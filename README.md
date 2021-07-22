@@ -25,6 +25,10 @@ Coming soon!
 
 Coming soon!
 
-## Licanse
+## License
+
+[MIT License](LICENSE).
 
 ## Contact
+
+- Benjamin S. Meyers <<bsm9339@rit.edu>>
