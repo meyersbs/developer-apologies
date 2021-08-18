@@ -130,3 +130,5 @@ dmypy.json
 
 # My Additions
 github_api_token.txt
+mysql-2019-06-01/*
+*.tar.gz
