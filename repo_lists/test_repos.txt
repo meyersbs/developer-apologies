@@ -1,0 +1,2 @@
+https://github.com/meyersbs/mitre-attack-mapper
+https://github.com/meyersbs/SPLAT
