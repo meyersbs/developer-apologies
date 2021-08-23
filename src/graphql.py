@@ -7,11 +7,15 @@ import sys
 
 
 #### PACKAGE IMPORTS ###############################################################################
-from src.config import getAPIToken
+from src.config import getAPIToken, EmptyAPITokenError
 
 
 #### GLOBALS #######################################################################################
-HEADERS = {"Authorization": "token {}".format(getAPIToken())}
+try:
+    HEADERS = {"Authorization": "token {}".format(getAPIToken())}
+except EmptyAPITokenError:
+    sys.exit()
+
 API_ENDPOINT = "https://api.github.com/graphql"
 REPO_URL = "https://github.com/{}/{}/"
 

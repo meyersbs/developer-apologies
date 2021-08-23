@@ -70,7 +70,7 @@ def validateDataDir(data_dir):
         Path(os.path.join(pull_requests_path), "__init__.py").touch()
         print("Created: {}".format(pull_requests_path))
     else:
-        Path(os.path.join(commits_path), "__init__.py").touch()
+        Path(os.path.join(pull_requests_path), "__init__.py").touch()
 
 
 def parseRepoURL(repo_url):
