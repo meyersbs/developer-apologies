@@ -7,6 +7,7 @@ import sys
 
 
 #### PROJECT IMPORTS ###############################################################################
+from src.delete import delete
 from src.download import download
 from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist
@@ -39,6 +40,21 @@ def downloadCommand(args):
 
 def loadCommand(args):
     sys.exit("Not yet implemented.")
+
+
+def deleteCommand(args):
+    """
+    Delete the CSV data stored in the given data_dir.
+    """
+    # Canonicalize filepaths
+    args.data_dir = canonicalize(args.data_dir)
+
+    # Verify with user
+    input("Are you sure you want to delete the data in {}? Press CTRL+C now to abort, or any key to "
+          "continue with deletion.".format(args.data_dir))
+
+    # Pass arguments to src.delete:delete()
+    delete(args.data_dir)
 
 
 def infoDataCommand(args):
@@ -103,6 +119,18 @@ if __name__ == "__main__":
         "be loaded. Relative paths will be canonicalized."
     )
     load_parser.set_defaults(func=loadCommand)
+
+    #### DELETE COMMAND
+    delete_parser = command_parsers.add_parser(
+        "delete", help="Delete local CSV data from disk. This command cannot be used to delete "
+        "the HDF5 file."
+    )
+    
+    delete_parser.add_argument(
+        "data_dir", type=str, help="The path for a directory containing downloaded data. Relative "
+        "paths will be canonicalized."
+    )
+    delete_parser.set_defaults(func=deleteCommand)
 
     #### INFO_DATA COMMAND
     info_data_parser = command_parsers.add_parser(
