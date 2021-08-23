@@ -11,7 +11,8 @@ from pathlib import Path
 #### PACKAGE IMPORTS ###############################################################################
 from src.config import getAPIToken, EmptyAPITokenError
 from src.delete import delete
-from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL
+from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
+    InvalidGitHubURLError
 
 
 #### GLOBALS #######################################################################################
@@ -158,6 +159,10 @@ class TestHelpers(unittest.TestCase):
         expected = ("meyersbs", "developer-apologies")
         actual = parseRepoURL(input_url)
         self.assertTupleEqual(expected, actual)
+
+        # Case 2 -- Non-GitHub URL
+        input_url = "http://www.se.rit.edu/~swen-331/"
+        self.assertRaises(InvalidGitHubURLError, parseRepoURL, input_url)
 
 
 class TestConfig(unittest.TestCase):

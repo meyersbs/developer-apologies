@@ -12,6 +12,14 @@ from pathlib import Path
 #### GLOBALS #######################################################################################
 
 
+#### CLASSES #######################################################################################
+class InvalidGitHubURLError(Exception):
+    """
+    Exception raised by parseRepoURL() when the provided input is not a valid GitHub repository.
+    """
+    pass
+
+
 #### FUNCTIONS #####################################################################################
 def canonicalize(path):
     """
@@ -84,6 +92,11 @@ def parseRepoURL(repo_url):
       repo_owner (str) -- the owner of the repo; e.g. meyersbs
       repo_name (str) -- the name of the repo; e.g. SPLAT
     """
+
+    if not repo_url.startswith("https://github.com/"):
+        raise InvalidGitHubURLError(
+            "The URL '{}' is not a valid GitHub repository.".format(repo_url))
+
     repo_owner = repo_url.split("/")[3]
     repo_name = repo_url.split("/")[4]
 

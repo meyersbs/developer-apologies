@@ -14,6 +14,9 @@ API_TOKEN_PATH = canonicalize("github_api_token.txt")
 
 #### CLASSES #######################################################################################
 class EmptyAPITokenError(Exception):
+    """
+    Exception raised by getAPIToken when API_TOKEN_PATH is an empty file.
+    """
     pass
 
 
