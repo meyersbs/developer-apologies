@@ -16,7 +16,7 @@ Cataloging developer mistakes yields a knowledge-base to help developers learn f
 ## Dependencies
 
 - PostgreSQL 9.6+
-- More coming soon...
+- More coming soon!
 
 ## Setup
 
