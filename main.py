@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
     #### PARSER ARGUMENTS
     args = parser.parse_args()
-    print(args)
+    #print(args)
     args.func(args)
 
 
