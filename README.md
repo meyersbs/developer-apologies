@@ -68,10 +68,16 @@ This command downloads the specified data and saves it in CSV format to disk (in
 usage: main.py download [-h] repo_file {issues,pull_requests,commits,all} data_dir
 
 positional arguments:
-  repo_file             The path for a file containing GitHub repository URLs to download data from. This file should contain a single repo URL per line. Relative paths will be canonicalized.
+  repo_file             The path for a file containing GitHub repository URLs to download
+                        data from. This file should contain a single repo URL per line.
+                        Relative paths will be canonicalized.
   {issues,pull_requests,commits,all}
-                        The type of data to download from the given repositories. All of the relevant metadata, including comments will be downloaded for whichever option is given.
-  data_dir              The path for a directory to save the downloaded data to. Relative paths will be canonicalized. Downloaded data will be in the form of a CSV file and placed in a subdirectory, e.g. data_dir/issues/.
+                        The type of data to download from the given repositories. All of
+                        the relevant metadata, including comments will be downloaded for
+                        whichever option is given.
+  data_dir              The path for a directory to save the downloaded data to. Relative
+                        paths will be canonicalized. Downloaded data will be in the form
+                        of a CSV file and placed in a subdirectory, e.g. data_dir/issues/.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -87,8 +93,10 @@ This command loads data from the specified data_dir into the specified HDF5 file
 usage: main.py load [-h] hdf5_file data_dir
 
 positional arguments:
-  hdf5_file   The path/name of the HDF5 file to create and load with data. Relative paths will be canonicalized.
-  data_dir    The path to a directory where data is downloaded and ready to be loaded. Relative paths will be canonicalized.
+  hdf5_file   The path/name of the HDF5 file to create and load with data. Relative paths
+              will be canonicalized.
+  data_dir    The path to a directory where data is downloaded and ready to be loaded.
+              Relative paths will be canonicalized.
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -102,7 +110,8 @@ This command deletes CSV data from the specified data_dir.
 usage: main.py delete [-h] data_dir
 
 positional arguments:
-  data_dir    The path for a directory containing downloaded data. Relative paths will be canonicalized.
+  data_dir    The path for a directory containing downloaded data. Relative paths will be
+              canonicalized.
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -118,7 +127,8 @@ This command prints useful information about the downloaded CSV data.
 usage: main.py info_data [-h] data_dir
 
 positional arguments:
-  data_dir    The path for a directory containing downloaded data. Relative paths will be canonicalized.
+  data_dir    The path for a directory containing downloaded data. Relative paths will be
+              canonicalized.
 
 optional arguments:
   -h, --help  show this help message and exit
