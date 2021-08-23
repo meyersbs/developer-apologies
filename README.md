@@ -42,16 +42,16 @@ To run unit tests, execute `./test.sh` from the root directory of the repository
 ``` bash
 usage: main.py [-h] {download,load,delete,info_data,info_hdf5,info_rate_limit} ...
 
-Scripts to facilitate downloading data from GitHub, loading it into an HDF5 file, and analyzing the
-data.
+Scripts to facilitate downloading data from GitHub, loading it into an HDF5 file, and analyzing
+the data.
 
 positional arguments:
   {download,load,delete,info_data,info_hdf5,info_rate_limit}
                         Available commands.
     download            Download data from GitHub repositories using the GraphQL API.
     load                Load downloaded data into an HDF5 file.
-    delete              Delete local CSV data from disk. This command cannot be used to delete the
-                        HDF5 file.
+    delete              Delete local CSV data from disk. This command cannot be used to delete
+                        the HDF5 file.
     info_data           Display info about the downloaded data.
     info_hdf5           Display info about the data loaded into HDF5.
     info_rate_limit     Display rate limiting info from GitHub's GraphQL API.
