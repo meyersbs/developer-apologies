@@ -36,13 +36,13 @@ class TestHelpers(unittest.TestCase):
         """
         # Case 1 -- simple relative path
         input_path = "data/"
-        expected = "/home/benjamin/Code/developer-apologies/data"
+        expected = os.path.join(CWD, "data")
         actual = canonicalize(input_path)
         self.assertEqual(expected, actual)
 
         # Case 2 -- complex relative path
         input_path = "data/../data/"
-        expected = "/home/benjamin/Code/developer-apologies/data"
+        expected = os.path.join(CWD, "data")
         actual = canonicalize(input_path)
         self.assertEqual(expected, actual)
 
@@ -77,10 +77,10 @@ class TestHelpers(unittest.TestCase):
         Test src.helpers:validateDataDir().
         """
         expected = [
-            ('/home/benjamin/Code/developer-apologies/test_data/', ['commits', 'issues', 'pull_requests'], []),
-            ('/home/benjamin/Code/developer-apologies/test_data/commits', [], ['__init__.py']),
-            ('/home/benjamin/Code/developer-apologies/test_data/issues', [], ['__init__.py']),
-            ('/home/benjamin/Code/developer-apologies/test_data/pull_requests', [], ['__init__.py'])
+            (os.path.join(CWD, "test_data/"), ["commits", "issues", "pull_requests"], []),
+            (os.path.join(CWD, "test_data/commits"), [], ["__init__.py"]),
+            (os.path.join(CWD, "test_data/issues"), [], ["__init__.py"]),
+            (os.path.join(CWD, "test_data/pull_requests"), [], ["__init__.py"])
         ]
 
         # Case 1 -- empty data_dir
@@ -202,10 +202,10 @@ class TestDelete(unittest.TestCase):
         Test src.delete:delete().
         """
         expected = [
-            ('/home/benjamin/Code/developer-apologies/test_data/', ['commits', 'issues', 'pull_requests'], []),
-            ('/home/benjamin/Code/developer-apologies/test_data/commits', [], ['__init__.py']),
-            ('/home/benjamin/Code/developer-apologies/test_data/issues', [], ['__init__.py']),
-            ('/home/benjamin/Code/developer-apologies/test_data/pull_requests', [], ['__init__.py'])
+            (os.path.join(CWD, "test_data/"), ["commits", "issues", "pull_requests"], []),
+            (os.path.join(CWD, "test_data/commits"), [], ["__init__.py"]),
+            (os.path.join(CWD, "test_data/issues"), [], ["__init__.py"]),
+            (os.path.join(CWD, "test_data/pull_requests"), [], ["__init__.py"])
         ]
 
         # Case 1 -- all files exist
