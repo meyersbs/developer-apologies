@@ -17,7 +17,9 @@ ISSUES_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_T
     "ISSUE_AUTHOR","ISSUE_CREATION_DATE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
     "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
 COMMITS_HEADER = list()
-PULL_REQUESTS_HEADER = list()
+PULL_REQUESTS_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "PULL_REQUEST_NUMBER",
+    "PULL_REQUEST_TITLE", "PULL_REQUEST_AUTHOR", "PULL_REQUEST_CREATION_DATE", "PULL_REQUEST_URL",
+    "PULL_REQUEST_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
 
 
 #### FUNCTIONS #####################################################################################
@@ -35,6 +37,22 @@ def _sortIssues(issues):
     """
     new_issues = sorted(issues, key=operator.itemgetter(3, 9))
     return new_issues
+
+
+def _sortPullRequests(pull_requests):
+    """
+    Helper function from _formatPullRequests(). Sort a list of pull requests by pull request number
+    and then by comment creation date.
+
+    GIVEN:
+      pull_requests (list) -- nested list of pull_requests and their comments
+
+    RETURN:
+      new_pull_requests (list) -- the given 'pull_requests' list, but sorted by pull request number
+                                  and comment creation date
+    """
+    new_pull_requests = sorted(pull_requests, key=operator.itemgetter(3, 9))
+    return new_pull_requests
 
 
 def _formatIssues(issues, repo_url, repo_name, repo_owner):
@@ -106,6 +124,75 @@ def _formatIssues(issues, repo_url, repo_name, repo_owner):
     return issues_list
 
 
+def _formatPullRequests(pull_requests, repo_url, repo_name, repo_owner):
+    """
+    Helper function for _formatCSV(). Transform pull requests (and their comments) from JSON to CSV.
+
+    GIVEN:
+      pull_requests (list) -- list of dictionaries representing pull requests
+      repo_url (str) -- the URL for the repository
+      repo_name (str) -- the name of the repository
+      repo_owner (str) -- the owner of the repository
+
+    RETURN:
+      pull_requests_list (list) -- flat list of plut requests and their comments
+    """
+    pull_requests_list = list()
+    # For each pull requests
+    for pull_request in pull_requests:
+        pull_request_num = pull_request["node"]["number"]
+        pull_request_title = pull_request["node"]["title"]
+        pull_request_author = pull_request["node"]["author"]["login"]
+        pull_request_created = pull_request["node"]["createdAt"]
+        pull_request_url = pull_request["node"]["url"]
+        pull_request_text = pull_request["node"]["bodyText"]
+
+        # If there are comments
+        if pull_request["node"]["comments"]["totalCount"] != 0:
+            # For each comments
+            for comment in pull_request["node"]["comments"]["edges"]:
+                comment_author = comment["node"]["author"]["login"]
+                comment_created = comment["node"]["createdAt"]
+                comment_url = comment["node"]["url"]
+                comment_text = comment["node"]["bodyText"]
+
+                pull_requests_list.append([
+                    repo_url,
+                    repo_name,
+                    repo_owner,
+                    pull_request_num,
+                    pull_request_created,
+                    pull_request_author,
+                    pull_request_title,
+                    pull_request_url,
+                    pull_request_text,
+                    comment_created,
+                    comment_author,
+                    comment_url,
+                    comment_text
+                ])
+        # If there are no comments
+        else:
+            pull_requests_list.append([
+                repo_url,
+                repo_name,
+                repo_owner,
+                pull_request_num,
+                pull_request_created,
+                pull_request_author,
+                pull_request_title,
+                pull_request_url,
+                pull_request_text,
+                "",
+                "",
+                "",
+                ""
+            ])
+
+    pull_requests_list = _sortPullRequests(pull_requests_list)
+    return pull_requests_list
+
+
 def _formatCSV(data, repo_url, data_types):
     """
     Helper function for download(). Take raw JSON data from GitHub's GraphQL API and convert it to
@@ -130,11 +217,15 @@ def _formatCSV(data, repo_url, data_types):
     commits = list()
     pull_requests = list()
     if data_types == "issues":
-        issues = _formatIssues(data["data"]["repository"]["issues"]["edges"], repo_url, repo_name, repo_owner)
+        issues = _formatIssues(
+            data["data"]["repository"]["issues"]["edges"], repo_url, repo_name, repo_owner
+        )
     elif data_types == "commits":
         pass
     elif data_types == "pull_requests":
-        pass
+        pull_requests = _formatPullRequests(
+            data["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name, repo_owner
+        )
     elif data_types == "all":
         pass
 
@@ -216,6 +307,8 @@ def download(repo_file, data_dir, data_types):
 
             # Run a GraphQL query
             results = runQuery(repo_owner, repo_name, data_types)
+            print("HI!")
+            print(results)
             # Convert results to CSV
             issues, pull_requests, comments = _formatCSV(results, repo_url, data_types)
             # Write data to disk

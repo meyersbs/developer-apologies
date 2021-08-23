@@ -30,7 +30,7 @@ def downloadCommand(args):
     assert doesPathExist(args.repo_file), ASSERT_NOT_EXIST.format("repo_file", args.repo_file)
     assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
 
-    if args.data_types in ["pull_requests", "commits", "all"]:
+    if args.data_types in ["commits", "all"]:
         sys.exit("Data type '{}' for downloadCommand() not yet implemented.".format(
             args.data_types))
 

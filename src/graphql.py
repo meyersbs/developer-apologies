@@ -26,9 +26,94 @@ QUERY_RATE_LIMIT = """
     }
 }
 """
-QUERY_PULL_REQUESTS = """"""
 QUERY_COMMITS = """"""
 QUERY_ALL = """"""
+QUERY_PULL_REQUESTS_1 = """
+query {
+    repository(owner:"OWNER", name:"NAME") {
+        name
+        owner { login }
+        pullRequests(first:100, states:[OPEN,CLOSED,MERGED]) {
+            totalCount
+            edges {
+                node {
+                    number
+                    title
+                    author { login }
+                    createdAt
+                    url
+                    bodyText
+                    comments(first:100) {
+                        totalCount
+                        edges {
+                            node {
+                                id
+                                author { login }
+                                bodyText
+                                createdAt
+                                url
+                            }
+                        }
+                        pageInfo {
+                            startCursor
+                            endCursor
+                            hasNextPage
+                        }
+                    }
+                }
+            }
+            pageInfo {
+                startCursor
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+}
+"""
+QUERY_PULL_REQUESTS_2 = """
+query {
+    repository(owner:"OWNER", name:"NAME") {
+        name
+        owner { login }
+        pullRequests(first:100, states:[OPEN,CLOSED,MERGED], after:"AFTER") {
+            totalCount
+            edges {
+                node {
+                    number
+                    title
+                    author { login }
+                    createdAt
+                    url
+                    bodyText
+                    comments(first:100) {
+                        totalCount
+                        edges {
+                            node {
+                                id
+                                author { login }
+                                bodyText
+                                createdAt
+                                url
+                            }
+                        }
+                        pageInfo {
+                            startCursor
+                            endCursor
+                            hasNextPage
+                        }
+                    }
+                }
+            }
+            pageInfo {
+                startCursor
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+}
+"""
 QUERY_ISSUES_1 = """
 query {
     repository(owner:"OWNER", name:"NAME") {
@@ -141,6 +226,30 @@ query {
     }
 }
 """
+QUERY_COMMENTS_BY_PULL_REQUEST_NUMBER = """
+query {
+    repository(owner:"OWNER", name:"NAME") {
+        pullRequest(number: NUMBER) {
+            comments(first:100, after:"AFTER") {
+                edges {
+                    node {
+                        id
+                        author { login }
+                        bodyText
+                        createdAt
+                        url
+                    }
+                }
+                pageInfo {
+                    startCursor
+                    endCursor
+                    hasNextPage
+                }
+            }
+        }
+    }
+}
+"""
 
 
 #### FUNCTIONS #####################################################################################
@@ -174,14 +283,28 @@ def _cleanUpAllIssues(results, all_issues):
     RETURN:
       results (dict) -- cleaned up results
     """
-    #TODO Remove pageInfo for comments
-    #TODO Flatten down the JSON
     results["data"]["repository"]["issues"]["edges"] = all_issues
     results["data"]["repository"]["issues"].pop("pageInfo")
     return results
 
 
-def _getAllComments(repo_owner, repo_name, all_issues):
+def _cleanUpAllPullRequests(results, all_pull_requests):
+    """
+    Helper function for _getAllPullRequests(). Clean up pull requests and strip out cursor info.
+
+    GIVEN:
+      results (dict) -- initial query response with metadata
+      all_pull_requests (list) -- nested list of pull_requests with comments and metadata
+
+    RETURN:
+      results (dict) -- cleaned up results
+    """
+    results["data"]["repository"]["pullRequests"]["edges"] = all_pull_requests
+    results["data"]["repository"]["pullRequests"].pop("pageInfo")
+    return results
+
+
+def _getAllCommentsByIssueNumber(repo_owner, repo_name, all_issues):
     """
     Helper function for _getAllIssues(). For issues where the first pass couldn't get all of the
     comments, get the missing comments.
@@ -217,6 +340,42 @@ def _getAllComments(repo_owner, repo_name, all_issues):
     return all_issues
 
 
+def _getAllCommentsByPullRequestNumber(repo_owner, repo_name, all_pull_requests):
+    """
+    Helper function for _getAllPullRequests(). For pull requests where the first pass couldn't get
+    all of the comments, get the missing comments.
+
+    GIVEN:
+      repo_owner (str) -- the owner of the repository; e.g. meyersbs
+      repo_name (str) -- the name of the repository; e.g. SPLAT
+      all_pull_requests (dict) -- intermediate data from _getAllPullRequests()
+    """
+    # For each pull request
+    for pull_request in all_pull_requests["data"]["repository"]["pullRequests"]["edges"]:
+        # While the number of comments is less than it should be
+        pull_request_copy = pull_request
+        while pull_request_copy["node"]["comments"]["pageInfo"]["hasNextPage"]:
+            # Get the next page of comments
+            end_cursor = pull_request["node"]["comments"]["pageInfo"]["endCursor"]
+            res = _runQuery(
+                QUERY_COMMENTS_BY_PULL_REQUEST_NUMBER.replace("OWNER", repo_owner)
+                .replace("NAME", repo_name)
+                .replace("NUMBER", str(pull_request["node"]["number"]))
+                .replace("AFTER", end_cursor)
+            )
+            # Update our comments
+            pull_request_copy["node"]["comments"]["edges"].extend(
+                res["data"]["repository"]["pullRequest"]["comments"]["edges"])
+            # Update the pageInfo
+            pull_request_copy["node"]["comments"]["pageInfo"] = \
+                res["data"]["repository"]["pullRequest"]["comments"]["pageInfo"]
+
+        # Update the issue
+        pull_request = pull_request_copy
+
+    return all_pull_requests
+
+
 def _getAllIssues(repo_owner, repo_name):
     """
     Helper function fro runQuery(). Get all issues with relevant metadata and their comments.
@@ -250,12 +409,42 @@ def _getAllIssues(repo_owner, repo_name):
         has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
 
     all_issues = _cleanUpAllIssues(results, all_issues)
-    all_issues = _getAllComments(repo_owner, repo_name, all_issues)
+    all_issues = _getAllCommentsByIssueNumber(repo_owner, repo_name, all_issues)
     return all_issues
 
 
 def _getAllPullRequests(repo_owner, repo_name):
-    sys.exit("Not yet implemented.")
+    """
+
+    """
+    all_pull_requests = list()
+    results = None
+
+    # First pass to get pagination cursors
+    res = _runQuery(
+        QUERY_PULL_REQUESTS_1.replace("OWNER", repo_owner)
+        .replace("NAME", repo_name)
+    )
+    results = res
+    print(res)
+    all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
+    end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
+    has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
+
+    # Subsequent passes
+    while has_next_page:
+        res = _runQuery(
+            QUERY_PULL_REQUESTS_2.replace("OWNER", repo_owner)
+            .replace("NAME", repo_name)
+            .replace("AFTER", end_cursor)
+        )
+        all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
+        end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
+        has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
+
+    all_pull_requests = _cleanUpAllPullRequests(results, all_pull_requests)
+    all_pull_requests = _getAllCommentsByPullRequestNumber(repo_owner, repo_name, all_pull_requests)
+    return all_pull_requests
 
 
 def _getAllCommits(repo_owner, repo_name):
