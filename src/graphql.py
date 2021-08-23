@@ -26,8 +26,109 @@ QUERY_RATE_LIMIT = """
     }
 }
 """
-QUERY_COMMITS = """"""
 QUERY_ALL = """"""
+QUERY_COMMITS_1 = """
+query {
+    repository(owner:"OWNER", name:"NAME") {
+        name
+        owner { login }
+        defaultBranchRef {
+            target {
+                ... on Commit {
+                    history(first:100) {
+                        edges {
+                            node {
+                                oid
+                                author {
+                                    user { login }
+                                }
+                                additions
+                                deletions
+                                committedDate
+                                url
+                                messageHeadline
+                                messageBody
+                                comments(first:100) {
+                                    totalCount
+                                    edges { 
+                                        node {
+                                            author { login }
+                                            bodyText
+                                            createdAt
+                                            url
+                                        }
+                                    }
+                                    pageInfo {
+                                        startCursor
+                                        endCursor
+                                        hasNextPage
+                                    }
+                                }
+                            }
+                        }
+                        pageInfo {
+                            startCursor
+                            endCursor
+                            hasNextPage
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+"""
+QUERY_COMMITS_2 = """
+query {
+    repository(owner:"OWNER", name:"NAME") {
+        name
+        owner { login }
+        defaultBranchRef {
+            target {
+                ... on Commit {
+                    history(first:100, after:"AFTER") {
+                        edges {
+                            node {
+                                oid
+                                author {
+                                    user { login }
+                                }
+                                additions
+                                deletions
+                                committedDate
+                                url
+                                messageHeadline
+                                messageBody
+                                comments(first:100) {
+                                    totalCount
+                                    edges { 
+                                        node {
+                                            author { login }
+                                            bodyText
+                                            createdAt
+                                            url
+                                        }
+                                    }
+                                    pageInfo {
+                                        startCursor
+                                        endCursor
+                                        hasNextPage
+                                    }
+                                }
+                            }
+                        }
+                        pageInfo {
+                            startCursor
+                            endCursor
+                            hasNextPage
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+"""
 QUERY_PULL_REQUESTS_1 = """
 query {
     repository(owner:"OWNER", name:"NAME") {
@@ -250,6 +351,30 @@ query {
     }
 }
 """
+QUERY_COMMENTS_BY_COMMIT_OID = """
+query {
+    repository(owner:"OWNER", name:"NAME") {
+        object(oid:"OID") {
+            comments(first:100, after:"AFTER") {
+                totalCount
+                edges { 
+                    node {
+                        author { login }
+                        bodyText
+                        createdAt
+                        url
+                    }
+                }
+                pageInfo {
+                    startCursor
+                    endCursor
+                    hasNextPage
+                }
+            }
+        }
+    }
+}
+"""
 
 
 #### FUNCTIONS #####################################################################################
@@ -301,6 +426,22 @@ def _cleanUpAllPullRequests(results, all_pull_requests):
     """
     results["data"]["repository"]["pullRequests"]["edges"] = all_pull_requests
     results["data"]["repository"]["pullRequests"].pop("pageInfo")
+    return results
+
+
+def _cleanUpAllCommits(results, all_commits):
+    """
+    Helper function for _getAllCommitss(). Clean up commits and strip out cursor info.
+
+    GIVEN:
+      results (dict) -- initial query response with metadata
+      all_commits (list) -- nested list of commits with comments and metadata
+
+    RETURN:
+      results (dict) -- cleaned up results
+    """
+    results["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"] = all_commits
+    results["data"]["repository"]["defaultBranchRef"]["target"]["history"].pop("pageInfo")
     return results
 
 
@@ -376,9 +517,45 @@ def _getAllCommentsByPullRequestNumber(repo_owner, repo_name, all_pull_requests)
     return all_pull_requests
 
 
+def _getAllCommentsByCommitOID(repo_owner, repo_name, all_commits):
+    """
+    Helper function for _getAllCommits(). For commits where the first pass couldn't get all of the
+    comments, get the missing comments.
+
+    GIVEN:
+      repo_owner (str) -- the owner of the repository; e.g. meyersbs
+      repo_name (str) -- the name of the repository; e.g. SPLAT
+      all_commits (dict) -- intermediate data from _getAllCommits()
+    """
+    # For each commit
+    for commit in all_commits["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"]:
+        # While the number of comments is less than it should be
+        commit_copy = commit
+        while commit_copy["node"]["comments"]["pageInfo"]["hasNextPage"]:
+            # Get the next page of comments
+            end_cursor = commit["node"]["comments"]["pageInfo"]["endCursor"]
+            res = _runQuery(
+                QUERY_COMMENTS_BY_COMMIT_OID.replace("OWNER", repo_owner)
+                .replace("NAME", repo_name)
+                .replace("OID", commit["node"]["oid"])
+                .replace("AFTER", end_cursor)
+            )
+            # Update our comments
+            commit_copy["node"]["comments"]["edges"].extend(
+                res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["comments"]["edges"])
+            # Update pageInfo
+            commit_copy["node"]["comments"]["pageInfo"] = \
+                res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["comments"]["pageInfo"]
+
+        # Update the commit
+        commit = commit_copy
+
+    return all_commits
+
+
 def _getAllIssues(repo_owner, repo_name):
     """
-    Helper function fro runQuery(). Get all issues with relevant metadata and their comments.
+    Helper function for runQuery(). Get all issues with relevant metadata and their comments.
 
     GIVEN:
       repo_owner (str) -- the owner of the repository; e.g. meyersbs
@@ -415,7 +592,11 @@ def _getAllIssues(repo_owner, repo_name):
 
 def _getAllPullRequests(repo_owner, repo_name):
     """
+    Helper function for runQuery(). Get all pull requests with relevant metadata and their comments.
 
+    GIVEN:
+      repo_owner (str) -- the owner of the repository; e.g. meyersbs
+      repo_name (str) -- the name of the repository; e.g. SPLAT
     """
     all_pull_requests = list()
     results = None
@@ -426,7 +607,6 @@ def _getAllPullRequests(repo_owner, repo_name):
         .replace("NAME", repo_name)
     )
     results = res
-    print(res)
     all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
     end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
     has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
@@ -448,7 +628,40 @@ def _getAllPullRequests(repo_owner, repo_name):
 
 
 def _getAllCommits(repo_owner, repo_name):
-    sys.exit("Not yet implemented.")
+    """
+    Helper function for runQuery(). Get all commits with relevant metadata.
+
+    GIVEN:
+      repo_owner (str) -- the owner of the repository; e.g. meyersbs
+      repo_name (str) -- the name of the repository; e.g. SPLAT
+    """
+    all_commits = list()
+    results = None
+
+    # First pass to get pagination cursors
+    res = _runQuery(
+        QUERY_COMMITS_1.replace("OWNER", repo_owner)
+        .replace("NAME", repo_name)
+    )
+    results = res
+    all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
+    end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
+    has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+
+    # Subsequent passes
+    while has_next_page:
+        res = _runQuery(
+            QUERY_COMMITS_2.replace("OWNER", repo_owner)
+            .replace("NAME", repo_name)
+            .replace("AFTER", end_cursor)
+        )
+        all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
+        end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
+        has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+
+    all_commits = _cleanUpAllCommits(results, all_commits)
+    all_commits = _getAllCommentsByCommitOID(repo_owner, repo_name, all_commits)
+    return all_commits
 
 
 def _getAllData(repo_owner, repo_name):

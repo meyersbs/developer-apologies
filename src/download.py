@@ -16,7 +16,9 @@ from src.helpers import validateDataDir, parseRepoURL
 ISSUES_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_TITLE",
     "ISSUE_AUTHOR","ISSUE_CREATION_DATE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
     "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
-COMMITS_HEADER = list()
+COMMITS_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "COMMIT_OID", "COMMIT_CREATION_DATE",
+    "COMMIT_AUTHOR", "COMMIT_ADDITIONS", "COMMIT_DELETIONS", "COMMIT_HEADLINE", "COMMIT_URL",
+    "COMMIT_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
 PULL_REQUESTS_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "PULL_REQUEST_NUMBER",
     "PULL_REQUEST_TITLE", "PULL_REQUEST_AUTHOR", "PULL_REQUEST_CREATION_DATE", "PULL_REQUEST_URL",
     "PULL_REQUEST_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
@@ -53,6 +55,22 @@ def _sortPullRequests(pull_requests):
     """
     new_pull_requests = sorted(pull_requests, key=operator.itemgetter(3, 9))
     return new_pull_requests
+
+
+def _sortCommits(commits):
+    """
+    Helper function from _formatCommits(). Sort a list of commits by commit creation date and then
+    by comment creation date.
+
+    GIVEN:
+      commits (list) -- nested list of commits and their comments
+
+    RETURN:
+      new_commits (list) -- the given 'commits' list, but sorted by commit creation date and
+                            comment creation date
+    """
+    new_commits = sorted(commits, key=operator.itemgetter(4, 11))
+    return new_commits
 
 
 def _formatIssues(issues, repo_url, repo_name, repo_owner):
@@ -135,7 +153,7 @@ def _formatPullRequests(pull_requests, repo_url, repo_name, repo_owner):
       repo_owner (str) -- the owner of the repository
 
     RETURN:
-      pull_requests_list (list) -- flat list of plut requests and their comments
+      pull_requests_list (list) -- flat list of pull requests and their comments
     """
     pull_requests_list = list()
     # For each pull requests
@@ -193,6 +211,81 @@ def _formatPullRequests(pull_requests, repo_url, repo_name, repo_owner):
     return pull_requests_list
 
 
+def _formatCommits(commits, repo_url, repo_name, repo_owner):
+    """
+    Helper function for _formatCSV(). Transform commits (and their comments) from JSON to CSV.
+
+    GIVEN:
+      commits (list) -- list of dictionaries representing commits
+      repo_url (str) -- the URL for the repository
+      repo_name (str) -- the name of the repository
+      repo_owner (str) -- the owner of the repository
+
+    RETURN:
+      commits_list (list) -- flat list of commits and their comments
+    """
+    commits_list = list()
+    # For each commit
+    for commit in commits:
+        commit_oid = commit["node"]["oid"]
+        commit_author = commit["node"]["author"]["user"]["login"]
+        commit_created = commit["node"]["committedDate"]
+        commit_additions = commit["node"]["additions"]
+        commit_deletions = commit["node"]["deletions"]
+        commit_url = commit["node"]["url"]
+        commit_headline = commit["node"]["messageHeadline"]
+        commit_text = commit["node"]["messageBody"]
+
+        # If there are comments
+        if commit["node"]["comments"]["totalCount"] != 0:
+            # For each comments
+            for comment in commit["node"]["comments"]["edges"]:
+                comment_author = commit["node"]["author"]["login"]
+                comment_created = commit["node"]["createdAt"]
+                comment_url = commit["node"]["url"]
+                comment_text = commit["node"]["bodyText"]
+
+                commits_list.append([
+                    repo_url,
+                    repo_name,
+                    repo_owner,
+                    commit_oid,
+                    commit_created,
+                    commit_author,
+                    commit_additions,
+                    commit_deletions,
+                    commit_headline,
+                    commit_url,
+                    commit_text,
+                    comment_created,
+                    comment_author,
+                    comment_url,
+                    comment_text
+                ])
+        # If there are no comments
+        else:
+            commits_list.append([
+                repo_url,
+                repo_name,
+                repo_owner,
+                commit_oid,
+                commit_created,
+                commit_author,
+                commit_additions,
+                commit_deletions,
+                commit_headline,
+                commit_url,
+                commit_text,
+                "",
+                "",
+                "",
+                ""
+            ])
+
+    commits_list = _sortCommits(commits_list)
+    return commits_list
+
+
 def _formatCSV(data, repo_url, data_types):
     """
     Helper function for download(). Take raw JSON data from GitHub's GraphQL API and convert it to
@@ -221,7 +314,10 @@ def _formatCSV(data, repo_url, data_types):
             data["data"]["repository"]["issues"]["edges"], repo_url, repo_name, repo_owner
         )
     elif data_types == "commits":
-        pass
+        commits = _formatCommits(
+            data["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"], repo_url,
+            repo_name, repo_owner
+        )
     elif data_types == "pull_requests":
         pull_requests = _formatPullRequests(
             data["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name, repo_owner
@@ -307,8 +403,6 @@ def download(repo_file, data_dir, data_types):
 
             # Run a GraphQL query
             results = runQuery(repo_owner, repo_name, data_types)
-            print("HI!")
-            print(results)
             # Convert results to CSV
             issues, pull_requests, comments = _formatCSV(results, repo_url, data_types)
             # Write data to disk
