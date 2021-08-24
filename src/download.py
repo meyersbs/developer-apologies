@@ -13,8 +13,8 @@ from src.helpers import validateDataDir, parseRepoURL
 
 
 #### GLOBALS #######################################################################################
-ISSUES_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_TITLE",
-    "ISSUE_AUTHOR","ISSUE_CREATION_DATE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
+ISSUES_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_CREATION_DATE",
+    "ISSUE_AUTHOR", "ISSUE_TITLE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
     "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
 COMMITS_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "COMMIT_OID", "COMMIT_CREATION_DATE",
     "COMMIT_AUTHOR", "COMMIT_ADDITIONS", "COMMIT_DELETIONS", "COMMIT_HEADLINE", "COMMIT_URL",
@@ -240,10 +240,10 @@ def _formatCommits(commits, repo_url, repo_name, repo_owner):
         if commit["node"]["comments"]["totalCount"] != 0:
             # For each comments
             for comment in commit["node"]["comments"]["edges"]:
-                comment_author = commit["node"]["author"]["login"]
-                comment_created = commit["node"]["createdAt"]
-                comment_url = commit["node"]["url"]
-                comment_text = commit["node"]["bodyText"]
+                comment_author = comment["node"]["author"]["login"]
+                comment_created = comment["node"]["createdAt"]
+                comment_url = comment["node"]["url"]
+                comment_text = comment["node"]["bodyText"]
 
                 commits_list.append([
                     repo_url,
@@ -325,12 +325,12 @@ def _formatCSV(data, repo_url, data_types):
     elif data_types == "all":
         pass
 
-    print(repo_url)
-    print(repo_name)
-    print(repo_owner)
-    print(issues)
-    print(commits)
-    print(pull_requests)
+    #print(repo_url)
+    #print(repo_name)
+    #print(repo_owner)
+    #print(issues)
+    #print(commits)
+    #print(pull_requests)
 
     return issues, pull_requests, commits
 
