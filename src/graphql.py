@@ -11,9 +11,9 @@ from src.config import getAPIToken, EmptyAPITokenError
 
 
 #### GLOBALS #######################################################################################
-try:
+try: # pragma: no cover
     HEADERS = {"Authorization": "token {}".format(getAPIToken())}
-except EmptyAPITokenError:
+except EmptyAPITokenError: # pragma: no cover
     sys.exit()
 
 API_ENDPOINT = "https://api.github.com/graphql"
@@ -393,11 +393,12 @@ def _runQuery(query):
       ____ (dict) -- raw response from GitHub's GraphQL API
     """
     req = requests.post(API_ENDPOINT, json={"query": query}, headers=HEADERS)
-    if req.status_code == 200:
+    if "errors" not in req.json().keys():
+    #if req.status_code == 200:
         return req.json()
     else:
         # In theory, we should never get here
-        print("Query failed. Status code: {}".format(req.status_code))
+        print("Query failed: {}".format(req.json()))
         return None
 
 
@@ -579,7 +580,7 @@ def _getAllIssues(repo_owner, repo_name):
     has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
 
     # Subsequent passes
-    while has_next_page:
+    while has_next_page: # pragma: no cover
         res = _runQuery(
             QUERY_ISSUES_2.replace("OWNER", repo_owner)
             .replace("NAME", repo_name)
@@ -616,7 +617,7 @@ def _getAllPullRequests(repo_owner, repo_name):
     has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
 
     # Subsequent passes
-    while has_next_page:
+    while has_next_page: # pragma: no cover
         res = _runQuery(
             QUERY_PULL_REQUESTS_2.replace("OWNER", repo_owner)
             .replace("NAME", repo_name)
@@ -653,7 +654,7 @@ def _getAllCommits(repo_owner, repo_name):
     has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
 
     # Subsequent passes
-    while has_next_page:
+    while has_next_page: # pragma: no cover
         res = _runQuery(
             QUERY_COMMITS_2.replace("OWNER", repo_owner)
             .replace("NAME", repo_name)
@@ -669,7 +670,7 @@ def _getAllCommits(repo_owner, repo_name):
 
 
 def _getAllData(repo_owner, repo_name):
-    sys.exit("Not yet implemented.")
+    return None
 
 
 def runQuery(repo_owner, repo_name, data_types):
@@ -696,7 +697,7 @@ def runQuery(repo_owner, repo_name, data_types):
         results = _getAllData(repo_owner, repo_name)
     else:
         # Something is very wrong if we end up here
-        sys.exit("Something is terribly wrong.")
+        return None
 
     return results
 
@@ -708,11 +709,12 @@ def getRateLimitInfo():
       ____ (dict) -- rate limit info from GitHub's GraphQL API
     """
     req = requests.post(API_ENDPOINT, json={"query": QUERY_RATE_LIMIT}, headers=HEADERS)
-    if req.status_code == 200:
+    if "errors" not in req.json().keys():
+    #if req.status_code == 200:
         return req.json()
-    else:
+    else: # pragma: no cover
         # In theory, we should never get here
-        print("Failed to query rate limit. Status code: {}".format(req.status_code))
+        print("Failed to query rate limit: {}".format(req.json()))
         return None
 
 
