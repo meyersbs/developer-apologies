@@ -302,9 +302,14 @@ def _formatCSV(data, repo_url, data_types):
       pull_requests (list) -- flat list of pull requests and their comments
       commits (list) -- flat list of commits and their comments
     """
-    repo_url = repo_url
-    repo_name = data["data"]["repository"]["name"]
-    repo_owner = data["data"]["repository"]["owner"]["login"]
+    repo_name = None
+    repo_owner = None
+    if isinstance(data, list):
+        repo_name = data[0]["data"]["repository"]["name"]
+        repo_owner = data[0]["data"]["repository"]["owner"]["login"]
+    else:
+        repo_name = data["data"]["repository"]["name"]
+        repo_owner = data["data"]["repository"]["owner"]["login"]
 
     issues = list()
     commits = list()
@@ -322,8 +327,19 @@ def _formatCSV(data, repo_url, data_types):
         pull_requests = _formatPullRequests(
             data["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name, repo_owner
         )
-    elif data_types == "all":
-        pass
+    elif data_types == "all": # pragma: no cover
+        issues = _formatIssues(
+            data[0]["data"]["repository"]["issues"]["edges"], repo_url, repo_name, repo_owner
+        )
+
+        commits = _formatCommits(
+            data[1]["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"],
+            repo_url, repo_name, repo_owner
+        )
+
+        pull_requests = _formatPullRequests(
+            data[2]["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name, repo_owner
+        )
 
     return issues, pull_requests, commits
 

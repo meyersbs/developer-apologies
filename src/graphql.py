@@ -567,6 +567,9 @@ def _getAllIssues(repo_owner, repo_name):
     GIVEN:
       repo_owner (str) -- the owner of the repository; e.g. meyersbs
       repo_name (str) -- the name of the repository; e.g. SPLAT
+
+    RETURN:
+      all_issues (JSON) -- JSON representation of all issues with their comments and metadata
     """
     all_issues = list()
     results = None
@@ -604,6 +607,10 @@ def _getAllPullRequests(repo_owner, repo_name):
     GIVEN:
       repo_owner (str) -- the owner of the repository; e.g. meyersbs
       repo_name (str) -- the name of the repository; e.g. SPLAT
+
+    RETURN:
+      all_pull_requests (JSON) -- JSON representation of all pull requests with their comments and
+                                  metadata
     """
     all_pull_requests = list()
     results = None
@@ -641,6 +648,9 @@ def _getAllCommits(repo_owner, repo_name):
     GIVEN:
       repo_owner (str) -- the owner of the repository; e.g. meyersbs
       repo_name (str) -- the name of the repository; e.g. SPLAT
+
+    RETURN:
+      all_commits (JSON) -- JSON representation of all commits with their comments and metadata
     """
     all_commits = list()
     results = None
@@ -672,7 +682,25 @@ def _getAllCommits(repo_owner, repo_name):
 
 
 def _getAllData(repo_owner, repo_name):
-    return None
+    """
+    Helper function for runQuer(). Get all issues, commits, and pull requests with relevant metadata
+    and comments.
+
+    GIVEN:
+      repo_owner (str) -- the owner of the repository; e.g. meyersbs
+      repo_name (str) -- the name of the repository; e.g. SPLAT
+
+    RETURN:
+      all_issues (JSON) -- JSON representation of all issues with their comments and metadata
+      all_commits (JSON) -- JSON representation of all commits with their comments and metadata
+      all_pull_requests (JSON) -- JSON representation of all pull requests with their comments and
+                                  metadata
+    """
+    all_issues = _getAllIssues(repo_owner, repo_name)
+    all_commits = _getAllCommits(repo_owner, repo_name)
+    all_pull_requests = _getAllPullRequests(repo_owner, repo_name)
+
+    return [all_issues, all_commits, all_pull_requests]
 
 
 def runQuery(repo_owner, repo_name, data_types):

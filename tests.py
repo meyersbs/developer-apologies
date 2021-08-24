@@ -49,13 +49,13 @@ class TestHelpers(unittest.TestCase):
         """
         Test src.helpers:canonicalize().
         """
-        # Case 1 -- simple relative path
+        #### Case 1 -- simple relative path
         input_path = "data/"
         expected = os.path.join(CWD, "data")
         actual = canonicalize(input_path)
         self.assertEqual(expected, actual)
 
-        # Case 2 -- complex relative path
+        #### Case 2 -- complex relative path
         input_path = "data/../data/"
         expected = os.path.join(CWD, "data")
         actual = canonicalize(input_path)
@@ -66,22 +66,22 @@ class TestHelpers(unittest.TestCase):
         """
         Test src.helpers:doesPathExist().
         """
-        # Case 1 -- relative path that doesn't exist
+        #### Case 1 -- relative path that doesn't exist
         input_path = "data/apples/"
         actual = doesPathExist(input_path)
         self.assertFalse(actual)
 
-        # Case 2 -- absolute path that doesn't exist
+        #### Case 2 -- absolute path that doesn't exist
         input_path = "data/apples/"
         actual = doesPathExist(canonicalize(input_path))
         self.assertFalse(actual)
 
-        # Case 3 -- relative path that does exist
+        #### Case 3 -- relative path that does exist
         input_path = "data/__init__.py"
         actual = doesPathExist(input_path)
         self.assertTrue(actual)
 
-        # Case 4 -- absolute path that does exist
+        #### Case 4 -- absolute path that does exist
         input_path = "data/__init__.py"
         actual = doesPathExist(canonicalize(input_path))
         self.assertTrue(actual)
@@ -98,69 +98,90 @@ class TestHelpers(unittest.TestCase):
             (os.path.join(CWD, "test_data/pull_requests"), [], ["__init__.py"])
         ]
 
-        # Case 1 -- empty data_dir
+        #### Case 1 -- empty data_dir
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         validateDataDir(data_dir)
+        # Test
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)       
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 2 -- data_dir with just issues dir
+        #### Case 2 -- data_dir with just issues dir
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         os.mkdir(os.path.join(data_dir, "issues/"))
         validateDataDir(data_dir)
+        # Test
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 3 -- data_dir with just issues dir containing __init__.py
+        #### Case 3 -- data_dir with just issues dir containing __init__.py
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         os.mkdir(os.path.join(data_dir, "issues/"))
         Path(os.path.join(data_dir, "issues/__init__.py")).touch()
         validateDataDir(data_dir)
+        # Test
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 4 -- data_dir with just commits dir
+        #### Case 4 -- data_dir with just commits dir
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         os.mkdir(os.path.join(data_dir, "commits/"))
         validateDataDir(data_dir)
+        # Test
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 5 -- data_dir with just commits dir containing __init__.py
+        #### Case 5 -- data_dir with just commits dir containing __init__.py
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         os.mkdir(os.path.join(data_dir, "commits/"))
         Path(os.path.join(data_dir, "commits/__init__.py")).touch()
         validateDataDir(data_dir)
+        # Test
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 6 -- data_dir with just pull_requests dir
+        #### Case 6 -- data_dir with just pull_requests dir
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         os.mkdir(os.path.join(data_dir, "pull_requests/"))
         validateDataDir(data_dir)
+        # Test
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 7 -- data_dir with just pull_requests dir containing __init__.py
+        #### Case 7 -- data_dir with just pull_requests dir containing __init__.py
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         os.mkdir(os.path.join(data_dir, "pull_requests/"))
         Path(os.path.join(data_dir, "pull_requests/__init__.py")).touch()
         validateDataDir(data_dir)
+        # Test
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
 
@@ -168,13 +189,13 @@ class TestHelpers(unittest.TestCase):
         """
         Test src.helpers:parseRepoURL().
         """
-        # Case 1 -- GitHub URL
+        #### Case 1 -- GitHub URL
         input_url = "https://github.com/meyersbs/developer-apologies/"
         expected = ("meyersbs", "developer-apologies")
         actual = parseRepoURL(input_url)
         self.assertTupleEqual(expected, actual)
 
-        # Case 2 -- Non-GitHub URL
+        #### Case 2 -- Non-GitHub URL
         input_url = "http://www.se.rit.edu/~swen-331/"
         self.assertRaises(InvalidGitHubURLError, parseRepoURL, input_url)
 
@@ -194,13 +215,13 @@ class TestConfig(unittest.TestCase):
         """
         Test src.config:getAPIToken().
         """
-        # Case 1 -- API token exists
+        #### Case 1 -- API token exists
         token_path = canonicalize("test_files/test_github_api_token.txt")
         expected = "abc_defG32ef6abd9mP4Qdmr5TY901sN01gF27eU"
         actual = getAPIToken(token_path)
         self.assertEqual(expected, actual)
 
-        # Case 2 -- blank API token
+        #### Case 2 -- blank API token
         token_path = canonicalize("test_files/test_github_api_token_empty.txt")
         self.assertRaises(EmptyAPITokenError, getAPIToken, token_path)
 
@@ -238,49 +259,61 @@ class TestDelete(unittest.TestCase):
             (os.path.join(CWD, "test_data/pull_requests"), [], ["__init__.py"])
         ]
 
-        # Case 1 -- all files exist
+        #### Case 1 -- all files exist
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         validateDataDir(data_dir) # We can use this because the test already passed
         Path(os.path.join(data_dir, "issues/issues.csv")).touch()
         Path(os.path.join(data_dir, "commits/commits.csv")).touch()
         Path(os.path.join(data_dir, "pull_requests/pull_requests.csv")).touch()
+        # Test
         delete(data_dir)
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 2 -- everything but issues.csv exists
+        #### Case 2 -- everything but issues.csv exists
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         validateDataDir(data_dir) # We can use this because the test already passed
         Path(os.path.join(data_dir, "commits/commits.csv")).touch()
         Path(os.path.join(data_dir, "pull_requests/pull_requests.csv")).touch()
+        # Test
         delete(data_dir)
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 3 -- everything but commits.csv exists
+        #### Case 3 -- everything but commits.csv exists
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         validateDataDir(data_dir) # We can use this because the test already passed
         Path(os.path.join(data_dir, "issues/issues.csv")).touch()
         Path(os.path.join(data_dir, "pull_requests/pull_requests.csv")).touch()
+        # Test
         delete(data_dir)
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
-        # Case 4 -- everything but pull_requests.csv exists
+        #### Case 4 -- everything but pull_requests.csv exists
+        # Setup
         data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(data_dir)
         validateDataDir(data_dir) # We can use this because the test already passed
         Path(os.path.join(data_dir, "issues/issues.csv")).touch()
         Path(os.path.join(data_dir, "commits/commits.csv")).touch()
+        # Test
         delete(data_dir)
         actual = list(os.walk(data_dir))
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
 
 
@@ -299,7 +332,7 @@ class TestGraphQL(unittest.TestCase):
         """
         Test src.graphql:_runQuery().
         """
-        # Case 1 -- dynamic, valid query
+        #### Case 1 -- dynamic, valid query
         input_query = """
         {
             viewer { login }
@@ -321,7 +354,7 @@ class TestGraphQL(unittest.TestCase):
         self.assertTrue("remaining" in actual["data"]["rateLimit"].keys())
         self.assertTrue("resetAt" in actual["data"]["rateLimit"].keys())
 
-        # Case 2 -- static, valid query
+        #### Case 2 -- static, valid query
         input_query = """
         query {
             repository(owner:"meyersbs", name:"tvdb-dl-nfo") {
@@ -363,12 +396,12 @@ class TestGraphQL(unittest.TestCase):
         actual = _runQuery(input_query)
         self.assertDictEqual(expected, actual)
 
-        # Case 3 -- invalid query, status code != 200
+        #### Case 3 -- invalid query, status code != 200
         # This can't really be tested. GitHub's GraphQL API responds with status code = 200 even
         # when the query was malformed. It responds with a JSON dict with the key "errors", which
         # we can test.
 
-        # Case 4 -- invalid query, returning errors
+        #### Case 4 -- invalid query, returning errors
         input_query = "query {}"
         expected = None
         actual = _runQuery(input_query)
@@ -379,7 +412,7 @@ class TestGraphQL(unittest.TestCase):
         """
         Test src.graphql:runQuery().
         """
-        # Case 1 -- data_types="issues"
+        #### Case 1 -- data_types="issues"
         input_repo_owner = "meyersbs"
         input_repo_name = "tvdb-dl-nfo"
         input_data_types = "issues"
@@ -428,7 +461,7 @@ class TestGraphQL(unittest.TestCase):
         actual = runQuery(input_repo_owner, input_repo_name, input_data_types)
         self.assertDictEqual(expected, actual)
 
-        # Case 2 -- data_types="issues", with over 100 comments
+        #### Case 2 -- data_types="issues", with over 100 comments
         input_repo_owner = "meyersbs"
         input_repo_name = "developer-apologies" # Yes, that's this repo!
         input_data_types = "issues"
@@ -460,7 +493,7 @@ class TestGraphQL(unittest.TestCase):
                         self.assertEqual("andymeneely", comment["node"]["author"]["login"])
                         self.assertEqual("2021-08-20T13:23:06Z", comment["node"]["createdAt"])
 
-        # Case 3 -- data_types="pull_requests"
+        #### Case 3 -- data_types="pull_requests"
         input_repo_owner = "meyersbs"
         input_repo_name = "developer-apologies" # Yes, that's this repo!
         input_data_types = "pull_requests"
@@ -476,7 +509,7 @@ class TestGraphQL(unittest.TestCase):
         for comment in comments:
             self.assertEqual("meyersbs", comment["node"]["author"]["login"])
 
-        # Case 4 -- data_types="commits"
+        #### Case 4 -- data_types="commits"
         input_repo_owner = "meyersbs"
         input_repo_name = "tvdb-dl-nfo"
         input_data_types = "commits"
@@ -502,15 +535,273 @@ class TestGraphQL(unittest.TestCase):
                 )
                 break
 
-        # Case 5 -- data_types="all"
+        #### Case 5 -- data_types="all"
         input_repo_owner = "meyersbs"
         input_repo_name = "tvdb-dl-nfo"
         input_data_types = "all"
         expected = None
+        expected_issues = {
+            "data": {
+                "repository": {
+                    "name": "tvdb-dl-nfo",
+                    "owner": {
+                        "login": "meyersbs"
+                    },
+                    "issues": {
+                        "totalCount": 1,
+                        "edges": [
+                            {
+                                "node": {
+                                    "id": "MDU6SXNzdWU0NDMwMzU3MTU=",
+                                    "number": 1,
+                                    "title": "Ampersands in Metadata",
+                                    "author": {
+                                        "login": "meyersbs"
+                                    },
+                                    "createdAt": "2019-05-11T20:58:59Z",
+                                    "url": "https://github.com/meyersbs/tvdb-dl-nfo/issues/1",
+                                    "bodyText": "If a show has an ampersand (&) in its name or desc"
+                                                "ription, the following error will occur:\n    PHP "
+                                                "Warning:  SimpleXMLElement::addChild(): unterminat"
+                                                "ed entity reference\n\nThe tvshow.nfo file is stil"
+                                                "l generated, but the field containing the ampersan"
+                                                "d will be empty.",
+                                    "comments": {
+                                        "totalCount": 0,
+                                        "edges": [],
+                                        "pageInfo": {
+                                            "startCursor": None,
+                                            "endCursor": None,
+                                            "hasNextPage": False
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+        expected_commits = {
+            "data": {
+                "repository": {
+                    "name": "tvdb-dl-nfo",
+                    "owner": {
+                        "login": "meyersbs"
+                    },
+                    "defaultBranchRef": {
+                        "target": {
+                            "history": {
+                                "edges": [
+                                    {
+                                        "node": {
+                                            "oid": "5b2009b8db3299cdb810b20caaaea88adb5ebe08",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 1, "deletions": 1,
+                                            "committedDate": "2019-11-27T19:09:42Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08",
+                                            "messageHeadline": "Update README.md", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 1,
+                                                "edges": [
+                                                    {
+                                                        "node": {
+                                                        	"author": {"login": "meyersbs"},
+                                                        	"bodyText": "Dummy comment.",
+                                                        	"createdAt": "2021-08-24T12:52:30Z",
+                                                        	"url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#commitcomment-55353873"
+                                                        }
+                                                    }
+                                                ],
+                                                "pageInfo": {
+                                                    "startCursor": "Y3Vyc29yOnYyOpHOA0yiEQ==",
+                                                    "endCursor": "Y3Vyc29yOnYyOpHOA0yiEQ==",
+                                                    "hasNextPage": False
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 6, "deletions": 2,
+                                            "committedDate": "2019-11-27T19:03:34Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6",
+                                            "messageHeadline": "Update README.md", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    }, 
+                                    {
+                                        "node": {
+                                            "oid": "f307305e5a12208baa4cb01f188e8fa20d7a6ef3",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 3, "deletions": 3,
+                                            "committedDate": "2019-05-11T21:04:23Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/f307305e5a12208baa4cb01f188e8fa20d7a6ef3",
+                                            "messageHeadline": "Fix #1", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "c399298846a2bcdbc4daa53076b5f9899d8f916b",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 16, "deletions": 13,
+                                            "committedDate": "2019-05-11T20:52:00Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/c399298846a2bcdbc4daa53076b5f9899d8f916b",
+                                            "messageHeadline": "Update README.md", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "23af721b3f70cdde0bcc3dc58ba3750dbab34b46",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 6, "deletions": 3,
+                                            "committedDate": "2019-05-11T20:51:50Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/23af721b3f70cdde0bcc3dc58ba3750dbab34b46",
+                                            "messageHeadline": "Read API Key from file rather than CLI.", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "bd163c63771e2e314470ce36a251b8e8ab9ce712",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 13, "deletions": 3,
+                                            "committedDate": "2019-05-11T20:51:19Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/bd163c63771e2e314470ce36a251b8e8ab9ce712",
+                                            "messageHeadline": "Change directory structure. Create apikey.txt", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "09929a23b30307ebbb426637d420b69216aa9772",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 10, "deletions": 0,
+                                            "committedDate": "2019-05-07T23:45:44Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/09929a23b30307ebbb426637d420b69216aa9772",
+                                            "messageHeadline": "Create install.sh", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 59, "deletions": 0,
+                                            "committedDate": "2019-05-07T23:45:06Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308",
+                                            "messageHeadline": "Create tvdb-dl-nfo.php", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "110efd9108faee147fa2430702999312d68f2329",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 12, "deletions": 1,
+                                            "committedDate": "2019-05-07T23:41:41Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/110efd9108faee147fa2430702999312d68f2329",
+                                            "messageHeadline": "Update README.md", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "1445c6376609dbf6c6017b19ed418d1cd73f2f6e",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 30, "deletions": 4,
+                                            "committedDate": "2019-05-07T23:38:41Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/1445c6376609dbf6c6017b19ed418d1cd73f2f6e",
+                                            "messageHeadline": "Update README.md", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "ae38a7f77d211c7678d1a518e797d0668598b472",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 78, "deletions": 1,
+                                            "committedDate": "2019-05-07T20:01:02Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/ae38a7f77d211c7678d1a518e797d0668598b472",
+                                            "messageHeadline": "Update README.md", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "node": {
+                                            "oid": "75614c09991b4313b1b999971aadd1d6d38f6ce7",
+                                            "author": {"user": {"login": "meyersbs"}},
+                                            "additions": 23, "deletions": 0,
+                                            "committedDate": "2019-05-07T19:32:43Z",
+                                            "url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/75614c09991b4313b1b999971aadd1d6d38f6ce7",
+                                            "messageHeadline": "Initial commit", "messageBody": "",
+                                            "comments": {
+                                                "totalCount": 0, "edges": [],
+                                                "pageInfo": {"startCursor": None, "endCursor": None, "hasNextPage": False}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        expected_pull_requests = {
+            "data": {
+                "repository": {
+                    "name": "tvdb-dl-nfo",
+                    "owner": {
+                        "login": "meyersbs"
+                    },
+                    "pullRequests": {
+                        "totalCount": 0,
+                        "edges": []
+                    }
+                }
+            }
+        }
         actual = runQuery(input_repo_owner, input_repo_name, input_data_types)
-        self.assertEqual(expected, actual)
+        self.assertDictEqual(expected_issues, actual[0])
+        self.assertDictEqual(expected_commits, actual[1])
+        self.assertDictEqual(expected_pull_requests, actual[2])
 
-        # Case 6 -- invalid data_types
+        #### Case 6 -- invalid data_types
         input_repo_owner = "meyersbs"
         input_repo_name = "tvdb-dl-nfo"
         input_data_types = "apples"
@@ -560,7 +851,8 @@ class TestDownload(unittest.TestCase):
         """
         Test src.download:download().
         """
-        # Case 1 -- data_types="issues"
+        #### Case 1 -- data_types="issues"
+        # Setup
         input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_2.txt")
         input_data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(input_data_dir)
@@ -581,6 +873,7 @@ class TestDownload(unittest.TestCase):
                 "rsand will be empty.", "", "", "", ""
             ]
         ]
+        # Test
         download(input_repo_file, input_data_dir, input_data_types)
         actual = list()
         with open(os.path.join(input_data_dir, "issues/issues.csv"), "r") as f:
@@ -588,14 +881,16 @@ class TestDownload(unittest.TestCase):
             for entry in csv_reader:
                 actual.append(entry)
         self.assertListEqual(expected, actual)
+        # Cleanup
         shutil.rmtree(input_data_dir)
 
-        # Case 2 -- data_types="issues", with over 100 comments
+        #### Case 2 -- data_types="issues", with over 100 comments
+        # Setup
         input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_3.txt")
         input_data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(input_data_dir)
         input_data_types = "issues"
-        expected = [
+        expected_issues_3 = [
             ["REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_CREATION_DATE",
              "ISSUE_AUTHOR", "ISSUE_TITLE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
              "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"],
@@ -1115,21 +1410,24 @@ class TestDownload(unittest.TestCase):
              "andymeneely", "https://github.com/meyersbs/developer-apologies/issues/2#issuecomment-902690150",
              "Sorry, but I figured I'd add a data point. Sorrynotsorry."]
         ]
+        # Test
         download(input_repo_file, input_data_dir, input_data_types)
         actual = list()
         with open(os.path.join(input_data_dir, "issues/issues.csv"), "r") as f:
             csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
             for entry in csv_reader:
                 actual.append(entry)
-        self.assertListEqual(expected, actual)
+        self.assertListEqual(expected_issues_3, actual)
+        # Cleanup
         shutil.rmtree(input_data_dir)
 
-        # Case 3 -- data_types="pull_requests"
+        #### Case 3 -- data_types="pull_requests"
+        # Setup
         input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_3.txt")
         input_data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(input_data_dir)
         input_data_types = "pull_requests"
-        expected = [
+        expected_pull_requests_3 = [
             ["REPO_URL", "REPO_NAME", "REPO_OWNER", "PULL_REQUEST_NUMBER", "PULL_REQUEST_TITLE",
              "PULL_REQUEST_AUTHOR", "PULL_REQUEST_CREATION_DATE", "PULL_REQUEST_URL", "PULL_REQUEST_TEXT",
              "COMMENT_CREATION_DATE", "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"],
@@ -1538,17 +1836,22 @@ class TestDownload(unittest.TestCase):
              "https://github.com/meyersbs/developer-apologies/pull/3", "", "2021-08-23T14:39:07Z", "meyersbs",
              "https://github.com/meyersbs/developer-apologies/pull/3#issuecomment-903834642", "101"]
         ]
-
+        # Test
         download(input_repo_file, input_data_dir, input_data_types)
         actual = list()
         with open(os.path.join(input_data_dir, "pull_requests/pull_requests.csv"), "r") as f:
             csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
             for entry in csv_reader:
                 actual.append(entry)
-        self.assertListEqual(expected, actual)
+        self.assertListEqual(expected_pull_requests_3, actual)
+        # Cleanup
         shutil.rmtree(input_data_dir)
 
-        # Case 4 -- data_types="commits"
+        #### Case 4 -- data_types="pull_requests", no comments
+        #TODO
+
+        #### Case 5 -- data_types="commits"
+        # Setup
         input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_3.txt")
         input_data_dir = os.path.join(CWD, "test_data/")
         os.mkdir(input_data_dir)
@@ -1559,6 +1862,7 @@ class TestDownload(unittest.TestCase):
             "COMMIT_URL", "COMMIT_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR",
             "COMMENT_URL", "COMMENT_TEXT"
         ]
+        # Test
         download(input_repo_file, input_data_dir, input_data_types)
         actual = list()
         with open(os.path.join(input_data_dir, "commits/commits.csv"), "r") as f:
@@ -1571,7 +1875,52 @@ class TestDownload(unittest.TestCase):
             if entry[8] == "Implement pull request downloading.":
                 over_100_count += 1
         self.assertEqual(102, over_100_count)
+        # Cleanup
         shutil.rmtree(input_data_dir)
+
+        #### Case 6 -- data_types="all"
+        # Setup
+        input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_3.txt")
+        input_data_dir = os.path.join(CWD, "test_data/")
+        os.mkdir(input_data_dir)
+        input_data_types = "all"
+        actual_issues = list()
+        actual_commits = list()
+        actual_pull_requests = list()
+        # Test
+        download(input_repo_file, input_data_dir, input_data_types)
+        with open(os.path.join(input_data_dir, "issues/issues.csv"), "r") as f:
+            csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
+            for entry in csv_reader:
+                actual_issues.append(entry)
+        with open(os.path.join(input_data_dir, "commits/commits.csv"), "r") as f:
+            csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
+            for entry in csv_reader:
+                actual_commits.append(entry)
+        with open(os.path.join(input_data_dir, "pull_requests/pull_requests.csv"), "r") as f:
+            csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
+            for entry in csv_reader:
+                actual_pull_requests.append(entry)
+        # Test issues
+        self.assertListEqual(expected_issues_3, actual_issues)
+        # Test commits
+        expected_header = [
+            "REPO_URL", "REPO_NAME", "REPO_OWNER", "COMMIT_OID", "COMMIT_CREATION_DATE",
+            "COMMIT_AUTHOR", "COMMIT_ADDITIONS", "COMMIT_DELETIONS", "COMMIT_HEADLINE",
+            "COMMIT_URL", "COMMIT_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR",
+            "COMMENT_URL", "COMMENT_TEXT"
+        ]
+        self.assertListEqual(expected_header, actual_commits[0])
+        over_100_count = 0
+        for entry in actual_commits:
+            if entry[8] == "Implement pull request downloading.":
+                over_100_count += 1
+        self.assertEqual(102, over_100_count)
+        # Test pull requests
+        self.assertListEqual(expected_pull_requests_3, actual_pull_requests)
+        # Cleanup
+        shutil.rmtree(input_data_dir)
+
 
 #### MAIN ##########################################################################################
 if __name__ == "__main__":

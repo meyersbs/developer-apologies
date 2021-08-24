@@ -30,10 +30,6 @@ def downloadCommand(args):
     assert doesPathExist(args.repo_file), ASSERT_NOT_EXIST.format("repo_file", args.repo_file)
     assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
 
-    if args.data_types in ["all"]:
-        sys.exit("Data type '{}' for downloadCommand() not yet implemented.".format(
-            args.data_types))
-
     # Pass arguments to src.download:download()
     download(args.repo_file, args.data_dir, args.data_types)
 
