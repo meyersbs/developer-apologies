@@ -62,21 +62,21 @@ def validateDataDir(data_dir):
     if not doesPathExist(issues_path):
         os.mkdir(issues_path)
         Path(os.path.join(issues_path), "__init__.py").touch()
-        print("Created: {}".format(issues_path))
+        #print("Created: {}".format(issues_path))
     else:
         Path(os.path.join(issues_path), "__init__.py").touch()
     
     if not doesPathExist(commits_path):
         os.mkdir(commits_path)
         Path(os.path.join(commits_path), "__init__.py").touch()
-        print("Created: {}".format(commits_path))
+        #print("Created: {}".format(commits_path))
     else:
         Path(os.path.join(commits_path), "__init__.py").touch()
     
     if not doesPathExist(pull_requests_path):
         os.mkdir(pull_requests_path)
         Path(os.path.join(pull_requests_path), "__init__.py").touch()
-        print("Created: {}".format(pull_requests_path))
+        #print("Created: {}".format(pull_requests_path))
     else:
         Path(os.path.join(pull_requests_path), "__init__.py").touch()
 

@@ -325,13 +325,6 @@ def _formatCSV(data, repo_url, data_types):
     elif data_types == "all":
         pass
 
-    #print(repo_url)
-    #print(repo_name)
-    #print(repo_owner)
-    #print(issues)
-    #print(commits)
-    #print(pull_requests)
-
     return issues, pull_requests, commits
 
 
