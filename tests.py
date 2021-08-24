@@ -499,7 +499,7 @@ class TestGraphQL(unittest.TestCase):
         input_data_types = "pull_requests"
         actual = runQuery(input_repo_owner, input_repo_name, input_data_types)
         pull_requests = actual["data"]["repository"]["pullRequests"]["edges"]
-        self.assertEqual(1, len(pull_requests))
+        self.assertEqual(2, len(pull_requests))
         self.assertEqual("Update README.md", pull_requests[0]["node"]["title"])
         self.assertEqual("andymeneely", pull_requests[0]["node"]["author"]["login"])
         self.assertEqual("", pull_requests[0]["node"]["bodyText"])
@@ -1834,7 +1834,10 @@ class TestDownload(unittest.TestCase):
             ["https://github.com/meyersbs/developer-apologies/", "developer-apologies", "meyersbs", "3",
              "2021-08-23T14:33:22Z", "andymeneely", "Update README.md",
              "https://github.com/meyersbs/developer-apologies/pull/3", "", "2021-08-23T14:39:07Z", "meyersbs",
-             "https://github.com/meyersbs/developer-apologies/pull/3#issuecomment-903834642", "101"]
+             "https://github.com/meyersbs/developer-apologies/pull/3#issuecomment-903834642", "101"],
+            ["https://github.com/meyersbs/developer-apologies/", "developer-apologies", "meyersbs", "4",
+             "2021-08-24T17:59:32Z", "bnk5096", "Brandon-test",
+             "https://github.com/meyersbs/developer-apologies/pull/4", "", "", "", "", ""]
         ]
         # Test
         download(input_repo_file, input_data_dir, input_data_types)
@@ -1847,10 +1850,7 @@ class TestDownload(unittest.TestCase):
         # Cleanup
         shutil.rmtree(input_data_dir)
 
-        #### Case 4 -- data_types="pull_requests", no comments
-        #TODO
-
-        #### Case 5 -- data_types="commits"
+        #### Case 4 -- data_types="commits"
         # Setup
         input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_3.txt")
         input_data_dir = os.path.join(CWD, "test_data/")
@@ -1878,7 +1878,7 @@ class TestDownload(unittest.TestCase):
         # Cleanup
         shutil.rmtree(input_data_dir)
 
-        #### Case 6 -- data_types="all"
+        #### Case 5 -- data_types="all"
         # Setup
         input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_3.txt")
         input_data_dir = os.path.join(CWD, "test_data/")
