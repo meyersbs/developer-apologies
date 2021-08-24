@@ -359,20 +359,22 @@ QUERY_COMMENTS_BY_COMMIT_OID = """
 query {
     repository(owner:"OWNER", name:"NAME") {
         object(oid:"OID") {
-            comments(first:100, after:"AFTER") {
-                totalCount
-                edges { 
-                    node {
-                        author { login }
-                        bodyText
-                        createdAt
-                        url
+            ... on Commit {
+                comments(first:100, after:"AFTER") {
+                    totalCount
+                    edges { 
+                        node {
+                            author { login }
+                            bodyText
+                            createdAt
+                            url
+                        }
                     }
-                }
-                pageInfo {
-                    startCursor
-                    endCursor
-                    hasNextPage
+                    pageInfo {
+                        startCursor
+                        endCursor
+                        hasNextPage
+                    }
                 }
             }
         }
@@ -547,10 +549,10 @@ def _getAllCommentsByCommitOID(repo_owner, repo_name, all_commits):
             )
             # Update our comments
             commit_copy["node"]["comments"]["edges"].extend(
-                res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["comments"]["edges"])
+                res["data"]["repository"]["object"]["comments"]["edges"])
             # Update pageInfo
             commit_copy["node"]["comments"]["pageInfo"] = \
-                res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["comments"]["pageInfo"]
+                res["data"]["repository"]["object"]["comments"]["pageInfo"]
 
         # Update the commit
         commit = commit_copy
