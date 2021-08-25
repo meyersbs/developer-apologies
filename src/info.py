@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import h5py
+import numpy as np
 from collections import OrderedDict
 from pprint import PrettyPrinter
 
@@ -39,9 +40,17 @@ def infoHDF5(hdf5_file, verbose=True):
     for dataset in list(f.keys()):
         ds_len = f[dataset][:].shape[0]
         ds_description = dict(f[dataset].attrs)["description"]
+        if ds_len == 0:
+            ds_repos = 0
+        else:
+            df = f[dataset][:]
+            df = df[1:, ]
+            repo_urls = df[:, 0]
+            ds_repos = len(np.unique(repo_urls))
         metadata.update({
             dataset: OrderedDict({
                 "num_items": ds_len,
+                "num_repos": ds_repos,
                 "description": ds_description
             })
         })

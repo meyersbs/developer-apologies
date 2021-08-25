@@ -254,6 +254,7 @@ class TestInfo(unittest.TestCase):
             ("modified", "2021/08/25 @ 10:03:00"),
             ("commits", OrderedDict([
                 ("num_items", 13),
+                ("num_repos", 1),
                 ("description", "GitHub commits with relevant metadata and comments. Columns: [REPO"
                                 "_URL, REPO_NAME, REPO_OWNER, COMMIT_OID, COMMIT_CREATION_DATE, COM"
                                 "MIT_AUTHOR, COMMIT_ADDITIONS, COMMIT_DELETIONS, COMMIT_HEADLINE, C"
@@ -262,6 +263,7 @@ class TestInfo(unittest.TestCase):
             ])),
             ("issues", OrderedDict([
                 ("num_items", 2),
+                ("num_repos", 1),
                 ("description", "GitHub issues with relevant metadata and comments. Columns: [REPO_"
                                 "URL, REPO_NAME, REPO_OWNER, ISSUE_NUMBER, ISSUE_CREATION_DATE, ISS"
                                 "UE_AUTHOR, ISSUE_TITLE, ISSUE_URL, ISSUE_TEXT, COMMENT_CREATION_DA"
@@ -269,6 +271,7 @@ class TestInfo(unittest.TestCase):
             ])),
             ("pull_requests", OrderedDict([
                 ("num_items", 0),
+                ("num_repos", 0),
                 ("description", "GitHub pull_requests with relevant metadata and comments. Columns:"
                                 " [REPO_URL, REPO_NAME, REPO_OWNER, PULL_REQUEST_NUMBER, PULL_REQUE"
                                 "ST_TITLE, PULL_REQUEST_AUTHOR, PULL_REQUEST_CREATION_DATE, PULL_RE"
