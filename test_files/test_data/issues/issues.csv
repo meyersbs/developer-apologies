@@ -1,0 +1,5 @@
+REPO_URL,REPO_NAME,REPO_OWNER,ISSUE_NUMBER,ISSUE_CREATION_DATE,ISSUE_AUTHOR,ISSUE_TITLE,ISSUE_URL,ISSUE_TEXT,COMMENT_CREATION_DATE,COMMENT_AUTHOR,COMMENT_URL,COMMENT_TEXT
+https://github.com/meyersbs/tvdb-dl-nfo,tvdb-dl-nfo,meyersbs,1,2019-05-11T20:58:59Z,meyersbs,Ampersands in Metadata,https://github.com/meyersbs/tvdb-dl-nfo/issues/1,"If a show has an ampersand (&) in its name or description, the following error will occur:
+    PHP Warning:  SimpleXMLElement::addChild(): unterminated entity reference
+
+The tvshow.nfo file is still generated, but the field containing the ampersand will be empty.",,,,

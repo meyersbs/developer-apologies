@@ -2,6 +2,7 @@
 
 
 #### PYTHON IMPORTS ################################################################################
+import datetime
 import os
 import sys
 from pathlib import Path
@@ -116,6 +117,53 @@ def numpyByteArrayToStrList(numpy_byte_array):
     """
     string_list = numpy_byte_array.astype(str).tolist()
     return string_list
+
+
+def getFileSizeMB(filepath):
+    """
+    Get the filesize (in MB) of the given file.
+
+    GIVEN:
+      filepath (str) -- absolute path to a file
+
+    RETURN:
+      size_mb (float) -- size of the file in MB
+    """
+    size_bytes = os.path.getsize(filepath)
+    size_mb = float(size_bytes) / (1024 * 1024)
+    return size_mb
+
+
+def getFileCreationTime(filepath):
+    """
+    Get the creation date for a file.
+
+    GIVEN:
+      filepath (str) -- absolute path to a file
+
+    RETURN:
+      creation_time (str) -- timestamp of the file's creation date
+    """
+    filename = Path(filepath)
+    creation_time = datetime.datetime.fromtimestamp(filename.stat().st_ctime)
+    creation_time = creation_time.strftime("%Y/%m/%d @ %H:%M:%S")
+    return creation_time
+
+
+def getFileModifiedTime(filepath):
+    """
+    Get the modification date for a file.
+
+    GIVEN:
+      filepath (str) -- absolute path to a file
+
+    RETURN:
+      modification_time (str) -- timestamp of the file's modification date
+    """
+    filename = Path(filepath)
+    modification_time = datetime.datetime.fromtimestamp(filename.stat().st_mtime)
+    modification_time = modification_time.strftime("%Y/%m/%d @ %H:%M:%S")
+    return modification_time
 
 
 #### MAIN ##########################################################################################

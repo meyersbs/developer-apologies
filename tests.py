@@ -7,6 +7,7 @@ import h5py
 import os
 import shutil
 import unittest
+from collections import OrderedDict
 from pathlib import Path
 
 
@@ -17,6 +18,7 @@ from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
     numpyByteArrayToStrList, InvalidGitHubURLError
+from src.info import infoHDF5
 from src.load import load
 
 
@@ -226,6 +228,56 @@ class TestConfig(unittest.TestCase):
         #### Case 2 -- blank API token
         token_path = canonicalize("test_files/test_github_api_token_empty.txt")
         self.assertRaises(EmptyAPITokenError, getAPIToken, token_path)
+
+
+class TestInfo(unittest.TestCase):
+    """
+    Test cases for functions in src.info.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+
+    def test_infoHDF5(self):
+        """
+        Test src.info:infoHDF5().
+        """
+        input_hdf5_file = canonicalize("test_files/test.hdf5")
+        expected = OrderedDict([
+            ("filepath", "/home/benjamin/Code/developer-apologies/test_files/test.hdf5"),
+            ("keys", ["commits", "issues", "pull_requests"]),
+            ("filesize", "0.02 MB"),
+            ("creation", "2021/08/25 @ 10:03:00"),
+            ("modified", "2021/08/25 @ 10:03:00"),
+            ("commits", OrderedDict([
+                ("num_items", 13),
+                ("description", "GitHub commits with relevant metadata and comments. Columns: [REPO"
+                                "_URL, REPO_NAME, REPO_OWNER, COMMIT_OID, COMMIT_CREATION_DATE, COM"
+                                "MIT_AUTHOR, COMMIT_ADDITIONS, COMMIT_DELETIONS, COMMIT_HEADLINE, C"
+                                "OMMIT_URL, COMMIT_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHOR, COM"
+                                "MENT_URL, COMMENT_TEXT].")
+            ])),
+            ("issues", OrderedDict([
+                ("num_items", 2),
+                ("description", "GitHub issues with relevant metadata and comments. Columns: [REPO_"
+                                "URL, REPO_NAME, REPO_OWNER, ISSUE_NUMBER, ISSUE_CREATION_DATE, ISS"
+                                "UE_AUTHOR, ISSUE_TITLE, ISSUE_URL, ISSUE_TEXT, COMMENT_CREATION_DA"
+                                "TE, COMMENT_AUTHOR, COMMENT_URL, COMMENT_TEXT].")
+            ])),
+            ("pull_requests", OrderedDict([
+                ("num_items", 0),
+                ("description", "GitHub pull_requests with relevant metadata and comments. Columns:"
+                                " [REPO_URL, REPO_NAME, REPO_OWNER, PULL_REQUEST_NUMBER, PULL_REQUE"
+                                "ST_TITLE, PULL_REQUEST_AUTHOR, PULL_REQUEST_CREATION_DATE, PULL_RE"
+                                "QUEST_URL, PULL_REQUEST_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHO"
+                                "R, COMMENT_URL, COMMENT_TEXT].")
+            ]))
+        ])
+        actual = infoHDF5(input_hdf5_file, verbose=False)
+        self.assertDictEqual(expected, actual)
 
 
 class TestDelete(unittest.TestCase):

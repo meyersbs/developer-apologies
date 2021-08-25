@@ -11,6 +11,7 @@ from src.delete import delete
 from src.download import download
 from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist
+from src.info import infoHDF5
 from src.load import load
 
 
@@ -44,7 +45,7 @@ def loadCommand(args):
     args.data_dir = canonicalize(args.data_dir)
 
     # Check assertions
-    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir")
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
 
     if doesPathExist(args.hdf5_file):
         input("File '{}' already exists. Continuing will delete and recreate this file. Press "
@@ -74,7 +75,17 @@ def infoDataCommand(args):
 
 
 def infoHDF5Command(args):
-    sys.exit("Not yet implemented.")
+    """
+    Display useful information about an HDF5 file and its contents.
+    """
+    # Canonicalize filepaths
+    args.hdf5_file = canonicalize(args.hdf5_file)
+
+    # Check assertions
+    assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
+
+    # Pass arguments to src.info:infoHDF5()
+    infoHDF5(args.hdf5_file)
 
 
 def infoRateLimitCommand(args):
