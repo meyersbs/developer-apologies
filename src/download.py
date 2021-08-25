@@ -5,6 +5,7 @@
 import csv
 import operator
 import os
+import sys
 
 
 #### PACKAGE IMPORTS ###############################################################################
@@ -419,3 +420,6 @@ def download(repo_file, data_dir, data_types):
 
 
 #### MAIN ##########################################################################################
+if __name__ == "__main__": # pragma: no cover
+    sys.exit("This file is not intended to be run independently. Please execute './main.py' to "
+             "access this functionality.")

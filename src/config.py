@@ -2,6 +2,7 @@
 
 
 #### PYTHON IMPORTS ################################################################################
+import sys
 
 
 #### PACKAGE IMPORTS ###############################################################################
@@ -39,3 +40,6 @@ def getAPIToken(filepath=API_TOKEN_PATH):
 
 
 #### MAIN ##########################################################################################
+if __name__ == "__main__": # pragma: no cover
+    sys.exit("This file is not intended to be run independently. Please execute './main.py' to "
+             "access this functionality.")

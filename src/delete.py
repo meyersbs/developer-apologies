@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import os
+import sys
 
 
 #### PACKAGE IMPORTS ###############################################################################
@@ -46,3 +47,6 @@ def delete(data_dir):
 
 
 #### MAIN ##########################################################################################
+if __name__ == "__main__": # pragma: no cover
+    sys.exit("This file is not intended to be run independently. Please execute './main.py' to "
+             "access this functionality.")
