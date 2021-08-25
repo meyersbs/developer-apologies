@@ -1,1 +1,3 @@
 coverage
+h5py >= 3.3.0
+numpy >= 1.20.1

@@ -11,6 +11,7 @@ from src.delete import delete
 from src.download import download
 from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist
+from src.load import load
 
 
 #### GLOBALS #######################################################################################
@@ -35,7 +36,22 @@ def downloadCommand(args):
 
 
 def loadCommand(args):
-    sys.exit("Not yet implemented.")
+    """
+    Parse arguments for 'load' command and pass them to src.load:load().
+    """
+    # Canonicalize filepaths
+    args.hdf5_file = canonicalize(args.hdf5_file)
+    args.data_dir = canonicalize(args.data_dir)
+
+    # Check assertions
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir")
+
+    if doesPathExist(args.hdf5_file):
+        input("File '{}' already exists. Continuing will delete and recreate this file. Press "
+              "CTRL+C now to abort, or any key to continue.".format(args.hdf5_file))
+    
+    # Pass arguments to src.load:load()
+    load(args.hdf5_file, args.data_dir)
 
 
 def deleteCommand(args):
