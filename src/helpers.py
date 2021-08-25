@@ -103,6 +103,21 @@ def parseRepoURL(repo_url):
 
     return repo_owner, repo_name
 
+
+def numpyByteArrayToStrList(numpy_byte_array):
+    """
+    Convert a numpy array containing byte strings to a regular list containing strings.
+
+    GIVEN:
+      numpy_byte_array (array) -- numpy array containing byte strings
+
+    RETURN:
+      string_list (list) -- list containing regular strings
+    """
+    string_list = numpy_byte_array.astype(str).tolist()
+    return string_list
+
+
 #### MAIN ##########################################################################################
 if __name__ == "__main__": # pragma: no cover
     sys.exit("This file is not intended to be run independently. Please execute './main.py' to "

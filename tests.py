@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import csv
+import h5py
 import os
 import shutil
 import unittest
@@ -15,7 +16,8 @@ from src.delete import delete
 from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
-    InvalidGitHubURLError
+    numpyByteArrayToStrList, InvalidGitHubURLError
+from src.load import load
 
 
 #### GLOBALS #######################################################################################
@@ -1921,6 +1923,195 @@ class TestDownload(unittest.TestCase):
         # Cleanup
         shutil.rmtree(input_data_dir)
 
+
+class TestLoad(unittest.TestCase):
+    """
+    Test cases for function in src.download.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+
+    def tearDown(self):
+        """
+        Necessary cleanup for these test cases.
+        """
+        try:
+            data_dir = os.path.join(CWD, "test_data/") 
+            shutil.rmtree(data_dir)
+        except FileNotFoundError:
+            pass # We don't want the directory to exist, so this is fine
+
+
+    def test_load(self):
+        """
+        Test src.load:load().
+        """
+        #### Case 1 -- valid data
+        # Setup
+        input_hdf5_file = os.path.join(CWD, "test_file.hdf5")
+        input_data_dir = os.path.join(CWD, "test_data/")
+        input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_2.txt")
+        input_data_types = "all"
+        os.mkdir(input_data_dir)
+        validateDataDir(input_data_dir)
+        expected_keys = ["commits", "issues", "pull_requests"]
+        expected_issues = [
+            [
+                "REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_CREATION_DATE",
+                "ISSUE_AUTHOR", "ISSUE_TITLE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
+                "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs", "1",
+                "2019-05-11T20:58:59Z", "meyersbs", "Ampersands in Metadata",
+                "https://github.com/meyersbs/tvdb-dl-nfo/issues/1",
+                "If a show has an ampersand (&) in its name or description, the following error wil"
+                "l occur:\n    PHP Warning:  SimpleXMLElement::addChild(): unterminated entity refe"
+                "rence\n\nThe tvshow.nfo file is still generated, but the field containing the ampe"
+                "rsand will be empty.", "", "", "", ""
+            ]
+        ]
+        expected_issues_attrs = {
+            "description": "GitHub issues with relevant metadata and comments. Columns: [REPO_URL, "
+                           "REPO_NAME, REPO_OWNER, ISSUE_NUMBER, ISSUE_CREATION_DATE, ISSUE_AUTHOR,"
+                           " ISSUE_TITLE, ISSUE_URL, ISSUE_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTH"
+                           "OR, COMMENT_URL, COMMENT_TEXT]."
+        }
+        expected_commits = [
+            [
+                "REPO_URL", "REPO_NAME", "REPO_OWNER", "COMMIT_OID", "COMMIT_CREATION_DATE",
+                "COMMIT_AUTHOR", "COMMIT_ADDITIONS", "COMMIT_DELETIONS", "COMMIT_HEADLINE",
+                "COMMIT_URL", "COMMIT_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR",
+                "COMMENT_URL", "COMMENT_TEXT"
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "75614c09991b4313b1b999971aadd1d6d38f6ce7", "2019-05-07T19:32:43Z", "meyersbs", "23",
+                "0", "Initial commit",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/75614c09991b4313b1b999971aadd1d6d38f6ce7",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "ae38a7f77d211c7678d1a518e797d0668598b472", "2019-05-07T20:01:02Z", "meyersbs", "78",
+                "1", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/ae38a7f77d211c7678d1a518e797d0668598b472",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "1445c6376609dbf6c6017b19ed418d1cd73f2f6e", "2019-05-07T23:38:41Z", "meyersbs", "30",
+                "4", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/1445c6376609dbf6c6017b19ed418d1cd73f2f6e",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "110efd9108faee147fa2430702999312d68f2329", "2019-05-07T23:41:41Z", "meyersbs", "12",
+                "1", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/110efd9108faee147fa2430702999312d68f2329",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308", "2019-05-07T23:45:06Z", "meyersbs", "59",
+                "0", "Create tvdb-dl-nfo.php",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "09929a23b30307ebbb426637d420b69216aa9772", "2019-05-07T23:45:44Z", "meyersbs", "10",
+                "0", "Create install.sh",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/09929a23b30307ebbb426637d420b69216aa9772",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "bd163c63771e2e314470ce36a251b8e8ab9ce712", "2019-05-11T20:51:19Z", "meyersbs", "13",
+                "3", "Change directory structure. Create apikey.txt",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/bd163c63771e2e314470ce36a251b8e8ab9ce712",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "23af721b3f70cdde0bcc3dc58ba3750dbab34b46", "2019-05-11T20:51:50Z", "meyersbs", "6",
+                "3", "Read API Key from file rather than CLI.",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/23af721b3f70cdde0bcc3dc58ba3750dbab34b46",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "c399298846a2bcdbc4daa53076b5f9899d8f916b", "2019-05-11T20:52:00Z", "meyersbs", "16",
+                "13", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/c399298846a2bcdbc4daa53076b5f9899d8f916b",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "f307305e5a12208baa4cb01f188e8fa20d7a6ef3", "2019-05-11T21:04:23Z", "meyersbs", "3",
+                "3", "Fix #1",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/f307305e5a12208baa4cb01f188e8fa20d7a6ef3",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6", "2019-11-27T19:03:34Z", "meyersbs", "6",
+                "2", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "5b2009b8db3299cdb810b20caaaea88adb5ebe08", "2019-11-27T19:09:42Z", "meyersbs", "1",
+                "1", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08",
+                "", "2021-08-24T12:52:30Z", "meyersbs",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#commitcomment-55353873",
+                "Dummy comment."
+            ]
+        ]
+        expected_commits_attrs = {
+            "description": "GitHub commits with relevant metadata and comments. Columns: [REPO_URL,"
+                           " REPO_NAME, REPO_OWNER, COMMIT_OID, COMMIT_CREATION_DATE, COMMIT_AUTHOR"
+                           ", COMMIT_ADDITIONS, COMMIT_DELETIONS, COMMIT_HEADLINE, COMMIT_URL, COMM"
+                           "IT_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHOR, COMMENT_URL, COMMENT_TE"
+                           "XT]."
+        }
+        expected_pull_requests = list()
+        expected_pull_requests_attrs = {
+            "description": "GitHub pull_requests with relevant metadata and comments. Columns: [REP"
+                           "O_URL, REPO_NAME, REPO_OWNER, PULL_REQUEST_NUMBER, PULL_REQUEST_TITLE, "
+                           "PULL_REQUEST_AUTHOR, PULL_REQUEST_CREATION_DATE, PULL_REQUEST_URL, PULL"
+                           "_REQUEST_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHOR, COMMENT_URL, COMM"
+                           "ENT_TEXT]."
+        }
+        download(input_repo_file, input_data_dir, input_data_types)
+        # Test
+        load(input_hdf5_file, input_data_dir)
+        f = h5py.File(input_hdf5_file, "r")
+        actual_keys = list(f.keys())
+        actual_issues = numpyByteArrayToStrList(f["issues"][:])
+        actual_commits = numpyByteArrayToStrList(f["commits"][:])
+        actual_pull_requests = numpyByteArrayToStrList(f["pull_requests"][:])
+        actual_issues_attrs = dict(f["issues"].attrs)
+        actual_commits_attrs = dict(f["commits"].attrs)
+        actual_pull_requests_attrs = dict(f["pull_requests"].attrs)
+        self.assertListEqual(expected_keys, actual_keys)
+        self.assertListEqual(expected_issues, actual_issues)
+        self.assertListEqual(expected_commits, actual_commits)
+        self.assertListEqual(expected_pull_requests, actual_pull_requests)
+        self.assertDictEqual(expected_issues_attrs, actual_issues_attrs)
+        self.assertDictEqual(expected_commits_attrs, actual_commits_attrs)
+        self.assertDictEqual(expected_pull_requests_attrs, actual_pull_requests_attrs)
+        # Cleanup
+        shutil.rmtree(input_data_dir)
+        h5py.File.close(f)
+        os.remove(input_hdf5_file)
 
 #### MAIN ##########################################################################################
 if __name__ == "__main__":
