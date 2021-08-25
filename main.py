@@ -45,14 +45,18 @@ def loadCommand(args):
     args.data_dir = canonicalize(args.data_dir)
 
     # Check assertions
-    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir) 
+    if args.append:
+        assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
 
-    if doesPathExist(args.hdf5_file):
+    # Edge case
+    if doesPathExist(args.hdf5_file) and not args.append:
         input("File '{}' already exists. Continuing will delete and recreate this file. Press "
-              "CTRL+C now to abort, or any key to continue.".format(args.hdf5_file))
+              "CTRL+C now to abort, or any key to continue. If you want to append new data to the "
+              "file, please re-run with the flag '--append'.".format(args.hdf5_file))
     
     # Pass arguments to src.load:load()
-    load(args.hdf5_file, args.data_dir)
+    load(args.hdf5_file, args.data_dir, args.append)
 
 
 def deleteCommand(args):
@@ -134,8 +138,13 @@ if __name__ == "__main__":
     )
 
     load_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of the HDF5 file to create and load with data. "
-        "Relative paths will be canonicalized."
+        "--append", default=False, action="store_true", help="If included, data will be appended to"
+        " the HDF5 file. Otherwise, the file will be created/overwritten. Note that you can append "
+        "duplicate data with this flag."
+    )
+    load_parser.add_argument(
+        "hdf5_file", type=str, help="The path/name of the HDF5 file to create/open and load with "
+        "data. Relative paths will be canonicalized."
     )
     load_parser.add_argument(
         "data_dir", type=str, help="The path to a directory where data is downloaded and ready to "

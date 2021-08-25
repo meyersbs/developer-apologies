@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import datetime
+import numpy as np
 import os
 import sys
 from pathlib import Path
@@ -12,7 +13,9 @@ from pathlib import Path
 
 
 #### GLOBALS #######################################################################################
-
+BAD_CHARS = [
+    "…", "\xe2\x80\xa6"
+]
 
 #### CLASSES #######################################################################################
 class InvalidGitHubURLError(Exception):
@@ -117,6 +120,26 @@ def numpyByteArrayToStrList(numpy_byte_array):
     """
     string_list = numpy_byte_array.astype(str).tolist()
     return string_list
+
+
+def sanitizeUnicode(str_list):
+    """
+    Replace weird unicode characters that break numpy with "BAD_CHAR".
+
+    GIVEN:
+      str_list (list) -- list of strings to sanitize
+
+    RETURN:
+      new_str_list (list) -- sanitized copy of str_list
+    """
+    new_str_list = list()
+    for element in str_list:
+        element_copy = element
+        for bad_char in BAD_CHARS:
+            element_copy = element_copy.replace(bad_char, "BAD_CHAR")
+        new_str_list.append(element_copy)
+
+    return new_str_list
 
 
 def getFileSizeMB(filepath):

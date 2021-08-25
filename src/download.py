@@ -6,6 +6,7 @@ import csv
 import operator
 import os
 import sys
+from pathlib import Path
 
 
 #### PACKAGE IMPORTS ###############################################################################
@@ -370,6 +371,8 @@ def _writeCSV(issues, pull_requests, commits, data_dir):
             csv_writer.writerow(ISSUES_HEADER)
             for issue in issues:
                 csv_writer.writerow(issue)
+    else:
+        Path(issues_file).touch()
 
     # Write commits
     if len(commits) > 0:
@@ -379,6 +382,8 @@ def _writeCSV(issues, pull_requests, commits, data_dir):
             csv_writer.writerow(COMMITS_HEADER)
             for commit in commits:
                 csv_writer.writerow(commit)
+    else:
+        Path(commits_file).touch()
 
     # Write pull requests
     if len(pull_requests) > 0:
@@ -388,6 +393,8 @@ def _writeCSV(issues, pull_requests, commits, data_dir):
             csv_writer.writerow(PULL_REQUESTS_HEADER)
             for pull_request in pull_requests:
                 csv_writer.writerow(pull_request)
+    else:
+        Path(pull_requests_file).touch()
 
 
 def download(repo_file, data_dir, data_types):

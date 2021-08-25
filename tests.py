@@ -2005,7 +2005,7 @@ class TestLoad(unittest.TestCase):
         """
         Test src.load:load().
         """
-        #### Case 1 -- valid data
+        #### Case 1 -- append=False
         # Setup
         input_hdf5_file = os.path.join(CWD, "test_file.hdf5")
         input_data_dir = os.path.join(CWD, "test_data/")
@@ -2146,8 +2146,261 @@ class TestLoad(unittest.TestCase):
                            "ENT_TEXT]."
         }
         download(input_repo_file, input_data_dir, input_data_types)
+        input_append = False
         # Test
-        load(input_hdf5_file, input_data_dir)
+        load(input_hdf5_file, input_data_dir, input_append)
+        f = h5py.File(input_hdf5_file, "r")
+        actual_keys = list(f.keys())
+        actual_issues = numpyByteArrayToStrList(f["issues"][:])
+        actual_commits = numpyByteArrayToStrList(f["commits"][:])
+        actual_pull_requests = numpyByteArrayToStrList(f["pull_requests"][:])
+        actual_issues_attrs = dict(f["issues"].attrs)
+        actual_commits_attrs = dict(f["commits"].attrs)
+        actual_pull_requests_attrs = dict(f["pull_requests"].attrs)
+        self.assertListEqual(expected_keys, actual_keys)
+        self.assertListEqual(expected_issues, actual_issues)
+        self.assertListEqual(expected_commits, actual_commits)
+        self.assertListEqual(expected_pull_requests, actual_pull_requests)
+        self.assertDictEqual(expected_issues_attrs, actual_issues_attrs)
+        self.assertDictEqual(expected_commits_attrs, actual_commits_attrs)
+        self.assertDictEqual(expected_pull_requests_attrs, actual_pull_requests_attrs)
+        # Cleanup
+        shutil.rmtree(input_data_dir)
+        h5py.File.close(f)
+
+        #### Case 2 -- append=True
+        # Setup
+        input_hdf5_file = os.path.join(CWD, "test_file.hdf5")
+        input_data_dir = os.path.join(CWD, "test_data_2/")
+        input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_4.txt")
+        input_data_types = "all"
+        os.mkdir(input_data_dir)
+        validateDataDir(input_data_dir)
+        download(input_repo_file, input_data_dir, input_data_types)
+        input_append = True
+        expected_issues = [
+            [
+                "REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_CREATION_DATE",
+                "ISSUE_AUTHOR", "ISSUE_TITLE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
+                "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs", "1",
+                "2019-05-11T20:58:59Z", "meyersbs", "Ampersands in Metadata",
+                "https://github.com/meyersbs/tvdb-dl-nfo/issues/1",
+                "If a show has an ampersand (&) in its name or description, the following error wil"
+                "l occur:\n    PHP Warning:  SimpleXMLElement::addChild(): unterminated entity refe"
+                "rence\n\nThe tvshow.nfo file is still generated, but the field containing the ampe"
+                "rsand will be empty.",
+                "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs", "1",
+                "2018-11-07T20:03:46Z", "sojusnik", "Layout improvements",
+                "https://github.com/meyersbs/gedit-text-stats/issues/1",
+                'Your useful plugin has a small vertical offset (about 2px) in comparison to the ot'
+                'her text in the status bar. Also the space between "CharCount" and "Reiner Text" c'
+                'ould be bigger for aesthetical reasons, imho.\nHappens on Gedit 3.30.1 on Ubuntu 1'
+                '8.10 with the Numix theme.',
+                "2018-11-07T20:30:21Z", "meyersbs",
+                "https://github.com/meyersbs/gedit-text-stats/issues/1#issuecomment-436766586",
+                "Thank you for pointing this out. Unfortunately, I do not see the same error on Ged"
+                "it 3.28.1 on Ubuntu 18.04 with the BlackMATE theme.\nI will look into it, but it m"
+                "ay be a while before I have the time. If you find or can implement a fix, I welcom"
+                "e you to submit a pull-request for review!"
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs", "1",
+                "2018-11-07T20:03:46Z", "sojusnik", "Layout improvements",
+                "https://github.com/meyersbs/gedit-text-stats/issues/1",
+                'Your useful plugin has a small vertical offset (about 2px) in comparison to the ot'
+                'her text in the status bar. Also the space between "CharCount" and "Reiner Text" c'
+                'ould be bigger for aesthetical reasons, imho.\nHappens on Gedit 3.30.1 on Ubuntu 1'
+                '8.10 with the Numix theme.',
+                "2018-11-13T21:11:56Z", "sojusnik",
+                "https://github.com/meyersbs/gedit-text-stats/issues/1#issuecomment-438438136",
+                "Since I'm code illiterate I have to rely on your contribution. Thanks in advance!"
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs", "1",
+                "2018-11-07T20:03:46Z", "sojusnik", "Layout improvements",
+                "https://github.com/meyersbs/gedit-text-stats/issues/1",
+                'Your useful plugin has a small vertical offset (about 2px) in comparison to the ot'
+                'her text in the status bar. Also the space between "CharCount" and "Reiner Text" c'
+                'ould be bigger for aesthetical reasons, imho.\nHappens on Gedit 3.30.1 on Ubuntu 1'
+                '8.10 with the Numix theme.',
+                "2018-12-19T16:18:23Z", "meyersbs",
+                "https://github.com/meyersbs/gedit-text-stats/issues/1#issuecomment-448653856",
+                "I cannot recreate the vertical offset bug that @sojusnik described. I welcome cont"
+                "ributions from other developers if anyone can recreate and fix the bug."
+            ]
+        ]
+        expected_commits = [
+            [
+                "REPO_URL", "REPO_NAME", "REPO_OWNER", "COMMIT_OID", "COMMIT_CREATION_DATE",
+                "COMMIT_AUTHOR", "COMMIT_ADDITIONS", "COMMIT_DELETIONS", "COMMIT_HEADLINE",
+                "COMMIT_URL", "COMMIT_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR",
+                "COMMENT_URL", "COMMENT_TEXT"
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "75614c09991b4313b1b999971aadd1d6d38f6ce7", "2019-05-07T19:32:43Z", "meyersbs", "23",
+                "0", "Initial commit",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/75614c09991b4313b1b999971aadd1d6d38f6ce7",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "ae38a7f77d211c7678d1a518e797d0668598b472", "2019-05-07T20:01:02Z", "meyersbs", "78",
+                "1", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/ae38a7f77d211c7678d1a518e797d0668598b472",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "1445c6376609dbf6c6017b19ed418d1cd73f2f6e", "2019-05-07T23:38:41Z", "meyersbs", "30",
+                "4", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/1445c6376609dbf6c6017b19ed418d1cd73f2f6e",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "110efd9108faee147fa2430702999312d68f2329", "2019-05-07T23:41:41Z", "meyersbs", "12",
+                "1", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/110efd9108faee147fa2430702999312d68f2329",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308", "2019-05-07T23:45:06Z", "meyersbs", "59",
+                "0", "Create tvdb-dl-nfo.php",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "09929a23b30307ebbb426637d420b69216aa9772", "2019-05-07T23:45:44Z", "meyersbs", "10",
+                "0", "Create install.sh",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/09929a23b30307ebbb426637d420b69216aa9772",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "bd163c63771e2e314470ce36a251b8e8ab9ce712", "2019-05-11T20:51:19Z", "meyersbs", "13",
+                "3", "Change directory structure. Create apikey.txt",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/bd163c63771e2e314470ce36a251b8e8ab9ce712",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "23af721b3f70cdde0bcc3dc58ba3750dbab34b46", "2019-05-11T20:51:50Z", "meyersbs", "6",
+                "3", "Read API Key from file rather than CLI.",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/23af721b3f70cdde0bcc3dc58ba3750dbab34b46",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "c399298846a2bcdbc4daa53076b5f9899d8f916b", "2019-05-11T20:52:00Z", "meyersbs", "16",
+                "13", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/c399298846a2bcdbc4daa53076b5f9899d8f916b",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "f307305e5a12208baa4cb01f188e8fa20d7a6ef3", "2019-05-11T21:04:23Z", "meyersbs", "3",
+                "3", "Fix #1",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/f307305e5a12208baa4cb01f188e8fa20d7a6ef3",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6", "2019-11-27T19:03:34Z", "meyersbs", "6",
+                "2", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
+                "5b2009b8db3299cdb810b20caaaea88adb5ebe08", "2019-11-27T19:09:42Z", "meyersbs", "1",
+                "1", "Update README.md",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08",
+                "", "2021-08-24T12:52:30Z", "meyersbs",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#commitcomment-55353873",
+                "Dummy comment."
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
+                "69aeccf9c824a1b0da6711c97c1e3e1bf997c554", "2016-12-09T18:41:04Z", "meyersbs", "23",
+                "0", "Initial commit",
+                "https://github.com/meyersbs/gedit-text-stats/commit/69aeccf9c824a1b0da6711c97c1e3e1bf997c554",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
+                "0572c2d8da209a407a74b7a5e06918e8c019ad62", "2016-12-09T18:41:29Z", "meyersbs", "1",
+                "1", "Update LICENSE",
+                "https://github.com/meyersbs/gedit-text-stats/commit/0572c2d8da209a407a74b7a5e06918e8c019ad62",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
+                "1758bd16de74f12db54afe299b5b8ec11f48a605", "2016-12-09T21:52:09Z", "meyersbs", "86",
+                "0", "Plugin displays Character Count, Word Count, and Sentence Count. WillBAD_CHAR",
+                "https://github.com/meyersbs/gedit-text-stats/commit/1758bd16de74f12db54afe299b5b8ec11f48a605",
+                "BAD_CHAR add more features later.",
+                "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
+                "b3b533630c6f955f8fb5fd8c06faeca664027c42", "2016-12-09T22:04:01Z", "meyersbs", "36",
+                "0", "Update README.md",
+                "https://github.com/meyersbs/gedit-text-stats/commit/b3b533630c6f955f8fb5fd8c06faeca664027c42",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
+                "26ea166966eca25e4f88b6728438b06073054fa9", "2016-12-10T02:18:48Z", "meyersbs", "9",
+                "0", "Created install script.",
+                "https://github.com/meyersbs/gedit-text-stats/commit/26ea166966eca25e4f88b6728438b06073054fa9",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
+                "8c8f4eb7bbd8cfe9046fcf7f3a57b465083935b3", "2016-12-10T02:19:17Z", "meyersbs", "0",
+                "0", "Rename LICENSE to LICENSE.md",
+                "https://github.com/meyersbs/gedit-text-stats/commit/8c8f4eb7bbd8cfe9046fcf7f3a57b465083935b3",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
+                "3aec2be95dd2660c8c6d7941a6400f4f53a67b4d", "2016-12-10T02:21:38Z", "meyersbs", "6",
+                "4", "Update README.md",
+                "https://github.com/meyersbs/gedit-text-stats/commit/3aec2be95dd2660c8c6d7941a6400f4f53a67b4d",
+                "", "", "", "", ""
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
+                "c5515b7e7e4525d6767409b00cd03cb40090e705", "2018-08-22T20:07:29Z", "meyersbs", "9",
+                "1", "Legacy commit: Added line count.",
+                "https://github.com/meyersbs/gedit-text-stats/commit/c5515b7e7e4525d6767409b00cd03cb40090e705",
+                "", "", "", "", ""
+            ]
+        ]
+        expected_pull_requests = [
+            [
+                "REPO_URL", "REPO_NAME", "REPO_OWNER", "PULL_REQUEST_NUMBER", "PULL_REQUEST_TITLE",
+                "PULL_REQUEST_AUTHOR", "PULL_REQUEST_CREATION_DATE", "PULL_REQUEST_URL",
+                "PULL_REQUEST_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR", "COMMENT_URL",
+                "COMMENT_TEXT"
+            ],
+            [
+                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs", "2",
+                "2021-08-25T18:50:19Z", "meyersbs", "Update README.md",
+                "https://github.com/meyersbs/gedit-text-stats/pull/2", "", "", "", "", ""
+            ]
+        ]
+        # Test
+        load(input_hdf5_file, input_data_dir, input_append)
         f = h5py.File(input_hdf5_file, "r")
         actual_keys = list(f.keys())
         actual_issues = numpyByteArrayToStrList(f["issues"][:])
