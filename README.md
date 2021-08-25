@@ -87,8 +87,6 @@ optional arguments:
 
 This command loads data from the specified data_dir into the specified HDF5 file.
 
-**NOTE:** This command is not yet implemented.
-
 ``` bash
 usage: main.py load [-h] hdf5_file data_dir
 
@@ -137,8 +135,6 @@ optional arguments:
 ### Info_HDF5 Command
 
 This command prints useful information about the data loaded into the HDF5 file.
-
-**NOTE:** This command is not yet implemented.
 
 ``` bash
 usage: main.py info_hdf5 [-h] hdf5_file
