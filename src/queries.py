@@ -9,6 +9,46 @@ import sys
 
 
 #### GLOBALS #######################################################################################
+SEARCH_REPOS_1 = """
+{
+    search(query: "FILTERS", type:REPOSITORY, first:100) {
+        edges {
+            node {
+                ... on Repository {
+                    url
+                    stargazerCount
+                    primaryLanguage { name }
+                }
+            }
+        }
+        pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+        }
+    }
+}
+"""
+SEARCH_REPOS_2 = """
+{
+    search(query: "FILTERS", type:REPOSITORY, first:100, after:"AFTER") {
+        edges {
+            node {
+                ... on Repository {
+                    url
+                    stargazerCount
+                    primaryLanguage { name }
+                }
+            }
+        }
+        pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+        }
+    }
+}
+"""
 QUERY_RATE_LIMIT = """
 {
     viewer { login }

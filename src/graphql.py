@@ -90,6 +90,36 @@ def _cleanUpAllCommits(results, all_commits):
     return results
 
 
+def _cleanUpSearchResults(search_results, total):
+    """
+    Helper function for _searchRepos(). Clean up search results.
+
+    GIVEN:
+      search_results (list) -- list of search results
+      total (int) -- total number of search results to return
+
+    RETURN:
+      results (list) -- cleaned up search results
+    """
+    results = list()
+    for res in search_results:
+        element = [
+            res["node"]["url"],
+            res["node"]["stargazerCount"]
+        ]
+        if res["node"]["primaryLanguage"] is None:
+            element.append("None")
+        else:
+            element.append(res["node"]["primaryLanguage"]["name"])
+
+        results.append(element)
+
+    if total == 0:
+        return results
+    else:
+        return results[:total]
+
+
 def _getAllCommentsByIssueNumber(repo_owner, repo_name, all_issues):
     """
     Helper function for _getAllIssues(). For issues where the first pass couldn't get all of the
@@ -369,6 +399,7 @@ def runQuery(repo_owner, repo_name, data_types):
 
     return results
 
+
 def getRateLimitInfo():
     """
     Query GitHub's GraphQL API for rate limit information.
@@ -384,6 +415,41 @@ def getRateLimitInfo():
         # In theory, we should never get here
         print("Failed to query rate limit: {}".format(req.json()))
         return None
+
+
+def searchRepos(filters, total):
+    """
+    Query GitHub's GraphQL API for repositories matching the given filters.
+
+    GIVEN:
+      filters (str) -- filters for search results
+      total (int) -- total number of results to return
+
+    RETURN:
+      search_results (list) -- search results
+    """
+    search_results = list()
+    # First pass to get pagination cursors
+    res = _runQuery(
+        SEARCH_REPOS_1.replace("FILTERS", filters)
+    )
+    search_results.extend(res["data"]["search"]["edges"])
+    end_cursor = res["data"]["search"]["pageInfo"]["endCursor"]
+    has_next_page = res["data"]["search"]["pageInfo"]["hasNextPage"]
+
+    # Subsequent passes
+    while has_next_page and len(search_results) < total: # pragma: no cover
+        print("Oh hi")
+        res = _runQuery(
+            SEARCH_REPOS_2.replace("FILTERS", filters)
+            .replace("AFTER", end_cursor)
+        )
+        search_results.extend(res["data"]["search"]["edges"])
+        end_cursor = res["data"]["search"]["pageInfo"]["endCursor"]
+        has_next_page = res["data"]["search"]["pageInfo"]["hasNextPage"]
+
+    search_results = _cleanUpSearchResults(search_results, total)
+    return search_results
 
 
 #### MAIN ##########################################################################################

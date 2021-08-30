@@ -10,9 +10,10 @@ import sys
 from src.delete import delete
 from src.download import download
 from src.graphql import getRateLimitInfo
-from src.helpers import canonicalize, doesPathExist
+from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
 from src.info import infoHDF5
 from src.load import load
+from src.search import search
 
 
 #### GLOBALS #######################################################################################
@@ -72,6 +73,20 @@ def deleteCommand(args):
 
     # Pass arguments to src.delete:delete()
     delete(args.data_dir)
+
+
+def searchCommand(args):
+    """
+    Parse arguments for 'search' command and pass them to src.search:search().
+    """
+    # Check assertions
+    assert args.stars >= 0, "Argument 'stars' must be greater than or equal to 0."
+    assert args.total >= 0, "Argument 'total' must be greater than or equal to 0."
+    assert False if args.term == "" and args.stars == 0 and args.languages == "None" else True, \
+        "Argument 'term' cannot be empty when argument 'stars'=0 and argument 'languages'='None'."
+
+    # Pass arguments to src.search:search()
+    search(args.term, args.stars, args.language, args.total, args.save)
 
 
 def infoDataCommand(args):
@@ -163,6 +178,34 @@ if __name__ == "__main__":
         "paths will be canonicalized."
     )
     delete_parser.set_defaults(func=deleteCommand)
+
+    #### SEARCH COMMAND
+    search_parser = command_parsers.add_parser(
+        "search", help="Search GitHub for a list of repositories based on provided criteria."
+    )
+
+    search_parser.add_argument(
+        "term", type=str, help="Filter results to only include those that match this search term. "
+        "Enter '' to remove this filter. Note that this cannot be empty when 'stars'=0 and "
+        "'languages'='None' due to a limitation in the API."
+    )
+    search_parser.add_argument(
+        "stars", type=int, help="Filter out repositories with less than this number of stars. Enter"
+        " '0' to remove this filter."
+    )
+    search_parser.add_argument(
+        "total", type=int, help="Return this many repositories (or less if filters are restrictive."
+        "Enter '0' to remove this filter."
+    )
+    search_parser.add_argument(
+        "language", type=str, choices=GITHUB_LANGUAGES, help="Filter results to only include "
+        "repositories using this language. Enter 'None' to remove this filter."
+    )
+    search_parser.add_argument(
+        "save", default=False, action="store_true", help="Whether or not to save the list of "
+        "repositories to disk."
+    )
+    search_parser.set_defaults(func=searchCommand)
 
     #### INFO_DATA COMMAND
     info_data_parser = command_parsers.add_parser(

@@ -20,6 +20,7 @@ from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoU
     numpyByteArrayToStrList, InvalidGitHubURLError
 from src.info import infoHDF5
 from src.load import load
+from src.search import search
 
 
 #### GLOBALS #######################################################################################
@@ -2420,6 +2421,104 @@ class TestLoad(unittest.TestCase):
         shutil.rmtree(input_data_dir)
         h5py.File.close(f)
         os.remove(input_hdf5_file)
+
+
+class TestSearch(unittest.TestCase):
+    """
+    Test cases for function in src.search.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+
+    def test_search(self):
+        """
+        Test src.search:search().
+        """
+        #### Case 1 -- term="cherrypie", language="None", stars=0, total=10, save=False
+        # Setup
+        input_term = "cherrypie"
+        input_stars = 0
+        input_language = "None"
+        input_total = 10
+        input_save = False
+        # Test
+        actual = search(input_term, input_stars, input_language, input_total, input_save, verbose=False)
+        # With stars=0, the order that results are returned is not guaranteed. So, we can only test:
+        self.assertEqual(10, len(actual))
+        for element in actual:
+            self.assertEqual(3, len(element))
+
+        #### Case 2 -- term="cherrypie", language="Python", stars=0, total=0, save=False
+        # Setup
+        input_term = "cherrypie"
+        input_stars = 0
+        input_language = "Python"
+        input_total = 0
+        input_save = False
+        expected = [
+            ["https://github.com/cherrypie623/CherryPie-Addon-Repository", 2, "Python"],
+            ["https://github.com/zhengjiwen/cherrypie", 1, "Python"],
+            ["https://github.com/further-i-go-less-i-know/cherrypie-ssl-errors", 0, "Python"]
+        ]
+        # Test
+        actual = search(input_term, input_stars, input_language, input_total, input_save, verbose=False)
+        self.assertListEqual(expected, actual)
+
+        #### Case 3 -- term="cherrypie", language=Python, stars=1, total=0, save=False
+        input_term = "cherrypie"
+        input_stars = 1
+        input_language = "Python"
+        input_total = 0
+        input_save = False
+        expected = [
+            ["https://github.com/cherrypie623/CherryPie-Addon-Repository", 2, "Python"],
+            ["https://github.com/zhengjiwen/cherrypie", 1, "Python"]
+        ]
+        # Test
+        actual = search(input_term, input_stars, input_language, input_total, input_save, verbose=False)
+        self.assertListEqual(expected, actual)
+
+        #### Case 4 -- term="", language="", stars=20000, total=5, save=True
+        input_term = ""
+        input_stars = 20000
+        input_language = ""
+        input_total = 5
+        input_save = True
+        expected = [
+            ["https://github.com/freeCodeCamp/freeCodeCamp", 329259, "JavaScript"],
+            ["https://github.com/996icu/996.ICU", 258523, "Rust"],
+            ["https://github.com/EbookFoundation/free-programming-books", 201274, "None"],
+            ["https://github.com/jwasham/coding-interview-university", 190585, "None"],
+            ["https://github.com/vuejs/vue", 187493, "JavaScript"]
+        ]
+        expected_saved_results = [
+            "https://github.com/freeCodeCamp/freeCodeCamp",
+            "https://github.com/996icu/996.ICU",
+            "https://github.com/EbookFoundation/free-programming-books",
+            "https://github.com/jwasham/coding-interview-university",
+            "https://github.com/vuejs/vue"
+        ]
+        # Test
+        actual = search(input_term, input_stars, input_language, input_total, input_save, verbose=False)
+        # Number of stars might change, but top 5 repos probably won't. We need to test this way:
+        exp = sorted(expected)
+        act = sorted(actual)
+        for i in range(0, 5):
+            self.assertEqual(exp[i][0], act[i][0])
+            self.assertEqual(exp[i][2], act[i][2])
+        actual_saved_results = list()
+        with open(os.path.join(CWD, "search_results.txt"), "r") as f:
+            for line in f:
+                actual_saved_results.append(line.rstrip())
+        self.assertListEqual(expected_saved_results, actual_saved_results)
+        # Cleanup
+        os.remove(os.path.join(CWD, "search_results.txt"))
+
+
 
 #### MAIN ##########################################################################################
 if __name__ == "__main__":
