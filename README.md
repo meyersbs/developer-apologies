@@ -40,18 +40,19 @@ To run unit tests, execute `./test.sh` from the root directory of the repository
 ## Usage
 
 ``` bash
-usage: main.py [-h] {download,load,delete,info_data,info_hdf5,info_rate_limit} ...
+usage: main.py [-h] {download,load,delete,search,info_data,info_hdf5,info_rate_limit} ...
 
 Scripts to facilitate downloading data from GitHub, loading it into an HDF5 file, and analyzing
 the data.
 
 positional arguments:
-  {download,load,delete,info_data,info_hdf5,info_rate_limit}
+  {download,load,delete,search,info_data,info_hdf5,info_rate_limit}
                         Available commands.
     download            Download data from GitHub repositories using the GraphQL API.
     load                Load downloaded data into an HDF5 file.
     delete              Delete local CSV data from disk. This command cannot be used to delete
                         the HDF5 file.
+    search              Search GitHub for a list of repositories based on provided criteria.
     info_data           Display info about the downloaded data.
     info_hdf5           Display info about the data loaded into HDF5.
     info_rate_limit     Display rate limiting info from GitHub's GraphQL API.
@@ -114,6 +115,31 @@ positional arguments:
 optional arguments:
   -h, --help  show this help message and exit
 ```
+
+### Search Command
+
+This command searches GitHub for repositories based on provided criteria.
+
+``` bash
+usage: main.py search [-h] term stars total {language} save
+
+positional arguments:
+  term        Filter results to only include those that match this search term. Enter ''
+              to remove this filter. Note that this cannot be empty when 'stars'=0 and
+              'languages'='None' due to a limitation in the API.
+  stars       Filter out repositories with less than this number of stars. Enter '0' to
+              remove this filter.
+  total       Return this many repositories (or less if filters are restrictive. Enter
+              '0' to remove this filter.
+  {language}	Filter results to only include repositories using this language. Enter
+              'None' to remove this filter.
+  save		    Whether or not to save the list of repositories to disk.
+
+optional arguments:
+  -h, --help            show this help message and exit
+```
+
+**NOTE:** Any language that you can specify in the GitHub search bar is a valid option here. For a full list, see `GITHUB_LANGUAGES` in `src/helpers.py`.:
 
 ### Info_Data Command
 
