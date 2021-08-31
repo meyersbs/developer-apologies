@@ -24,8 +24,7 @@ jobs:
       run: |
         sudo apt install libhdf5-dev
         python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install flake8 pytest coverage h5p>=3.1.0 numpy>=1.19.5
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
