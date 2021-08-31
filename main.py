@@ -82,11 +82,21 @@ def searchCommand(args):
     # Check assertions
     assert args.stars >= 0, "Argument 'stars' must be greater than or equal to 0."
     assert args.total >= 0, "Argument 'total' must be greater than or equal to 0."
-    assert False if args.term == "" and args.stars == 0 and args.languages == "None" else True, \
+    assert False if args.term == "" and args.stars == 0 and args.language == "None" else True, \
         "Argument 'term' cannot be empty when argument 'stars'=0 and argument 'languages'='None'."
+    assert False if args.save == True and args.results_file is None else True, \
+        "Argument '--results_file' must be provided when argument `--save` is provided."
+
+    # Canonicalize filepaths
+    if args.results_file is not None:
+        args.results_file = canonicalize(args.results_file)
+
+    # Fix total
+    if args.total > 1000:
+        args.total = 1000
 
     # Pass arguments to src.search:search()
-    search(args.term, args.stars, args.language, args.total, args.save)
+    search(args.term, args.stars, args.language, args.total, args.save, args.results_file)
 
 
 def infoDataCommand(args):
@@ -195,15 +205,20 @@ if __name__ == "__main__":
     )
     search_parser.add_argument(
         "total", type=int, help="Return this many repositories (or less if filters are restrictive."
-        "Enter '0' to remove this filter."
+        "Enter '0' to remove this filter. Note that the maximum number of results that can be "
+        "returned is 1000 due to a limitation in the API."
     )
     search_parser.add_argument(
         "language", type=str, choices=GITHUB_LANGUAGES, help="Filter results to only include "
         "repositories using this language. Enter 'None' to remove this filter."
     )
     search_parser.add_argument(
-        "save", default=False, action="store_true", help="Whether or not to save the list of "
+        "--save", default=False, action="store_true", help="Whether or not to save the list of "
         "repositories to disk."
+    )
+    search_parser.add_argument(
+        "--results_file", type=str, help="The name of the file to save results to. Relative paths "
+        "will be canonicalized. This option is ignored when --save=False."
     )
     search_parser.set_defaults(func=searchCommand)
 

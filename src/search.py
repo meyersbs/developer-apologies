@@ -13,7 +13,7 @@ from src.graphql import searchRepos
 
 
 #### FUNCTIONS #####################################################################################
-def search(term, stars, language, total, save, verbose=True):
+def search(term, stars, language, total, save, results_file, verbose=True):
     """
     Search for GitHub repositories based on the given filters.
 
@@ -24,6 +24,7 @@ def search(term, stars, language, total, save, verbose=True):
       total (int) -- return this many repositories
       save (bool) -- whether or not to save the results to disk
       verbose (bool) -- flag to turn off printing for unit testing
+      results_file (str) -- path to save results to if save==True
 
     RETURN:
       results (list) -- returned search results
@@ -55,10 +56,10 @@ def search(term, stars, language, total, save, verbose=True):
 
     # Save results
     if save:
-        with open("search_results.txt", "w") as f:
+        with open(results_file, "w") as f:
             for element in results:
                 f.write(element[0] + "\n")
-        print("Search results saved to 'search_results.txt'.")
+        print("Search results saved to '{}'.".format(results_file))
     
     # Return results
     return results

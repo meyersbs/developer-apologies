@@ -2445,8 +2445,9 @@ class TestSearch(unittest.TestCase):
         input_language = "None"
         input_total = 10
         input_save = False
+        input_results = None
         # Test
-        actual = search(input_term, input_stars, input_language, input_total, input_save, verbose=False)
+        actual = search(input_term, input_stars, input_language, input_total, input_save, input_results, verbose=False)
         # With stars=0, the order that results are returned is not guaranteed. So, we can only test:
         self.assertEqual(10, len(actual))
         for element in actual:
@@ -2459,13 +2460,14 @@ class TestSearch(unittest.TestCase):
         input_language = "Python"
         input_total = 0
         input_save = False
+        input_results = None
         expected = [
             ["https://github.com/cherrypie623/CherryPie-Addon-Repository", 2, "Python"],
             ["https://github.com/zhengjiwen/cherrypie", 1, "Python"],
             ["https://github.com/further-i-go-less-i-know/cherrypie-ssl-errors", 0, "Python"]
         ]
         # Test
-        actual = search(input_term, input_stars, input_language, input_total, input_save, verbose=False)
+        actual = search(input_term, input_stars, input_language, input_total, input_save, input_results, verbose=False)
         self.assertListEqual(expected, actual)
 
         #### Case 3 -- term="cherrypie", language=Python, stars=1, total=0, save=False
@@ -2474,12 +2476,13 @@ class TestSearch(unittest.TestCase):
         input_language = "Python"
         input_total = 0
         input_save = False
+        input_results = None
         expected = [
             ["https://github.com/cherrypie623/CherryPie-Addon-Repository", 2, "Python"],
             ["https://github.com/zhengjiwen/cherrypie", 1, "Python"]
         ]
         # Test
-        actual = search(input_term, input_stars, input_language, input_total, input_save, verbose=False)
+        actual = search(input_term, input_stars, input_language, input_total, input_save, input_results, verbose=False)
         self.assertListEqual(expected, actual)
 
         #### Case 4 -- term="", language="", stars=20000, total=5, save=True
@@ -2488,6 +2491,7 @@ class TestSearch(unittest.TestCase):
         input_language = ""
         input_total = 5
         input_save = True
+        input_results = os.path.join(CWD, "search_results.txt")
         expected = [
             ["https://github.com/freeCodeCamp/freeCodeCamp", 329259, "JavaScript"],
             ["https://github.com/996icu/996.ICU", 258523, "Rust"],
@@ -2503,7 +2507,7 @@ class TestSearch(unittest.TestCase):
             "https://github.com/vuejs/vue"
         ]
         # Test
-        actual = search(input_term, input_stars, input_language, input_total, input_save, verbose=False)
+        actual = search(input_term, input_stars, input_language, input_total, input_save, input_results, verbose=False)
         # Number of stars might change, but top 5 repos probably won't. We need to test this way:
         exp = sorted(expected)
         act = sorted(actual)
@@ -2511,12 +2515,12 @@ class TestSearch(unittest.TestCase):
             self.assertEqual(exp[i][0], act[i][0])
             self.assertEqual(exp[i][2], act[i][2])
         actual_saved_results = list()
-        with open(os.path.join(CWD, "search_results.txt"), "r") as f:
+        with open(input_results, "r") as f:
             for line in f:
                 actual_saved_results.append(line.rstrip())
         self.assertListEqual(expected_saved_results, actual_saved_results)
         # Cleanup
-        os.remove(os.path.join(CWD, "search_results.txt"))
+        os.remove(input_results)
 
 
 
