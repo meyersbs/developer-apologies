@@ -4,6 +4,7 @@
 #### PYTHON IMPORTS ################################################################################
 import h5py
 import numpy as np
+import sys
 from collections import OrderedDict
 from pprint import PrettyPrinter
 
