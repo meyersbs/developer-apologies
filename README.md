@@ -130,14 +130,20 @@ positional arguments:
   stars       Filter out repositories with less than this number of stars. Enter '0' to
               remove this filter.
   total       Return this many repositories (or less if filters are restrictive. Enter
-              '0' to remove this filter.
-  {language}	Filter results to only include repositories using this language. Enter
+              '0' to remove this filter. Note that the maximum number of results that
+              can be returned is 1000 due to a limitation in the API.
+  {language}  Filter results to only include repositories using this language. Enter
               'None' to remove this filter.
-  save		    Whether or not to save the list of repositories to disk.
 
 optional arguments:
-  -h, --help            show this help message and exit
+  -h, --help  show this help message and exit
+  --save      Whether or not to save the list of repositories to disk.
+  --results_file RESULTS_FILE
+              The name of the file to save results to. Relative paths will be
+              canonicalized. This option is ignored when --save=False.
 ```
+
+**NOTE:** Due to limitations in the API, only one language (or no language) can be specified.
 
 **NOTE:** Any language that you can specify in the GitHub search bar is a valid option here. For a full list, see `GITHUB_LANGUAGES` in `src/helpers.py`.:
 
