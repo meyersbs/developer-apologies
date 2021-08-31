@@ -439,7 +439,6 @@ def searchRepos(filters, total):
 
     # Subsequent passes
     while has_next_page and len(search_results) < total: # pragma: no cover
-        print("Oh hi")
         res = _runQuery(
             SEARCH_REPOS_2.replace("FILTERS", filters)
             .replace("AFTER", end_cursor)

@@ -20,7 +20,7 @@ from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoU
     numpyByteArrayToStrList, InvalidGitHubURLError
 from src.info import infoHDF5
 from src.load import load
-from src.search import search
+from src.search import search, topRepos
 
 
 #### GLOBALS #######################################################################################
@@ -2522,6 +2522,122 @@ class TestSearch(unittest.TestCase):
         # Cleanup
         os.remove(input_results)
 
+
+    def test_topRepos(self):
+        """
+        Test src.search:topRepos().
+        """
+        #### Case 1 -- languages="test", stars=30000
+        # Setup
+        input_languages = "test"
+        input_stars = 30000
+        input_results = os.path.join(CWD, "test_repo_urls.txt")
+        input_verbose = False
+        expected = [
+            "https://github.com/torvalds/linux", "https://github.com/netdata/netdata",
+            "https://github.com/Genymobile/scrcpy", "https://github.com/redis/redis",
+            "https://github.com/git/git", "https://github.com/php/php-src",
+            "https://github.com/obsproject/obs-studio", "https://github.com/wg/wrk",
+            "https://github.com/tensorflow/tensorflow", "https://github.com/electron/electron",
+            "https://github.com/microsoft/terminal", "https://github.com/apple/swift",
+            "https://github.com/bitcoin/bitcoin", "https://github.com/opencv/opencv",
+            "https://github.com/pytorch/pytorch", "https://github.com/protocolbuffers/protobuf",
+            "https://github.com/godotengine/godot", "https://github.com/tesseract-ocr/tesseract",
+            "https://github.com/x64dbg/x64dbg", "https://github.com/BVLC/caffe",
+            "https://github.com/grpc/grpc", "https://github.com/ocornut/imgui",
+            "https://github.com/microsoft/PowerToys", "https://github.com/shadowsocks/shadowsocks-windows",
+            "https://github.com/CyC2018/CS-Notes", "https://github.com/Snailclimb/JavaGuide",
+            "https://github.com/iluwatar/java-design-patterns", "https://github.com/MisterBooo/LeetCodeAnimation",
+            "https://github.com/spring-projects/spring-boot", "https://github.com/doocs/advanced-java",
+            "https://github.com/elastic/elasticsearch", "https://github.com/kdn251/interviews",
+            "https://github.com/macrozheng/mall", "https://github.com/ReactiveX/RxJava",
+            "https://github.com/spring-projects/spring-framework", "https://github.com/google/guava",
+            "https://github.com/TheAlgorithms/Java", "https://github.com/square/retrofit",
+            "https://github.com/kon9chunkit/GitHub-Chinese-Top-Charts", "https://github.com/apache/dubbo",
+            "https://github.com/PhilJay/MPAndroidChart", "https://github.com/airbnb/lottie-android",
+            "https://github.com/bumptech/glide", "https://github.com/freeCodeCamp/freeCodeCamp",
+            "https://github.com/vuejs/vue", "https://github.com/facebook/react",
+            "https://github.com/twbs/bootstrap", "https://github.com/trekhleb/javascript-algorithms",
+            "https://github.com/airbnb/javascript", "https://github.com/d3/d3",
+            "https://github.com/facebook/react-native", "https://github.com/facebook/create-react-app",
+            "https://github.com/axios/axios", "https://github.com/30-seconds/30-seconds-of-code",
+            "https://github.com/nodejs/node", "https://github.com/mrdoob/three.js",
+            "https://github.com/vercel/next.js", "https://github.com/mui-org/material-ui",
+            "https://github.com/goldbergyoni/nodebestpractices", "https://github.com/FortAwesome/Font-Awesome",
+            "https://github.com/awesome-selfhosted/awesome-selfhosted", "https://github.com/angular/angular.js",
+            "https://github.com/webpack/webpack", "https://github.com/hakimel/reveal.js",
+            "https://github.com/yangshun/tech-interview-handbook", "https://github.com/typicode/json-server",
+            "https://github.com/ryanmcdermott/clean-code-javascript", "https://github.com/atom/atom",
+            "https://github.com/jquery/jquery", "https://github.com/chartjs/Chart.js",
+            "https://github.com/socketio/socket.io", "https://github.com/expressjs/express",
+            "https://github.com/adam-p/markdown-here", "https://github.com/h5bp/html5-boilerplate",
+            "https://github.com/gatsbyjs/gatsby", "https://github.com/lodash/lodash",
+            "https://github.com/resume/resume.github.com", "https://github.com/Semantic-Org/Semantic-UI",
+            "https://github.com/tailwindlabs/tailwindcss", "https://github.com/moment/moment",
+            "https://github.com/scutan90/DeepLearning-500-questions", "https://github.com/jaywcjlove/awesome-mac",
+            "https://github.com/remix-run/react-router", "https://github.com/azl397985856/leetcode",
+            "https://github.com/leonardomso/33-js-concepts", "https://github.com/meteor/meteor",
+            "https://github.com/NARKOZ/hacker-scripts", "https://github.com/serverless/serverless",
+            "https://github.com/prettier/prettier", "https://github.com/juliangarnier/anime",
+            "https://github.com/yarnpkg/yarn", "https://github.com/babel/babel",
+            "https://github.com/ColorlibHQ/AdminLTE", "https://github.com/strapi/strapi",
+            "https://github.com/parcel-bundler/parcel", "https://github.com/iptv-org/iptv",
+            "https://github.com/Dogfalo/materialize", "https://github.com/nwjs/nw.js",
+            "https://github.com/TryGhost/Ghost", "https://github.com/nuxt/nuxt.js",
+            "https://github.com/mermaid-js/mermaid", "https://github.com/impress/impress.js",
+            "https://github.com/iamkun/dayjs", "https://github.com/mozilla/pdf.js",
+            "https://github.com/Unitech/pm2", "https://github.com/algorithm-visualizer/algorithm-visualizer",
+            "https://github.com/microsoft/Web-Dev-For-Beginners", "https://github.com/chinese-poetry/chinese-poetry",
+            "https://github.com/adobe/brackets", "https://github.com/GitSquared/edex-ui",
+            "https://github.com/Marak/faker.js", "https://github.com/hexojs/hexo",
+            "https://github.com/dcloudio/uni-app", "https://github.com/cypress-io/cypress",
+            "https://github.com/alvarotrigo/fullPage.js", "https://github.com/gulpjs/gulp",
+            "https://github.com/sahat/hackathon-starter", "https://github.com/videojs/video.js",
+            "https://github.com/Leaflet/Leaflet", "https://github.com/koajs/koa",
+            "https://github.com/yangshun/front-end-interview-handbook", "https://github.com/zenorocha/clipboard.js",
+            "https://github.com/quilljs/quill", "https://github.com/RocketChat/Rocket.Chat",
+            "https://github.com/photonstorm/phaser", "https://github.com/jondot/awesome-react-native",
+            "https://github.com/laravel/laravel", "https://github.com/danielmiessler/SecLists",
+            "https://github.com/blueimp/jQuery-File-Upload", "https://github.com/public-apis/public-apis",
+            "https://github.com/donnemartin/system-design-primer", "https://github.com/TheAlgorithms/Python",
+            "https://github.com/jackfrued/Python-100-Days", "https://github.com/vinta/awesome-python",
+            "https://github.com/ytdl-org/youtube-dl", "https://github.com/tensorflow/models",
+            "https://github.com/nvbn/thefuck", "https://github.com/django/django",
+            "https://github.com/pallets/flask", "https://github.com/keras-team/keras",
+            "https://github.com/httpie/httpie", "https://github.com/josephmisiti/awesome-machine-learning",
+            "https://github.com/huggingface/transformers", "https://github.com/ansible/ansible",
+            "https://github.com/scikit-learn/scikit-learn", "https://github.com/521xueweihan/HelloGitHub",
+            "https://github.com/psf/requests", "https://github.com/home-assistant/core",
+            "https://github.com/soimort/you-get", "https://github.com/scrapy/scrapy",
+            "https://github.com/ageitgey/face_recognition", "https://github.com/minimaxir/big-list-of-naughty-strings",
+            "https://github.com/apache/superset", "https://github.com/python/cpython",
+            "https://github.com/deepfakes/faceswap", "https://github.com/3b1b/manim",
+            "https://github.com/tiangolo/fastapi", "https://github.com/localstack/localstack",
+            "https://github.com/fighting41love/funNLP", "https://github.com/shadowsocks/shadowsocks",
+            "https://github.com/0voice/interview_internal_reference", "https://github.com/isocpp/CppCoreGuidelines",
+            "https://github.com/apachecn/AiLearning", "https://github.com/pandas-dev/pandas",
+            "https://github.com/XX-net/XX-Net", "https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap",
+            "https://github.com/testerSunshine/12306", "https://github.com/rails/rails",
+            "https://github.com/jekyll/jekyll", "https://github.com/discourse/discourse",
+            "https://github.com/fastlane/fastlane", "https://github.com/huginn/huginn",
+            "https://github.com/sindresorhus/awesome", "https://github.com/ohmyzsh/ohmyzsh",
+            "https://github.com/gothinkster/realworld", "https://github.com/nvm-sh/nvm",
+            "https://github.com/papers-we-love/papers-we-love", "https://github.com/pi-hole/pi-hole",
+            "https://github.com/microsoft/vscode", "https://github.com/angular/angular",
+            "https://github.com/ant-design/ant-design", "https://github.com/microsoft/TypeScript",
+            "https://github.com/puppeteer/puppeteer", "https://github.com/storybookjs/storybook",
+            "https://github.com/reduxjs/redux", "https://github.com/sveltejs/svelte",
+            "https://github.com/apache/echarts", "https://github.com/cdr/code-server",
+            "https://github.com/ionic-team/ionic-framework", "https://github.com/grafana/grafana",
+            "https://github.com/nestjs/nest", "https://github.com/vercel/hyper",
+            "https://github.com/facebook/jest", "https://github.com/DefinitelyTyped/DefinitelyTyped",
+            "https://github.com/styled-components/styled-components", "https://github.com/pixijs/pixijs",
+            "https://github.com/vuetifyjs/vuetify", "https://github.com/immutable-js/immutable-js",
+            "https://github.com/vitejs/vite"
+        ]
+        # Test
+        actual = topRepos(input_languages, input_stars, input_results, input_verbose)
+        self.assertListEqual(sorted(expected), sorted(actual))
 
 
 #### MAIN ##########################################################################################

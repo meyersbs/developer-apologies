@@ -16,6 +16,7 @@ from pathlib import Path
 BAD_CHARS = [
     "…", "\xe2\x80\xa6"
 ]
+# All filterable languages grabbed from GitHub's page source on 2021-08-31.
 GITHUB_LANGUAGES = [
     "1C Enterprise", "4D", "ABAP", "ABAP CDS", "ABNF", "ActionScript", "Ada", "Adobe Font Metrics",
     "Agda", "AGS Script", "AIDL", "AL", "Alloy", "Alpine Abuild", "Altium Designer", "AMPL",
@@ -95,6 +96,28 @@ GITHUB_LANGUAGES = [
     "X Font Directory Index", "XML", "XML Property List", "Xojo", "Xonsh", "XPages", "X PixMap",
     "XProc", "XQuery", "XS", "XSLT", "Xtend", "Yacc", "YAML", "YANG", "YARA", "YASnippet", "ZAP",
     "Zeek", "ZenScript", "Zephir", "Zig", "ZIL", "Zimpl", "None"
+]
+# You will likely notice that this list only contains 47 languages. The TIOBE Index lists "Ladder
+# Logic" and "(Visual) FoxPro", which are not languages you can filter for on GitHub. It also lists
+# "Visual Basic" and "Classic Visual Basic" separately, but the closest match for GitHub filtering
+# is "Visual Basic .NET", which is in the list below. Additionally, "Delphi/Object Pascal" is listed
+# below as "Pascal", "Logo" as "Logos", and "Bash" as "Shell".
+TIOBE_INDEX_TOP_50_AUG_2021 = [
+    "ABAP", "Ada", "Apex", "Assembly", "C", "C#", "C++", "Clojure", "COBOL", "D", "Dart", "F#",
+    "Fortran", "Go", "Groovy", "Java", "JavaScript", "Julia", "Kotlin", "LabVIEW", "Lisp", "Logos",
+    "Lua", "MATLAB", "Nim", "Objective-C", "Pascal", "Perl", "PHP", "Prolog", "Python", "R", "Ruby",
+    "Rust", "SAS", "Scala", "Scheme", "Scratch", "Shell", "SQL", "SQLPL", "Swift", "TSQL",
+    "TypeScript", "VBScript", "VHDL", "Visual Basic .NET"
+]
+# All popular languages grabbed from GitHub's page source on 2021-08-31.
+GITHUB_POPULAR_AUG_2021 = [
+    "C", "C#", "C++", "CoffeeScript", "CSS", "Dart", "DM", "Elixir", "Go", "Groovy", "HTML", "Java",
+    "JavaScript", "Kotlin", "Objective-C", "Perl", "PHP", "PowerShell", "Python", "Ruby", "Rust",
+    "Scala", "Shell", "Swift", "TypeScript"
+]
+COMBINED_LANGUAGES = sorted(list(set(TIOBE_INDEX_TOP_50_AUG_2021).union(GITHUB_POPULAR_AUG_2021)))
+TEST_LANGUAGES = [
+    "C", "C++", "C#", "Java", "JavaScript", "PHP", "Python", "Ruby", "Shell", "TypeScript"
 ]
 
 

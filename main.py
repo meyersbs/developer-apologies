@@ -13,7 +13,7 @@ from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
 from src.info import infoHDF5
 from src.load import load
-from src.search import search
+from src.search import search, topRepos
 
 
 #### GLOBALS #######################################################################################
@@ -97,6 +97,20 @@ def searchCommand(args):
 
     # Pass arguments to src.search:search()
     search(args.term, args.stars, args.language, args.total, args.save, args.results_file)
+
+
+def topReposCommand(args):
+    """
+    Parse arguments for 'top_repos' command and pass them to src.search:topRepos().
+    """
+    # Check assertions
+    assert args.stars >= 0, "Argument 'stars' must be greater than or equal to 0."
+    
+    # Canonicalize filepaths
+    args.results_file = canonicalize(args.results_file)
+
+    # Pass arguments to src.search:topRepos().
+    topRepos(args.languages, args.stars, args.results_file)
 
 
 def infoDataCommand(args):
@@ -221,6 +235,26 @@ if __name__ == "__main__":
         "will be canonicalized. This option is ignored when --save=False."
     )
     search_parser.set_defaults(func=searchCommand)
+
+    #### TOP_REPOS COMMAND
+    top_repos_parser = command_parsers.add_parser(
+        "top_repos", help="Download the top 1000 repo URLs for each of the languages specified."
+    )
+
+    top_repos_parser.add_argument(
+        "languages", type=str, choices=["tiobe_index", "github_popular", "combined"],
+        help="The list of languages to get repo URLs for. Either the top 50 from the TIOBE Index, "
+        "the most popular from GitHub, or the combined set of languages from both."
+    )
+    top_repos_parser.add_argument(
+        "stars", type=int, help="Filter out repositories with less than this number of stars. Enter"
+        " '0' to remove this filter."
+    )
+    top_repos_parser.add_argument(
+        "results_file", type=str, help="The name of the file to save URLs to. Relative paths will "
+        "be canonicalized."
+    )
+    top_repos_parser.set_defaults(func=topReposCommand)
 
     #### INFO_DATA COMMAND
     info_data_parser = command_parsers.add_parser(
