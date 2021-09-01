@@ -57,7 +57,17 @@ def _lemmatize(comment):
 
 def preprocess(hdf5_file, num_procs):
     """
+    Clean up comments by lowercasing, removing punctuation and non-space whitespace, and
+    lemmatizing.
 
+    GIVEN:
+      hdf5_file (str) -- path to a populated HDF5 file
+      num_procs (int) -- number of processes (CPUs) to use for multiprocessing
+
+    RETURN:
+      issue_lemmas (np.array) -- lemmatized issue comments
+      commit_lemmas (np.array) -- lemmatized commit comments
+      pull_request_lemmas (np.array) -- lemmatized pull request comments
     """
     # Return variables
     issue_lemmas = None
