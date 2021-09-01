@@ -13,6 +13,7 @@ import unittest.mock as mock
 
 
 #### PACKAGE IMPORTS ###############################################################################
+from src.apologies import classify, _countApologies
 from src.config import getAPIToken, EmptyAPITokenError
 from src.delete import delete
 from src.download import download
@@ -2644,7 +2645,7 @@ class TestSearch(unittest.TestCase):
 
 class TestPreprocess(unittest.TestCase):
     """
-    Test cases for function in src.search.
+    Test cases for function in src.preprocess.
     """
     def setUp(self):
         """
@@ -2762,6 +2763,43 @@ class TestPreprocess(unittest.TestCase):
         h5py.File.close(f)
         os.remove(input_hdf5_file)
 
+
+class TestApologies(unittest.TestCase):
+    """
+    Test cases for function in src.apologies.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+    
+    def test__countApologies(self):
+        """
+        Test src.apologies:_countApologies().
+        """
+        # Setup
+        test_cases = [
+            "I need to apologize for accidentally drive my car into your house",
+            "sorry I forget how to use the brake",
+            "pardon the interruption",
+            "I be mistaken that should have be + = not =",
+            "I 'll take the blame for this",
+            "who write this spaghetti code",
+            "oops that should have be delete",
+            "that be my fault for not unit testing",
+            "I apologize I be so sorry about this",
+            "I do nothing wrong it work as intend"
+        ]
+        expected_apologies = [
+            "1", "1", "1", "1", "1", "0", "1", "1", "2", "0"
+        ]
+        actual_apologies = list()
+        # Test
+        for case in test_cases:
+            actual_apologies.append(_countApologies(case))
+        self.assertListEqual(expected_apologies, actual_apologies)
 
 #### MAIN ##########################################################################################
 if __name__ == "__main__":
