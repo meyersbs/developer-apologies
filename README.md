@@ -8,6 +8,16 @@ Scripts to facilitate discovery and analysis of developer apologies in GitHub is
 
 To better understand the lead-up to a vulnerability, we are exploring the concept of "mistakes". While the research world has taxonomies of technical, software weaknesses, we lack a robust understanding of human mistakes. Behind every vulnerability is a set of mistakes, and one way to identify mistakes are when people apologize. These _self-admitted mistakes_ allow us to cluster and discover the many different types of mistakes in software development. We are developing an "apology miner" that uses natural language processing techniques to identify apology sentences in GitHub comments from issues, pull requests, and commits. Our miner will build this corpus of apologies, and then we will use word embedding to identify similarly-phrased clusters of apology phrases. We will take those clusters and map them to existing taxonomies of human error in the field of psychology.
 
+## Background
+
+### HDF5
+
+Coming soon...
+
+### NLP Concepts
+
+Coming soon...
+
 ## Dependencies
 
 ### System Dependencies
@@ -53,6 +63,11 @@ positional arguments:
     delete              Delete local CSV data from disk. This command cannot be used to delete
                         the HDF5 file.
     search              Search GitHub for a list of repositories based on provided criteria.
+    top_repos           Download the top 1000 repo URLs for each of the languages specified.
+    preprocess          For each dataset in the given HDF5 file, append a
+                        'COMMENT_TEXT_LEMMATIZED' column that contains the comment text that
+                        (1) is lowercased, (2) has punctuation removed, (3) has non-space
+                        whitespace removed, and (4) is lemmatized.
     info_data           Display info about the downloaded data.
     info_hdf5           Display info about the data loaded into HDF5.
     info_rate_limit     Display rate limiting info from GitHub's GraphQL API.
@@ -146,6 +161,48 @@ optional arguments:
 **NOTE:** Due to limitations in the API, only one language (or no language) can be specified.
 
 **NOTE:** Any language that you can specify in the GitHub search bar is a valid option here. For a full list, see `GITHUB_LANGUAGES` in `src/helpers.py`.:
+
+### Top_Repos Command
+
+This command downloads 1000 repository URLs for each of the specified languages.
+
+``` bash
+usage: main.py top_repos [-h] {tiobe_index,github_popular,combined} stars results_file
+
+positional arguments:
+  {tiobe_index,github_popular,combined}
+                        The list of languages to get repo URLs for. Either the top 50
+                        from the TIOBE Index, the most popular from GitHub, or the
+                        combined set of languages from both.
+  stars                 Filter out repositories with less than this number of stars.
+                        Enter '0' to remove this filter.
+  results_file          The name of the file to save URLs to. Relative paths will be
+                        canonicalized.
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+```
+
+**NOTE:** This may download less than 1000 repo URLs for a language if there are not 1000 repos for that language with at least as many stars as specified.
+
+### Preprocess Command
+
+This command cleans up the comment text by lowercasing, removing punctuation and non-space whitespace, and lemmatizing.
+
+``` bash
+usage: main.py preprocess [-h] hdf5_file num_procs
+
+positional arguments:
+  hdf5_file   The path/name of an HDF5 file that has already been populated using the
+              'load' command. Relative paths will be canonicalized.
+  num_procs   Number of processes (CPUs) to use for multiprocessing.
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
+**NOTE:** This command modifies the specified HDF5 file by adding a new column with the lemmatized text.
 
 ### Info_Data Command
 
