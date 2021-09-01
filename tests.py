@@ -9,6 +9,7 @@ import shutil
 import unittest
 from collections import OrderedDict
 from pathlib import Path
+import unittest.mock as mock
 
 
 #### PACKAGE IMPORTS ###############################################################################
@@ -20,6 +21,7 @@ from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoU
     numpyByteArrayToStrList, InvalidGitHubURLError
 from src.info import infoHDF5
 from src.load import load
+from src.preprocess import preprocess, _stripNonWords, _lemmatize
 from src.search import search, topRepos
 
 
@@ -251,8 +253,8 @@ class TestInfo(unittest.TestCase):
             ("filepath", "/home/benjamin/Code/developer-apologies/test_files/test.hdf5"),
             ("keys", ["commits", "issues", "pull_requests"]),
             ("filesize", "0.02 MB"),
-            ("creation", "2021/08/25 @ 10:03:00"),
-            ("modified", "2021/08/25 @ 10:03:00"),
+            ("creation", mock.ANY),
+            ("modified", mock.ANY),
             ("commits", OrderedDict([
                 ("num_items", 13),
                 ("num_repos", 1),
@@ -2638,6 +2640,127 @@ class TestSearch(unittest.TestCase):
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
         self.assertListEqual(sorted(expected), sorted(actual))
+
+
+class TestPreprocess(unittest.TestCase):
+    """
+    Test cases for function in src.search.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+
+    def test__stripNonWords(self):
+        """
+        Test src.preprocess:_stripNonWords().
+        """
+        # Setup
+        test_cases = [
+            "apples!", "oranges?", "Bananas; pears: plums", "carrots, celery, and\n beets",
+            "onions,  CUCUMBERS,   and    peppers."
+        ]
+        expected = [
+            "apples", "oranges", "bananas pears plums", "carrots celery and beets",
+            "onions cucumbers and peppers"
+        ]
+        actual = list()
+        # Test
+        for case in test_cases:
+            actual.append(_stripNonWords(case))
+        self.assertListEqual(expected, actual)
+
+
+    def test__lemmatize(self):
+        """
+        Test src.preprocess:_lemmatize().
+        """
+        # Setup
+        test_cases = [
+            "the quick brown fox jumps over the lazy dog",
+            "i'm sorry if you're offended",
+            "you wouldn't download a pizza would you",
+            "only you can prevent forest fires",
+            "don't forget to be awesome"
+        ]
+        expected = [
+            "the quick brown fox jump over the lazy dog",
+            "I be sorry if you be offend",
+            "you would n't download a pizza would you",
+            "only you can prevent forest fire",
+            "do n't forget to be awesome"
+        ]
+        actual = list()
+        # Test
+        for case in test_cases:
+            actual.append(_lemmatize(case))
+        self.assertListEqual(expected, actual)
+
+
+    def test_preprocess(self):
+        """
+        Test src.preprocess:preprocess().
+        """
+        #### Case 1 -- num_procs=1
+        # Setup
+        input_hdf5_file = os.path.join(CWD, "test_files/test2.hdf5")
+        input_num_procs = 1
+        data_dir = os.path.join(CWD, "test_files/test_data2/")
+        append = False
+        expected_issue_lemmas = [
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
+            "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+            "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44",
+            "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58",
+            "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72",
+            "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86",
+            "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100",
+            "101", "dummy comment", "sorry but I figure I 'd add a data point sorrynotsorry"
+        ]
+        expected_commit_lemmas = [
+            "", "", "", "", "", "", "", "", "", "", "", "dummy commit comment", "1", "2", "3", "4",
+            "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
+            "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33",
+            "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47",
+            "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61",
+            "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75",
+            "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89",
+            "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100", "101", "", "", "",
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        ]
+        expected_pull_request_lemmas = [
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
+            "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+            "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44",
+            "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58",
+            "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72",
+            "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86",
+            "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100",
+            "101", ""
+        ]
+        load(input_hdf5_file, data_dir, append)
+        # Test data before write
+        actual = preprocess(input_hdf5_file, input_num_procs)
+        actual_issue_lemmas = list(actual[0])
+        actual_commit_lemmas = list(actual[1])
+        actual_pull_request_lemmas = list(actual[2])
+        self.assertListEqual(expected_issue_lemmas, actual_issue_lemmas)
+        self.assertListEqual(expected_commit_lemmas, actual_commit_lemmas)
+        self.assertListEqual(expected_pull_request_lemmas, actual_pull_request_lemmas)
+        # Test data after write
+        f = h5py.File(input_hdf5_file)
+        actual_issue_lemmas = numpyByteArrayToStrList(f["issues"][...][:, -1])[1:]
+        self.assertListEqual(expected_issue_lemmas, actual_issue_lemmas)
+        actual_commit_lemmas = numpyByteArrayToStrList(f["commits"][...][:, -1])[1:]
+        self.assertListEqual(expected_commit_lemmas, actual_commit_lemmas)
+        actual_pull_request_lemmas = numpyByteArrayToStrList(f["pull_requests"][...][:, -1])[1:]
+        self.assertListEqual(expected_pull_request_lemmas, actual_pull_request_lemmas)
+        # Cleanup
+        h5py.File.close(f)
+        os.remove(input_hdf5_file)
 
 
 #### MAIN ##########################################################################################

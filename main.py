@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import argparse
+import multiprocessing as mproc
 import sys
 
 
@@ -13,6 +14,7 @@ from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
 from src.info import infoHDF5
 from src.load import load
+from src.preprocess import preprocess
 from src.search import search, topRepos
 
 
@@ -111,6 +113,22 @@ def topReposCommand(args):
 
     # Pass arguments to src.search:topRepos().
     topRepos(args.languages, args.stars, args.results_file)
+
+
+def preprocessCommand(args):
+    """
+    Parse arguments for 'preprocess' command and pass them to src.preprocess:preprocess().
+    """
+    # Canonicalize filepaths
+    args.hdf5_file = canonicalize(args.hdf5_file)
+
+    # Check assertions
+    assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
+    assert args.num_procs <= mproc.cpu_count(), \
+        "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
+
+    # Pass arguments to src.preprocess:preprocess().
+    preprocess(args.hdf5_file, args.num_procs)
 
 
 def infoDataCommand(args):
@@ -255,6 +273,22 @@ if __name__ == "__main__":
         "be canonicalized."
     )
     top_repos_parser.set_defaults(func=topReposCommand)
+
+    #### PREPROCESS COMMAND
+    preprocess_parser = command_parsers.add_parser(
+        "preprocess", help="For each dataset in the given HDF5 file, append a "
+        "'COMMENT_TEXT_LEMMATIZED' column that contains the comment text that (1) is lowercased, "
+        "(2) has punctuation removed, (3) has non-space whitespace removed, and (4) is lemmatized."
+    )
+
+    preprocess_parser.add_argument(
+        "hdf5_file", type=str, help="The path/name of an HDF5 file that has already been populated "
+        "using the 'load' command. Relative paths will be canonicalized."
+    )
+    preprocess_parser.add_argument(
+        "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing."
+    )
+    preprocess_parser.set_defaults(func=preprocessCommand)
 
     #### INFO_DATA COMMAND
     info_data_parser = command_parsers.add_parser(
