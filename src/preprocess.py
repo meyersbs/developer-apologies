@@ -94,7 +94,6 @@ def preprocess(hdf5_file, num_procs):
     # Create the process pool
     pool = mproc.Pool(num_procs)
 
-    # Issues
     # There are pragmas here because coverage is confused.
     if do_issues: # pragma: no cover
         # Get just the comments

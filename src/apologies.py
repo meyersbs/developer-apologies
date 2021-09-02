@@ -4,6 +4,7 @@
 #### PYTHON IMPORTS ################################################################################
 import h5py
 import multiprocessing as mproc
+import numpy as np
 import sys
 
 
@@ -77,9 +78,9 @@ def classify(hdf5_file, num_procs):
       pull_request_apologies (np.array) -- apology counts for lemmatized pull request comments
     """
     # Return variables
-    issue_apologies = None
-    commit_apologies = None
-    pull_request_apologies = None
+    issue_apologies = list()
+    commit_apologies = list()
+    pull_request_apologies = list()
 
     # Grab the data
     f = h5py.File(hdf5_file, "r+") # read/write mode 
@@ -101,21 +102,63 @@ def classify(hdf5_file, num_procs):
     # Create the process pool
     pool = mproc.Pool(num_procs)
 
-    if do_issues:
+    # There are pragmas here because coverage is confused.
+    if do_issues: # pragma: no cover
         # Get just the lemmas
         issue_lemmas = issues[:, -1]
         # Convert bytestrings to strings
         issue_lemmas = numpyByteArrayToStrList(issue_lemmas)
         # Classify apologies
-        issue_apologies = np.array(pool.map(_containsApologies, issue_lemmas), dtype=str)
+        issue_apologies = np.array(pool.map(_countApologies, issue_lemmas), dtype=str)
         # Add header
+        issue_apologies = issue_apologies.tolist()
         issue_apologies[0] = "NUM_APOLOGY_LEMMAS"
         # Reshape the apologies array
-        issue_apologies = np.array(issue_apologies, dtype=str).reshape((len(issue_apologies), 1))
+        apologies = np.array(issue_apologies, dtype=str).reshape((len(issue_apologies), 1))
         # Resize dataset
-        # TODO
+        f["issues"].resize((issues.shape[0], issues.shape[1] + 1))
         # Add apology counts to HDF5 file
-        # TODO
+        f["issues"][...] = np.hstack((issues, apologies))
+    else: # pragma: no cover
+        pass
+
+    if do_commits: # pragma: no cover
+        # Get just the lemmas
+        commit_lemmas = commits[:, -1]
+        # Convert bytestrings to strings
+        commit_lemmas = numpyByteArrayToStrList(commit_lemmas)
+        # Classify apologies
+        commit_apologies = np.array(pool.map(_countApologies, commit_lemmas), dtype=str)
+        # Add header
+        commit_apologies = commit_apologies.tolist()
+        commit_apologies[0] = "NUM_APOLOGY_LEMMAS"
+        # Reshape the apologies array
+        apologies = np.array(commit_apologies, dtype=str).reshape((len(commit_apologies), 1))
+        # Resize dataset
+        f["commits"].resize((commits.shape[0], commits.shape[1] + 1))
+        # Add apology counts to HDF5 file
+        f["commits"][...] = np.hstack((commits, apologies))
+    else: # pragma: no cover
+        pass
+
+    if do_pull_requests: # pragma: no cover
+        # Get just the lemmas
+        pull_request_lemmas = pull_requests[:, -1]
+        # Convert bytestrings to strings
+        pull_request_lemmas = numpyByteArrayToStrList(pull_request_lemmas)
+        # Classify apologies
+        pull_request_apologies = np.array(
+            pool.map(_countApologies, pull_request_lemmas), dtype=str)
+        # Add header
+        pull_request_apologies = pull_request_apologies.tolist()
+        pull_request_apologies[0] = "NUM_APOLOGY_LEMMAS"
+        # Reshape the apologies array
+        apologies = np.array(
+            pull_request_apologies, dtype=str).reshape((len(pull_request_apologies), 1))
+        # Resize dataset
+        f["pull_requests"].resize((pull_requests.shape[0], pull_requests.shape[1] + 1))
+        # Add apology counts to HDF5 file
+        f["pull_requests"][...] = np.hstack((pull_requests, apologies))
     else: # pragma: no cover
         pass
 

@@ -2623,23 +2623,31 @@ class TestSearch(unittest.TestCase):
             "https://github.com/testerSunshine/12306", "https://github.com/rails/rails",
             "https://github.com/jekyll/jekyll", "https://github.com/discourse/discourse",
             "https://github.com/fastlane/fastlane", "https://github.com/huginn/huginn",
-            "https://github.com/sindresorhus/awesome", "https://github.com/ohmyzsh/ohmyzsh",
-            "https://github.com/gothinkster/realworld", "https://github.com/nvm-sh/nvm",
-            "https://github.com/papers-we-love/papers-we-love", "https://github.com/pi-hole/pi-hole",
-            "https://github.com/microsoft/vscode", "https://github.com/angular/angular",
-            "https://github.com/ant-design/ant-design", "https://github.com/microsoft/TypeScript",
-            "https://github.com/puppeteer/puppeteer", "https://github.com/storybookjs/storybook",
-            "https://github.com/reduxjs/redux", "https://github.com/sveltejs/svelte",
-            "https://github.com/apache/echarts", "https://github.com/cdr/code-server",
-            "https://github.com/ionic-team/ionic-framework", "https://github.com/grafana/grafana",
-            "https://github.com/nestjs/nest", "https://github.com/vercel/hyper",
-            "https://github.com/facebook/jest", "https://github.com/DefinitelyTyped/DefinitelyTyped",
+            "https://github.com/ohmyzsh/ohmyzsh", "https://github.com/gothinkster/realworld",
+            "https://github.com/nvm-sh/nvm", "https://github.com/papers-we-love/papers-we-love",
+            "https://github.com/pi-hole/pi-hole", "https://github.com/microsoft/vscode",
+            "https://github.com/angular/angular", "https://github.com/ant-design/ant-design",
+            "https://github.com/microsoft/TypeScript", "https://github.com/puppeteer/puppeteer",
+            "https://github.com/storybookjs/storybook", "https://github.com/reduxjs/redux",
+            "https://github.com/sveltejs/svelte", "https://github.com/apache/echarts",
+            "https://github.com/cdr/code-server", "https://github.com/ionic-team/ionic-framework",
+            "https://github.com/grafana/grafana", "https://github.com/nestjs/nest",
+            "https://github.com/vercel/hyper", "https://github.com/facebook/jest",
+            "https://github.com/DefinitelyTyped/DefinitelyTyped",
             "https://github.com/styled-components/styled-components", "https://github.com/pixijs/pixijs",
             "https://github.com/vuetifyjs/vuetify", "https://github.com/immutable-js/immutable-js",
             "https://github.com/vitejs/vite"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
+        # This changes sometimes, so I'm leaving these debug statements to help figure out what
+        # changed
+        #print(len(expected))
+        #print(len(actual))
+        #print(sorted(expected))
+        #print(sorted(actual))
+        #print(set(expected).difference(set(actual)))
+        #print(set(actual).difference(set(expected)))
         self.assertListEqual(sorted(expected), sorted(actual))
 
 
@@ -2800,6 +2808,67 @@ class TestApologies(unittest.TestCase):
         for case in test_cases:
             actual_apologies.append(_countApologies(case))
         self.assertListEqual(expected_apologies, actual_apologies)
+
+
+    def test_classify(self):
+        """
+        Test src.apologies:classify().
+        """
+        # Setup
+        input_hdf5_file = os.path.join(CWD, "test_files/test2.hdf5")
+        input_num_procs = 1
+        data_dir = os.path.join(CWD, "test_files/test_data2/")
+        append = False
+        expected_issue_apologies = [
+            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1"
+        ]
+        expected_commit_apologies = [
+            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0"
+        ]
+        expected_pull_request_apologies = [
+            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"
+        ]
+        load(input_hdf5_file, data_dir, append)
+        preprocess(input_hdf5_file, input_num_procs)
+        # Test data before write
+        actual = classify(input_hdf5_file, input_num_procs)
+        actual_issue_apologies = list(actual[0])
+        actual_commit_apologies = list(actual[1])
+        actual_pull_request_apologies = list(actual[2])
+        self.assertListEqual(expected_issue_apologies, actual_issue_apologies)
+        self.assertListEqual(expected_commit_apologies, actual_commit_apologies)
+        self.assertListEqual(expected_pull_request_apologies, actual_pull_request_apologies)
+        # Test data after write
+        f = h5py.File(input_hdf5_file)
+        actual_issue_apologies = numpyByteArrayToStrList(f["issues"][...][:, -1])
+        actual_commit_apologies = numpyByteArrayToStrList(f["commits"][...][:, -1])
+        actual_pull_request_apologies = numpyByteArrayToStrList(f["pull_requests"][...][:, -1])
+        self.assertListEqual(expected_issue_apologies, actual_issue_apologies)
+        self.assertListEqual(expected_commit_apologies, actual_commit_apologies)
+        self.assertListEqual(expected_pull_request_apologies, actual_pull_request_apologies)
+        # Cleanup
+        h5py.File.close(f)
+        os.remove(input_hdf5_file)
+
 
 #### MAIN ##########################################################################################
 if __name__ == "__main__":
