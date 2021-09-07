@@ -127,6 +127,9 @@ def preprocessCommand(args):
     assert args.num_procs <= mproc.cpu_count(), \
         "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
 
+    if args.num_procs == 0:
+        args.num_procs = mproc.cpu_count()
+
     # Pass arguments to src.preprocess:preprocess().
     preprocess(args.hdf5_file, args.num_procs)
 
@@ -142,6 +145,9 @@ def classifyCommand(args):
     assert doesPathExist(args.hdf_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
     assert args.num_procs <= mproc.cpu_count(), \
         "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
+
+    if args.num_procs == 0:
+        args.num_procs = mproc.cpu_count()
 
     # Pass arguments to src.apologies:classify().
     classify(args.hdf5_file, args.num_procs)
@@ -302,7 +308,8 @@ if __name__ == "__main__":
         "using the 'load' command. Relative paths will be canonicalized."
     )
     preprocess_parser.add_argument(
-        "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing."
+        "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing. Enter "
+        "'0' to use all available CPUs."
     )
     preprocess_parser.set_defaults(func=preprocessCommand)
 
@@ -318,7 +325,8 @@ if __name__ == "__main__":
         "using the 'load' and 'preprocess' commands. Relative paths will be canonicalized."
     )
     classify_parser.add_argument(
-        "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing."
+        "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing. Enter "
+        "'0' to use all available CPUs."
     )
     classify_parser.set_defaults(func=classifyCommand)
 
