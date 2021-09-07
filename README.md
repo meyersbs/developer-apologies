@@ -90,6 +90,9 @@ positional arguments:
                         'COMMENT_TEXT_LEMMATIZED' column that contains the comment text that
                         (1) is lowercased, (2) has punctuation removed, (3) has non-space
                         whitespace removed, and (4) is lemmatized.
+    classify            For each dataset in the given HDF5 file, append a 'NUM_POLOGY_LEMMAS'
+                        column that contains the total number of apology lemmas in the
+                        'COMMENT_TEXT_LEMMATIZED' column.
     info_data           Display info about the downloaded data.
     info_hdf5           Display info about the data loaded into HDF5.
     info_rate_limit     Display rate limiting info from GitHub's GraphQL API.
@@ -225,6 +228,25 @@ optional arguments:
 ```
 
 **NOTE:** This command modifies the specified HDF5 file by adding a new column with the lemmatized text.
+
+### Classify Command
+
+This command counts the number of apology lemmas in the lemmatized comment text.
+
+``` bash
+usage: main.py classify [-h] hdf5_file num_procs
+
+positional arguments:
+  hdf5_file   The path/name of an HDF5 file that has already been populated using the
+              'load' and 'preprocess' commands. Relative paths will be canonicalized.
+  num_procs   Number of processes (CPUs) to use for multiprocessing. Enter '0' to use
+              all available CPUs.
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
+**NOTE:** This command modifies the specified HDF5 file by adding a new column with the number of apology lemmas.
 
 ### Info_Data Command
 
