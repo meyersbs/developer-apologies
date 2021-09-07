@@ -131,6 +131,22 @@ def preprocessCommand(args):
     preprocess(args.hdf5_file, args.num_procs)
 
 
+def classifyCommand(args):
+    """
+    Parse arguments for 'classify' command and pass them to src.apologies:classify().
+    """
+    # Canonicalize filepaths
+    args.hdf5_file = canonicalize(args.hdf5_file)
+
+    # Check assertions
+    assert doesPathExist(args.hdf_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
+    assert args.num_procs <= mproc.cpu_count(), \
+        "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
+
+    # Pass arguments to src.apologies:classify().
+    classify(args.hdf5_file, args.num_procs)
+
+
 def infoDataCommand(args):
     sys.exit("Not yet implemented.")
 
@@ -289,6 +305,22 @@ if __name__ == "__main__":
         "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing."
     )
     preprocess_parser.set_defaults(func=preprocessCommand)
+
+    #### CLASSIFY COMMAND
+    classify_parser = command_parsers.add_parser(
+        "classify", help="For each dataset in the given HDF5 file, append a 'NUM_POLOGY_LEMMAS' "
+        " column that contains the total number of apology lemmas in the 'COMMENT_TEXT_LEMMATIZED' "
+        " column."
+    )
+    
+    classify_parser.add_argument(
+        "hdf5_file", type=str, help="The path/name of an HDF5 file that has already been populated "
+        "using the 'load' and 'preprocess' commands. Relative paths will be canonicalized."
+    )
+    classify_parser.add_argument(
+        "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing."
+    )
+    classify_parser.set_defaults(func=classifyCommand)
 
     #### INFO_DATA COMMAND
     info_data_parser = command_parsers.add_parser(
