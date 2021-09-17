@@ -4,6 +4,7 @@
 #### PYTHON IMPORTS ################################################################################
 import requests
 import sys
+import time
 
 
 #### PACKAGE IMPORTS ###############################################################################
@@ -33,7 +34,12 @@ def _runQuery(query):
       ____ (dict) -- raw response from GitHub's GraphQL API
     """
     req = requests.post(API_ENDPOINT, json={"query": query}, headers=HEADERS)
-    if "errors" not in req.json().keys():
+    if "documentation_url" in req.json().keys(): # pragma: no cover
+        print(req.json())
+        print("Hit secondary rate limit. Waiting 60 seconds...")
+        time.sleep(60) # Wait 60 seconds
+        return _runQuery(query)
+    elif "errors" not in req.json().keys():
     #if req.status_code == 200:
         return req.json()
     else:
@@ -259,9 +265,11 @@ def _getAllIssues(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
-        all_issues.extend(res["data"]["repository"]["issues"]["edges"])
-        end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
-        has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
+        # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
+        if res is not None:
+            all_issues.extend(res["data"]["repository"]["issues"]["edges"])
+            end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
+            has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
 
     all_issues = _cleanUpAllIssues(results, all_issues)
     all_issues = _getAllCommentsByIssueNumber(repo_owner, repo_name, all_issues)
@@ -300,9 +308,11 @@ def _getAllPullRequests(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
-        all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
-        end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
-        has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
+        # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
+        if res is not None:
+            all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
+            end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
+            has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
 
     all_pull_requests = _cleanUpAllPullRequests(results, all_pull_requests)
     all_pull_requests = _getAllCommentsByPullRequestNumber(repo_owner, repo_name, all_pull_requests)
@@ -340,9 +350,12 @@ def _getAllCommits(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
-        all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
-        end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
-        has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+        # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
+        print(res)
+        if res is not None:
+            all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
+            end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
+            has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
 
     all_commits = _cleanUpAllCommits(results, all_commits)
     all_commits = _getAllCommentsByCommitOID(repo_owner, repo_name, all_commits)
