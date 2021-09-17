@@ -91,9 +91,10 @@ def _formatIssues(issues, repo_url, repo_name, repo_owner):
     issues_list = list()
     # For each issue
     for issue in issues:
+        #print(issue)
         issue_num = issue["node"]["number"]
         issue_title = issue["node"]["title"]
-        issue_author = issue["node"]["author"]["login"]
+        issue_author = issue["node"]["author"]["login"] if isinstance(issue["node"]["author"], dict) else "None"
         issue_created = issue["node"]["createdAt"]
         issue_url = issue["node"]["url"]
         issue_text = issue["node"]["bodyText"]
@@ -102,7 +103,7 @@ def _formatIssues(issues, repo_url, repo_name, repo_owner):
         if issue["node"]["comments"]["totalCount"] != 0:
             # For each comments
             for comment in issue["node"]["comments"]["edges"]:
-                comment_author = comment["node"]["author"]["login"]
+                comment_author = comment["node"]["author"]["login"] if isinstance(comment["node"]["author"], dict) else "None"
                 comment_created = comment["node"]["createdAt"]
                 comment_url = comment["node"]["url"]
                 comment_text = comment["node"]["bodyText"]
@@ -160,9 +161,10 @@ def _formatPullRequests(pull_requests, repo_url, repo_name, repo_owner):
     pull_requests_list = list()
     # For each pull requests
     for pull_request in pull_requests:
+        #print(pull_request)
         pull_request_num = pull_request["node"]["number"]
         pull_request_title = pull_request["node"]["title"]
-        pull_request_author = pull_request["node"]["author"]["login"]
+        pull_request_author = pull_request["node"]["author"]["login"] if isinstance(pull_request["node"]["author"], dict) else "None"
         pull_request_created = pull_request["node"]["createdAt"]
         pull_request_url = pull_request["node"]["url"]
         pull_request_text = pull_request["node"]["bodyText"]
@@ -171,7 +173,7 @@ def _formatPullRequests(pull_requests, repo_url, repo_name, repo_owner):
         if pull_request["node"]["comments"]["totalCount"] != 0:
             # For each comments
             for comment in pull_request["node"]["comments"]["edges"]:
-                comment_author = comment["node"]["author"]["login"]
+                comment_author = comment["node"]["author"]["login"] if isinstance(comment["node"]["author"], dict) else "None"
                 comment_created = comment["node"]["createdAt"]
                 comment_url = comment["node"]["url"]
                 comment_text = comment["node"]["bodyText"]
@@ -229,8 +231,9 @@ def _formatCommits(commits, repo_url, repo_name, repo_owner):
     commits_list = list()
     # For each commit
     for commit in commits:
+        #print(commit)
         commit_oid = commit["node"]["oid"]
-        commit_author = commit["node"]["author"]["user"]["login"]
+        commit_author = commit["node"]["author"]["user"]["login"] if isinstance(commit["node"]["author"]["user"], dict) else "None"
         commit_created = commit["node"]["committedDate"]
         commit_additions = commit["node"]["additions"]
         commit_deletions = commit["node"]["deletions"]
@@ -242,7 +245,7 @@ def _formatCommits(commits, repo_url, repo_name, repo_owner):
         if commit["node"]["comments"]["totalCount"] != 0:
             # For each comments
             for comment in commit["node"]["comments"]["edges"]:
-                comment_author = comment["node"]["author"]["login"]
+                comment_author = comment["node"]["author"]["login"] if isinstance(comment["node"]["author"], dict) else "None"
                 comment_created = comment["node"]["createdAt"]
                 comment_url = comment["node"]["url"]
                 comment_text = comment["node"]["bodyText"]
@@ -414,16 +417,18 @@ def download(repo_file, data_dir, data_types):
     with open(repo_file, "r") as f:
         # For each repository
         for line in f.readlines():
-            # Get the the name of the repo and its owner
-            repo_url = line.strip("\n")
-            repo_owner, repo_name = parseRepoURL(repo_url)
+            print(line)
+            if not line.startswith("#"): # pragma: no cover
+                # Get the the name of the repo and its owner
+                repo_url = line.strip("\n")
+                repo_owner, repo_name = parseRepoURL(repo_url)
 
-            # Run a GraphQL query
-            results = runQuery(repo_owner, repo_name, data_types)
-            # Convert results to CSV
-            issues, pull_requests, comments = _formatCSV(results, repo_url, data_types)
-            # Write data to disk
-            _writeCSV(issues, pull_requests, comments, data_dir)
+                # Run a GraphQL query
+                results = runQuery(repo_owner, repo_name, data_types)
+                # Convert results to CSV
+                issues, pull_requests, comments = _formatCSV(results, repo_url, data_types)
+                # Write data to disk
+                _writeCSV(issues, pull_requests, comments, data_dir)
 
 
 #### MAIN ##########################################################################################
