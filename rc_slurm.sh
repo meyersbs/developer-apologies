@@ -22,7 +22,7 @@
 
 # Job Duration
 # Format: -t DD-HH:MM:SS
-#SBATCH -t 0-0:10:0
+#SBATCH -t 0-0:30:0
 
 # Job Account, Job Tier, Number of Cores
 # Format: -A <account_name> -p <onboard, tier1, tier2, tier3> -n <num_cpus>
@@ -30,7 +30,7 @@
 
 # Job Memory
 # Format: --mem=<num><k,m,g,t> (KB, MB, GB, TB)
-#SBATCH --mem=10g
+#SBATCH --mem=20g
 
 # Environment Settings
 echo "Loading environment"
@@ -43,12 +43,18 @@ spack env activate mistakes-21091601
 echo "Installing pip"
 python3 -m ensurepip --upgrade
 
+echo "Installing coverage"
+pip3 install --user coverage
+
 echo "Installing spacy model"
 python3 -m spacy download en_core_web_sm
 
 # Step 0: Test Environment
 echo "Testing environment"
+rm main_output.txt
+rm test_output.txt
 time ./main.py info_rate_limit >> main_output.txt
+time ./tests.py >> test_output.txt
 
 # Step 1: Download data
 #./main.py download repo_lists/repos_850stars_2021_09_07_09-03-45.txt all data_850_stars/
