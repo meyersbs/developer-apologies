@@ -33,14 +33,22 @@ def _runQuery(query):
     RETURN:
       ____ (dict) -- raw response from GitHub's GraphQL API
     """
-    req = requests.post(API_ENDPOINT, json={"query": query}, headers=HEADERS)
-    if "documentation_url" in req.json().keys(): # pragma: no cover
+    try:
+        req = requests.post(API_ENDPOINT, json={"query": query}, headers=HEADERS)
+    except requests.exceptions.ChunkedEncodingError as e:
+        print(e)
+        req = None
+    
+    if req is None:
+        print("Query failed: {}".format(query))
+        return None
+    elif "documentation_url" in req.json().keys(): # pragma: no cover
         print(req.json())
         print("Hit secondary rate limit. Waiting 60 seconds...")
         time.sleep(60) # Wait 60 seconds
         return _runQuery(query)
     elif "errors" not in req.json().keys():
-    #if req.status_code == 200:
+        #if req.status_code == 200:
         return req.json()
     else:
         # In theory, we should never get here
@@ -247,12 +255,15 @@ def _getAllIssues(repo_owner, repo_name):
     """
     all_issues = list()
     results = None
+    count = 1
 
     # First pass to get pagination cursors
     res = _runQuery(
         QUERY_ISSUES_1.replace("OWNER", repo_owner)
         .replace("NAME", repo_name)
     )
+    print(count)
+    count += 1
     results = res
     all_issues.extend(res["data"]["repository"]["issues"]["edges"])
     end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
@@ -265,6 +276,8 @@ def _getAllIssues(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
+        print(count)
+        count += 1
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
         if res is not None:
             all_issues.extend(res["data"]["repository"]["issues"]["edges"])
@@ -290,12 +303,15 @@ def _getAllPullRequests(repo_owner, repo_name):
     """
     all_pull_requests = list()
     results = None
+    count = 1
 
     # First pass to get pagination cursors
     res = _runQuery(
         QUERY_PULL_REQUESTS_1.replace("OWNER", repo_owner)
         .replace("NAME", repo_name)
     )
+    print(count)
+    count += 1
     results = res
     all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
     end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
@@ -308,6 +324,8 @@ def _getAllPullRequests(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
+        print(count)
+        count += 1
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
         if res is not None:
             all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
@@ -332,12 +350,15 @@ def _getAllCommits(repo_owner, repo_name):
     """
     all_commits = list()
     results = None
+    count = 1
 
     # First pass to get pagination cursors
     res = _runQuery(
         QUERY_COMMITS_1.replace("OWNER", repo_owner)
         .replace("NAME", repo_name)
     )
+    print(count)
+    count += 1
     results = res
     all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
     end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
@@ -350,8 +371,9 @@ def _getAllCommits(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
+        print(count)
+        count += 1
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
-        print(res)
         if res is not None:
             all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
             end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
