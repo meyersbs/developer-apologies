@@ -52,7 +52,7 @@ def _runQuery(query):
         return req.json()
     else:
         # In theory, we should never get here
-        print("Query failed: {}".format(req.json()))
+        print("Query failed: {}".format(query))
         return None
 
 
