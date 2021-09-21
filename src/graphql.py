@@ -41,7 +41,7 @@ def _runQuery(query):
     
     if req is None:
         print("Query failed: {}".format(query))
-        return None
+        return _runQuery(query)
     elif "documentation_url" in req.json().keys(): # pragma: no cover
         print(req.json())
         print("Hit secondary rate limit. Waiting 60 seconds...")
@@ -253,21 +253,24 @@ def _getAllIssues(repo_owner, repo_name):
     RETURN:
       all_issues (JSON) -- JSON representation of all issues with their comments and metadata
     """
+    print("\tGetting issues...")
     all_issues = list()
     results = None
-    count = 1
 
     # First pass to get pagination cursors
     res = _runQuery(
         QUERY_ISSUES_1.replace("OWNER", repo_owner)
         .replace("NAME", repo_name)
     )
-    print(count)
-    count += 1
     results = res
-    all_issues.extend(res["data"]["repository"]["issues"]["edges"])
-    end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
-    has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
+    try:
+        all_issues.extend(res["data"]["repository"]["issues"]["edges"])
+        end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
+        has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
+    except ValueError as e:
+        print(e)
+        print("Failed to get issues for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
+        return list()
 
     # Subsequent passes
     while has_next_page: # pragma: no cover
@@ -276,8 +279,6 @@ def _getAllIssues(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
-        print(count)
-        count += 1
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
         if res is not None:
             all_issues.extend(res["data"]["repository"]["issues"]["edges"])
@@ -301,21 +302,24 @@ def _getAllPullRequests(repo_owner, repo_name):
       all_pull_requests (JSON) -- JSON representation of all pull requests with their comments and
                                   metadata
     """
+    print("\tGetting pull requests...")
     all_pull_requests = list()
     results = None
-    count = 1
 
     # First pass to get pagination cursors
     res = _runQuery(
         QUERY_PULL_REQUESTS_1.replace("OWNER", repo_owner)
         .replace("NAME", repo_name)
     )
-    print(count)
-    count += 1
     results = res
-    all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
-    end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
-    has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
+    try:
+    	all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
+    	end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
+    	has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
+    except ValueError as e:
+        print(e)
+        print("Failed to get pull requests for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
+        return list()
 
     # Subsequent passes
     while has_next_page: # pragma: no cover
@@ -324,8 +328,6 @@ def _getAllPullRequests(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
-        print(count)
-        count += 1
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
         if res is not None:
             all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
@@ -348,21 +350,24 @@ def _getAllCommits(repo_owner, repo_name):
     RETURN:
       all_commits (JSON) -- JSON representation of all commits with their comments and metadata
     """
+    print("\tGetting commits...")
     all_commits = list()
     results = None
-    count = 1
 
     # First pass to get pagination cursors
     res = _runQuery(
         QUERY_COMMITS_1.replace("OWNER", repo_owner)
         .replace("NAME", repo_name)
     )
-    print(count)
-    count += 1
     results = res
-    all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
-    end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
-    has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+    try:
+    	all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
+    	end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
+    	has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+    except ValueError as e:
+        print(e)
+        print("Failed to get commits for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
+        return lisT()
 
     # Subsequent passes
     while has_next_page: # pragma: no cover
@@ -371,8 +376,6 @@ def _getAllCommits(repo_owner, repo_name):
             .replace("NAME", repo_name)
             .replace("AFTER", end_cursor)
         )
-        print(count)
-        count += 1
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
         if res is not None:
             all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])

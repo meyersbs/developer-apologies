@@ -417,7 +417,7 @@ def download(repo_file, data_dir, data_types):
     with open(repo_file, "r") as f:
         # For each repository
         for line in f.readlines():
-            print(line)
+            print("Downloading: {}".format(line))
             if not line.startswith("#"): # pragma: no cover
                 # Get the the name of the repo and its owner
                 repo_url = line.strip("\n")
