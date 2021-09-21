@@ -2637,7 +2637,9 @@ class TestSearch(unittest.TestCase):
             "https://github.com/styled-components/styled-components", "https://github.com/pixijs/pixijs",
             "https://github.com/vuetifyjs/vuetify", "https://github.com/immutable-js/immutable-js",
             "https://github.com/vitejs/vite", "https://github.com/ant-design/ant-design-pro",
-            "https://github.com/anuraghazra/github-readme-stats"
+            "https://github.com/anuraghazra/github-readme-stats", 'https://github.com/open-guides/og-aws',
+            'https://github.com/CorentinJ/Real-Time-Voice-Cloning',
+            'https://github.com/swisskyrepo/PayloadsAllTheThings'
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)

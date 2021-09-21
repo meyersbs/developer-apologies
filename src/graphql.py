@@ -35,11 +35,11 @@ def _runQuery(query):
     """
     try:
         req = requests.post(API_ENDPOINT, json={"query": query}, headers=HEADERS)
-    except requests.exceptions.ChunkedEncodingError as e:
+    except requests.exceptions.ChunkedEncodingError as e: # pragma: no cover
         print(e)
         req = None
     
-    if req is None:
+    if req is None: # pragma: no cover
         print("Query failed: {}".format(query))
         return _runQuery(query)
     elif "documentation_url" in req.json().keys(): # pragma: no cover
@@ -50,7 +50,7 @@ def _runQuery(query):
     elif "errors" not in req.json().keys():
         #if req.status_code == 200:
         return req.json()
-    else:
+    else: # pragma: no cover
         # In theory, we should never get here
         print("Query failed: {}".format(query))
         return None
@@ -267,7 +267,7 @@ def _getAllIssues(repo_owner, repo_name):
         all_issues.extend(res["data"]["repository"]["issues"]["edges"])
         end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
         has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
-    except ValueError as e:
+    except ValueError as e: # pragma: no cover
         print(e)
         print("Failed to get issues for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
         return list()
@@ -316,7 +316,7 @@ def _getAllPullRequests(repo_owner, repo_name):
     	all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
     	end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
     	has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
-    except ValueError as e:
+    except ValueError as e: # pragma: no cover
         print(e)
         print("Failed to get pull requests for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
         return list()
@@ -364,7 +364,7 @@ def _getAllCommits(repo_owner, repo_name):
     	all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
     	end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
     	has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
-    except ValueError as e:
+    except ValueError as e: # pragma: no cover
         print(e)
         print("Failed to get commits for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
         return lisT()

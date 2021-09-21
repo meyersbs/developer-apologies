@@ -17,7 +17,7 @@ from src.helpers import numpyByteArrayToStrList
 #### GLOBALS #######################################################################################
 try:
     NLP = spacy.load("en_core_web_sm")
-except OSError:
+except OSError: # pragma: no cover
     NLP = spacy.load("en") 
 RE_PUNCT = re.compile(r"[\.,:;?!]")
 RE_WHITESPACE = re.compile(r"[\n\r\t\v\f]") # everything but regular spaces
