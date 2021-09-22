@@ -38,7 +38,7 @@ def _runQuery(query):
     except requests.exceptions.ChunkedEncodingError as e: # pragma: no cover
         print(e)
         req = None
-    
+
     if req is None: # pragma: no cover
         print("Query failed: {}".format(query))
         return _runQuery(query)
@@ -286,9 +286,9 @@ def _getAllIssues(repo_owner, repo_name):
                 end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
                 has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
         except (ValueError, KeyError, TypeError) as e: # pragma: no cover
-	    print(e)
+            print(e)
             print("Failed to get issues for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
-	    return list()
+            return list()
 
     all_issues = _cleanUpAllIssues(results, all_issues)
     all_issues = _getAllCommentsByIssueNumber(repo_owner, repo_name, all_issues)
@@ -318,9 +318,9 @@ def _getAllPullRequests(repo_owner, repo_name):
     )
     results = res
     try:
-    	all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
-    	end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
-    	has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
+        all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
+        end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
+        has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
     except (ValueError, KeyError, TypeError) as e: # pragma: no cover
         print(e)
         print("Failed to get pull requests for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
@@ -340,9 +340,9 @@ def _getAllPullRequests(repo_owner, repo_name):
                 end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
                 has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
         except (ValueError, KeyError, TypeError) as e: # pragma: no cover
-	    print(e)
+            print(e)
             print("Failed to get pull requests for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
-	    return list()
+            return list()
 
     all_pull_requests = _cleanUpAllPullRequests(results, all_pull_requests)
     all_pull_requests = _getAllCommentsByPullRequestNumber(repo_owner, repo_name, all_pull_requests)
@@ -371,9 +371,9 @@ def _getAllCommits(repo_owner, repo_name):
     )
     results = res
     try:
-    	all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
-    	end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
-    	has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+        all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
+        end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
+        has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
     except (ValueError, KeyError, TypeError) as e: # pragma: no cover
         print(e)
         print("Failed to get commits for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
@@ -389,13 +389,13 @@ def _getAllCommits(repo_owner, repo_name):
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
         try:
             if res is not None:
-            	all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
-            	end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
-            	has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+                all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
+                end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
+                has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
         except (ValueError, KeyError, TypeError) as e: # pragma: no cover
-	    print(e)
+            print(e)
             print("Failed to get commits for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
-	    return list()
+            return list()
 
     all_commits = _cleanUpAllCommits(results, all_commits)
     all_commits = _getAllCommentsByCommitOID(repo_owner, repo_name, all_commits)
