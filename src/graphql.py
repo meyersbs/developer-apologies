@@ -267,7 +267,7 @@ def _getAllIssues(repo_owner, repo_name):
         all_issues.extend(res["data"]["repository"]["issues"]["edges"])
         end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
         has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
-    except ValueError as e:
+    except (ValueError, KeyError, TypeError) as e:
         print(e)
         print("Failed to get issues for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
         return list()
@@ -280,10 +280,15 @@ def _getAllIssues(repo_owner, repo_name):
             .replace("AFTER", end_cursor)
         )
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
-        if res is not None:
-            all_issues.extend(res["data"]["repository"]["issues"]["edges"])
-            end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
-            has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
+        try:
+            if res is not None:
+                all_issues.extend(res["data"]["repository"]["issues"]["edges"])
+                end_cursor = res["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
+                has_next_page = res["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
+        except (ValueError, KeyError, TypeError) as e:
+	    print(e)
+            print("Failed to get issues for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
+	    return list()
 
     all_issues = _cleanUpAllIssues(results, all_issues)
     all_issues = _getAllCommentsByIssueNumber(repo_owner, repo_name, all_issues)
@@ -316,7 +321,7 @@ def _getAllPullRequests(repo_owner, repo_name):
     	all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
     	end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
     	has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
-    except ValueError as e:
+    except (ValueError, KeyError, TypeError) as e:
         print(e)
         print("Failed to get pull requests for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
         return list()
@@ -329,10 +334,15 @@ def _getAllPullRequests(repo_owner, repo_name):
             .replace("AFTER", end_cursor)
         )
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
-        if res is not None:
-            all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
-            end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
-            has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
+        try:
+            if res is not None:
+                all_pull_requests.extend(res["data"]["repository"]["pullRequests"]["edges"])
+                end_cursor = res["data"]["repository"]["pullRequests"]["pageInfo"]["endCursor"]
+                has_next_page = res["data"]["repository"]["pullRequests"]["pageInfo"]["hasNextPage"]
+        except (ValueError, KeyError, TypeError) as e:
+	    print(e)
+            print("Failed to get pull requests for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
+	    return list()
 
     all_pull_requests = _cleanUpAllPullRequests(results, all_pull_requests)
     all_pull_requests = _getAllCommentsByPullRequestNumber(repo_owner, repo_name, all_pull_requests)
@@ -364,10 +374,10 @@ def _getAllCommits(repo_owner, repo_name):
     	all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
     	end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
     	has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
-    except ValueError as e:
+    except (ValueError, KeyError, TypeError) as e:
         print(e)
         print("Failed to get commits for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
-        return lisT()
+        return list()
 
     # Subsequent passes
     while has_next_page: # pragma: no cover
@@ -377,10 +387,15 @@ def _getAllCommits(repo_owner, repo_name):
             .replace("AFTER", end_cursor)
         )
         # If the query failed, then has_next_page doesn't get updated, so it will simply try the same query again
-        if res is not None:
-            all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
-            end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
-            has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+        try:
+            if res is not None:
+            	all_commits.extend(res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"])
+            	end_cursor = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["endCursor"]
+            	has_next_page = res["data"]["repository"]["defaultBranchRef"]["target"]["history"]["pageInfo"]["hasNextPage"]
+        except (ValueError, KeyError, TypeError) as e:
+	    print(e)
+            print("Failed to get commits for repo_owner={}, repo_name={}".format(repo_owner, repo_name))
+	    return list()
 
     all_commits = _cleanUpAllCommits(results, all_commits)
     all_commits = _getAllCommentsByCommitOID(repo_owner, repo_name, all_commits)
