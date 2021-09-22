@@ -338,6 +338,8 @@ def _formatCSV(data, repo_url, data_types):
         )
 
         commits = _formatCommits(
+            print(data)
+            print(type(data))
             data[1]["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"],
             repo_url, repo_name, repo_owner
         )

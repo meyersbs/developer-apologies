@@ -2,6 +2,7 @@
 
 
 #### PYTHON IMPORTS ################################################################################
+import json
 import requests
 import sys
 import time
@@ -23,7 +24,7 @@ REPO_URL = "https://github.com/{}/{}/"
 
 
 #### FUNCTIONS #####################################################################################
-def _runQuery(query):
+def _runQuery(query, fail_count=0):
     """
     Helper function. Run a query against GitHub's GraphQL API.
 
@@ -39,15 +40,25 @@ def _runQuery(query):
         print(e)
         req = None
 
+    try:
+        keys = req.json().keys()
+    except (AttributeError, json.decoder.JSONDecodeError) as e:
+        print(e)
+        keys = list()
+
     if req is None: # pragma: no cover
         print("Query failed: {}".format(query))
-        return _runQuery(query)
-    elif "documentation_url" in req.json().keys(): # pragma: no cover
+        fail_count += 1
+        if fail_count < 3:
+            return _runQuery(query, fail_count)
+        else:
+            return None
+    elif "documentation_url" in keys: # pragma: no cover
         print(req.json())
         print("Hit secondary rate limit. Waiting 60 seconds...")
         time.sleep(60) # Wait 60 seconds
-        return _runQuery(query)
-    elif "errors" not in req.json().keys():
+        return _runQuery(query, fail_count)
+    elif "errors" not in keys:
         #if req.status_code == 200:
         return req.json()
     else: # pragma: no cover
