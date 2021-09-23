@@ -12,7 +12,7 @@ from src.delete import delete
 from src.download import download
 from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
-from src.info import infoHDF5
+from src.info import infoHDF5, infoData
 from src.load import load
 from src.preprocess import preprocess
 from src.search import search, topRepos
@@ -154,7 +154,17 @@ def classifyCommand(args):
 
 
 def infoDataCommand(args):
-    sys.exit("Not yet implemented.")
+    """
+    Display useful information about the data in a directory.
+    """
+    # Canonicalize filepaths
+    args.data_dir = canonicalize(args.data_dir)
+
+    # Check assertions
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
+    
+    # Pass arguments to src.info:infoData()
+    infoData(args.data_dir)
 
 
 def infoHDF5Command(args):
