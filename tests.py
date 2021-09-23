@@ -19,8 +19,8 @@ from src.delete import delete
 from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
-    numpyByteArrayToStrList, InvalidGitHubURLError
-from src.info import infoHDF5
+    numpyByteArrayToStrList, InvalidGitHubURLError, getDataFilepaths
+from src.info import infoData, infoHDF5
 from src.load import load
 from src.preprocess import preprocess, _stripNonWords, _lemmatize
 from src.search import search, topRepos
@@ -193,6 +193,22 @@ class TestHelpers(unittest.TestCase):
         shutil.rmtree(data_dir) # Clean up before next test
 
 
+    def test_getDataFilepaths(self):
+        """
+        Test src.helpers:getDataFilepaths().
+        """
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data2/")
+        expected_issues_path = os.path.join(CWD, "test_files/test_data2/issues/issues.csv")
+        expected_commits_path = os.path.join(CWD, "test_files/test_data2/commits/commits.csv")
+        expected_pull_requests_path = os.path.join(CWD, "test_files/test_data2/pull_requests/pull_requests.csv")
+        # Test
+        actual_issues_path, actual_commits_path, actual_pull_requests_path = getDataFilepaths(data_dir)
+        self.assertEqual(expected_issues_path, actual_issues_path)
+        self.assertEqual(expected_commits_path, actual_commits_path)
+        self.assertEqual(expected_pull_requests_path, actual_pull_requests_path)
+
+
     def test_parseRepoURL(self):
         """
         Test src.helpers:parseRepoURL().
@@ -243,6 +259,19 @@ class TestInfo(unittest.TestCase):
         Necessary setup for test cases.
         """
         pass
+
+
+    def test_infoData(self):
+        """
+        Test src.info:infoData().
+        """
+        #### Case 1: all paths exist
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data2/")
+        expected = [1, 2, 103, 57, 102, 2, 101]
+        # Test
+        actual = infoData(data_dir, verbose=False)
+        self.assertListEqual(expected, actual)
 
 
     def test_infoHDF5(self):

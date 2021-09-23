@@ -42,7 +42,7 @@ def _runQuery(query, fail_count=0):
 
     try:
         keys = req.json().keys()
-    except (AttributeError, json.decoder.JSONDecodeError) as e:
+    except (AttributeError, json.decoder.JSONDecodeError) as e: # pragma: no cover
         print(e)
         keys = list()
 
