@@ -57,7 +57,7 @@ def _getStats(filepath):
         next(csv_reader) # Skip header row
         # For each entry
         for line in csv_reader:
-            if line[0] == "REPO_URL":
+            if line[0] == "REPO_URL": # pragma: no cover
                 pass
             else:
                 # If we haven't seen this repo before

@@ -94,7 +94,10 @@ def _formatIssues(issues, repo_url, repo_name, repo_owner):
         #print(issue)
         issue_num = issue["node"]["number"]
         issue_title = issue["node"]["title"]
-        issue_author = issue["node"]["author"]["login"] if isinstance(issue["node"]["author"], dict) else "None"
+        issue_author = \
+            issue["node"]["author"]["login"] \
+            if isinstance(issue["node"]["author"], dict) \
+            else "None"
         issue_created = issue["node"]["createdAt"]
         issue_url = issue["node"]["url"]
         issue_text = issue["node"]["bodyText"]
@@ -103,7 +106,10 @@ def _formatIssues(issues, repo_url, repo_name, repo_owner):
         if issue["node"]["comments"]["totalCount"] != 0:
             # For each comments
             for comment in issue["node"]["comments"]["edges"]:
-                comment_author = comment["node"]["author"]["login"] if isinstance(comment["node"]["author"], dict) else "None"
+                comment_author = \
+                    comment["node"]["author"]["login"] \
+                    if isinstance(comment["node"]["author"], dict) \
+                    else "None"
                 comment_created = comment["node"]["createdAt"]
                 comment_url = comment["node"]["url"]
                 comment_text = comment["node"]["bodyText"]
@@ -164,7 +170,10 @@ def _formatPullRequests(pull_requests, repo_url, repo_name, repo_owner):
         #print(pull_request)
         pull_request_num = pull_request["node"]["number"]
         pull_request_title = pull_request["node"]["title"]
-        pull_request_author = pull_request["node"]["author"]["login"] if isinstance(pull_request["node"]["author"], dict) else "None"
+        pull_request_author = \
+            pull_request["node"]["author"]["login"] \
+            if isinstance(pull_request["node"]["author"], dict) \
+            else "None"
         pull_request_created = pull_request["node"]["createdAt"]
         pull_request_url = pull_request["node"]["url"]
         pull_request_text = pull_request["node"]["bodyText"]
@@ -173,7 +182,10 @@ def _formatPullRequests(pull_requests, repo_url, repo_name, repo_owner):
         if pull_request["node"]["comments"]["totalCount"] != 0:
             # For each comments
             for comment in pull_request["node"]["comments"]["edges"]:
-                comment_author = comment["node"]["author"]["login"] if isinstance(comment["node"]["author"], dict) else "None"
+                comment_author = \
+                    comment["node"]["author"]["login"] \
+                    if isinstance(comment["node"]["author"], dict) \
+                    else "None"
                 comment_created = comment["node"]["createdAt"]
                 comment_url = comment["node"]["url"]
                 comment_text = comment["node"]["bodyText"]
@@ -233,7 +245,10 @@ def _formatCommits(commits, repo_url, repo_name, repo_owner):
     for commit in commits:
         #print(commit)
         commit_oid = commit["node"]["oid"]
-        commit_author = commit["node"]["author"]["user"]["login"] if isinstance(commit["node"]["author"]["user"], dict) else "None"
+        commit_author = \
+            commit["node"]["author"]["user"]["login"] \
+            if isinstance(commit["node"]["author"]["user"], dict) \
+            else "None"
         commit_created = commit["node"]["committedDate"]
         commit_additions = commit["node"]["additions"]
         commit_deletions = commit["node"]["deletions"]
@@ -245,7 +260,10 @@ def _formatCommits(commits, repo_url, repo_name, repo_owner):
         if commit["node"]["comments"]["totalCount"] != 0:
             # For each comments
             for comment in commit["node"]["comments"]["edges"]:
-                comment_author = comment["node"]["author"]["login"] if isinstance(comment["node"]["author"], dict) else "None"
+                comment_author = \
+                    comment["node"]["author"]["login"] \
+                    if isinstance(comment["node"]["author"], dict) \
+                    else "None"
                 comment_created = comment["node"]["createdAt"]
                 comment_url = comment["node"]["url"]
                 comment_text = comment["node"]["bodyText"]
@@ -346,7 +364,8 @@ def _formatCSV(data, repo_url, data_types):
 
         if data[2] != []:
             pull_requests = _formatPullRequests(
-                data[2]["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name, repo_owner
+                data[2]["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name,
+                repo_owner
             )
 
     return issues, pull_requests, commits
@@ -412,6 +431,9 @@ def download(repo_file, data_dir, data_types):
       data_dir (str) -- the absolute path to a directory to store data in
       data_types (str) -- the type of data to download for each repo; one of ["issues", "commits",
                           "pull_requests", "all"]
+
+    RETURN:
+      None
     """
 
     # Make sure the necessary subdirectories exist
