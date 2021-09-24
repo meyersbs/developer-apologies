@@ -6,6 +6,7 @@ import csv
 import h5py
 import numpy as np
 import sys
+csv.field_size_limit(sys.maxsize)
 from collections import OrderedDict
 from pprint import PrettyPrinter
 
@@ -19,6 +20,18 @@ from src.helpers import doesPathExist, getDataFilepaths, getFileSizeMB, getFileC
 PP = PrettyPrinter(width=120)
 
 #### FUNCTIONS #####################################################################################
+def _fixNullBytes(file_pointer):
+    """
+    Helper function for _getStats(). Replaces null bytes with "<NULL>" so csv.reader() doesn't
+    produce an error.
+
+    GIVEN:
+      file_pointer (...) -- pointer to an open file
+    """
+    for line in file_pointer:
+        yield line.replace("\0", "<NULL>")
+
+
 def _getStats(filepath):
     """
     Helper function for infoData(). Count the number of repos, (issues or commits or pull requests),
@@ -39,21 +52,23 @@ def _getStats(filepath):
     num_comments = 0
 
     with open(filepath, "r") as f:
-        csv_reader = csv.reader(f, delimiter=",", quotechar="\"")
+        csv_reader = csv.reader(_fixNullBytes(f), delimiter=",", quotechar="\"")
 
         next(csv_reader) # Skip header row
-
         # For each entry
         for line in csv_reader:
-            # If we haven't seen this repo before
-            if line[0] not in repos.keys():
-                repos.update({line[0]: [line[3]]})
+            if line[0] == "REPO_URL":
+                pass
             else:
-                if line[3] not in repos[line[0]]:
-                    repos[line[0]].append(line[3])
+                # If we haven't seen this repo before
+                if line[0] not in repos.keys():
+                    repos.update({line[0]: [line[3]]})
+                else:
+                    if line[3] not in repos[line[0]]:
+                        repos[line[0]].append(line[3])
 
-            if line[-1] != "":
-                num_comments += 1
+                if line[-1] != "":
+                    num_comments += 1
 
     for k, v in repos.items():
         num_entries += len(v)
