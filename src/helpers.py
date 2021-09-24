@@ -293,6 +293,24 @@ def getFileModifiedTime(filepath):
     return modification_time
 
 
+def getDataFilepaths(data_dir):
+    """
+    Get filepaths for issues, commits, and pull requests in the given data_dir.
+
+    GIVEN:
+      data_dir (str) -- absolute path to data
+
+    RETURN:
+      
+    """
+
+    issues_file = os.path.join(data_dir, "issues/issues.csv")
+    commits_file = os.path.join(data_dir, "commits/commits.csv")
+    pull_requests_file = os.path.join(data_dir, "pull_requests/pull_requests.csv")
+
+    return [issues_file, commits_file, pull_requests_file]
+
+
 #### MAIN ##########################################################################################
 if __name__ == "__main__": # pragma: no cover
     sys.exit("This file is not intended to be run independently. Please execute './main.py' to "
