@@ -333,20 +333,21 @@ def _formatCSV(data, repo_url, data_types):
             data["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name, repo_owner
         )
     elif data_types == "all": # pragma: no cover
-        issues = _formatIssues(
-            data[0]["data"]["repository"]["issues"]["edges"], repo_url, repo_name, repo_owner
-        )
+        if data[0] != []:
+            issues = _formatIssues(
+                data[0]["data"]["repository"]["issues"]["edges"], repo_url, repo_name, repo_owner
+            )
 
-        print(data)
-        print(type(data))
-        commits = _formatCommits(
-            data[1]["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"],
-            repo_url, repo_name, repo_owner
-        )
+        if data[1] != []:
+            commits = _formatCommits(
+                data[1]["data"]["repository"]["defaultBranchRef"]["target"]["history"]["edges"],
+                repo_url, repo_name, repo_owner
+            )
 
-        pull_requests = _formatPullRequests(
-            data[2]["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name, repo_owner
-        )
+        if data[2] != []:
+            pull_requests = _formatPullRequests(
+                data[2]["data"]["repository"]["pullRequests"]["edges"], repo_url, repo_name, repo_owner
+            )
 
     return issues, pull_requests, commits
 
