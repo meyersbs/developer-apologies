@@ -11,8 +11,8 @@ from pathlib import Path
 
 
 #### PACKAGE IMPORTS ###############################################################################
-from src.download import ISSUES_HEADER, COMMITS_HEADER, PULL_REQUESTS_HEADER
-from src.helpers import doesPathExist, sanitizeUnicode, fixNullBytes
+from src.helpers import doesPathExist, sanitizeUnicode, fixNullBytes, ISSUES_HEADER, \
+    COMMITS_HEADER, PULL_REQUESTS_HEADER
 
 
 #### GLOBALS #######################################################################################

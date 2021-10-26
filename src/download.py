@@ -10,20 +10,13 @@ from pathlib import Path
 
 
 #### PACKAGE IMPORTS ###############################################################################
+from src.deduplicate import deduplicate
 from src.graphql import runQuery
-from src.helpers import validateDataDir, parseRepoURL
+from src.helpers import validateDataDir, parseRepoURL, ISSUES_HEADER, COMMITS_HEADER, \
+    PULL_REQUESTS_HEADER
 
 
 #### GLOBALS #######################################################################################
-ISSUES_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_CREATION_DATE",
-    "ISSUE_AUTHOR", "ISSUE_TITLE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
-    "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
-COMMITS_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "COMMIT_OID", "COMMIT_CREATION_DATE",
-    "COMMIT_AUTHOR", "COMMIT_ADDITIONS", "COMMIT_DELETIONS", "COMMIT_HEADLINE", "COMMIT_URL",
-    "COMMIT_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
-PULL_REQUESTS_HEADER = ["REPO_URL", "REPO_NAME", "REPO_OWNER", "PULL_REQUEST_NUMBER",
-    "PULL_REQUEST_TITLE", "PULL_REQUEST_AUTHOR", "PULL_REQUEST_CREATION_DATE", "PULL_REQUEST_URL",
-    "PULL_REQUEST_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"]
 
 
 #### FUNCTIONS #####################################################################################
@@ -432,7 +425,7 @@ def _writeCSV(issues, pull_requests, commits, data_dir):
         Path(pull_requests_file).touch()
 
 
-def download(repo_file, data_dir, data_types):
+def download(repo_file, data_dir, data_types, overwrite=True):
     """
     Download data from GitHub repositories and save to disk.
 
@@ -441,6 +434,7 @@ def download(repo_file, data_dir, data_types):
       data_dir (str) -- the absolute path to a directory to store data in
       data_types (str) -- the type of data to download for each repo; one of ["issues", "commits",
                           "pull_requests", "all"]
+      overwrite (bool) -- whether or not to overwrite downloaded data with deduplicated data
 
     RETURN:
       None
@@ -464,6 +458,9 @@ def download(repo_file, data_dir, data_types):
                 issues, pull_requests, comments = _formatCSV(results, repo_url, data_types)
                 # Write data to disk
                 _writeCSV(issues, pull_requests, comments, data_dir)
+
+    # Remove duplicate header rows
+    deduplicate(data_dir, overwrite)
 
 
 #### MAIN ##########################################################################################
