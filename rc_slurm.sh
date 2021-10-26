@@ -2,15 +2,15 @@
 
 # Job Name
 # Format: -J <job_name>
-#SBATCH -J dev_apologies
+#SBATCH -J devaps1
 
 # Standard Out
 # Format: -o <file_name>
-#SBATCH -o dev_apologies.stdout
+#SBATCH -o devaps1.stdout
 
 # Standard Error
 # Format: -e <file_name>
-#SBATCH -e dev_apologies.stderr
+#SBATCH -e devaps1.stderr
 
 # Email for Notifications
 # Format: --mail-user=<email@email.com>
@@ -22,7 +22,7 @@
 
 # Job Duration
 # Format: -t DD-HH:MM:SS
-#SBATCH -t 0-0:30:0
+#SBATCH -t 1-00:00:00
 
 # Job Account, Job Tier, Number of Cores
 # Format: -A <account_name> -p <onboard, tier1, tier2, tier3> -n <num_cpus>
@@ -30,7 +30,7 @@
 
 # Job Memory
 # Format: --mem=<num><k,m,g,t> (KB, MB, GB, TB)
-#SBATCH --mem=20g
+#SBATCH --mem=50g
 
 # Environment Settings
 echo "Loading environment"
@@ -50,20 +50,37 @@ echo "Installing spacy model"
 python3 -m spacy download en_core_web_sm
 
 # Step 0: Test Environment
-echo "Testing environment"
-rm main_output.txt
-rm test_output.txt
-time ./main.py info_rate_limit >> main_output.txt
-time ./tests.py >> test_output.txt
+#echo "Testing environment"
+#rm test_output.txt
+#time python3 -u main.py info_rate_limit
+#time python3 -u tests.py >> test_output.txt
 
 # Step 1: Download data
-#./main.py download repo_lists/repos_850stars_2021_09_07_09-03-45.txt all data_850_stars/
+# echo "Downloading DM..."
+# mkdir data_850_stars/DM/
+# date
+# time python3 -u main.py download repos.txt.DM all data_850_stars/DM/
+# echo "Checking DM..."
+# time python3 -u main.py info_data data_850_stars/DM/
+# date
 
 # Step 2: Load data into HDF5
-#./main.py load 850_stars.hdf5 data_850_stars/
+# echo "Loading DM..."
+# date
+# time python3 -u main.py load experiment.hdf5 data_850_stars/DM/
+# time python3 -u main.py info_hdf5 experiment.hdf5
+# date
 
 # Step 3: Preprocess data
-#./main.py preprocess 850_stars.hdf5 0
+# echo "Preprocessing data..."
+# date
+# time python3 -u main.py preprocess experiment.hdf5 0
+# time python3 -u main.py info_hdf5 experiment.hdf5
+# date
 
 # Step 4: Classify apologies
-#./main.py classify 850_stars.hdf5 0
+# echo "Classifying apologies..."
+# date
+# time python3 -u main.py classify experiment.hdf5 0
+# time python3 -u main.py info_hdf5 experiment.hdf5
+# date
