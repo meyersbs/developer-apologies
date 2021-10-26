@@ -48,6 +48,7 @@ def _runQuery(query, fail_count=0):
 
     if req is None: # pragma: no cover
         print("Query failed: {}".format(query))
+        print("Fail count: {}".format(fail_count))
         fail_count += 1
         if fail_count < 3:
             return _runQuery(query, fail_count)
@@ -58,7 +59,7 @@ def _runQuery(query, fail_count=0):
         print("Hit secondary rate limit. Waiting 60 seconds...")
         time.sleep(60) # Wait 60 seconds
         return _runQuery(query, fail_count)
-    elif "errors" not in keys:
+    elif "errors" not in keys and keys != []:
         #if req.status_code == 200:
         return req.json()
     else: # pragma: no cover

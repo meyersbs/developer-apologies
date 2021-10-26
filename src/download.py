@@ -310,8 +310,18 @@ def _formatCSV(data, repo_url, data_types):
     repo_name = None
     repo_owner = None
     if isinstance(data, list):
-        repo_name = data[0]["data"]["repository"]["name"]
-        repo_owner = data[0]["data"]["repository"]["owner"]["login"]
+        if len(data[0]) > 0:
+            repo_name = data[0]["data"]["repository"]["name"]
+            repo_owner = data[0]["data"]["repository"]["owner"]["login"]
+        elif len(data[1]) > 0:
+            repo_name = data[1]["data"]["repository"]["name"]
+            repo_owner = data[1]["data"]["repository"]["owner"]["login"]
+        elif len(data[2]) > 0:
+            repo_name = data[2]["data"]["repository"]["name"]
+            repo_owner = data[2]["data"]["repository"]["owner"]["login"]
+        else:
+            # Getting here is highly unlikely
+            return [], [], []
     else:
         repo_name = data["data"]["repository"]["name"]
         repo_owner = data["data"]["repository"]["owner"]["login"]
