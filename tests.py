@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import csv
+import filecmp
 import h5py
 import os
 import shutil
@@ -15,11 +16,13 @@ import unittest.mock as mock
 #### PACKAGE IMPORTS ###############################################################################
 from src.apologies import classify, _countApologies
 from src.config import getAPIToken, EmptyAPITokenError
+from src.deduplicate import deduplicate
 from src.delete import delete
 from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
-    numpyByteArrayToStrList, InvalidGitHubURLError, getDataFilepaths
+    numpyByteArrayToStrList, InvalidGitHubURLError, getDataFilepaths, ISSUES_HEADER, \
+    COMMITS_HEADER, PULL_REQUESTS_HEADER
 from src.info import infoData, infoHDF5
 from src.load import load
 from src.preprocess import preprocess, _stripNonWords, _lemmatize
@@ -964,7 +967,7 @@ class TestDownload(unittest.TestCase):
             ]
         ]
         # Test
-        download(input_repo_file, input_data_dir, input_data_types)
+        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
         actual = list()
         with open(os.path.join(input_data_dir, "issues/issues.csv"), "r") as f:
             csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
@@ -1507,7 +1510,7 @@ class TestDownload(unittest.TestCase):
              "", "", "", ""]
         ]
         # Test
-        download(input_repo_file, input_data_dir, input_data_types)
+        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
         actual = list()
         with open(os.path.join(input_data_dir, "issues/issues.csv"), "r") as f:
             csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
@@ -1936,7 +1939,7 @@ class TestDownload(unittest.TestCase):
              "https://github.com/meyersbs/developer-apologies/pull/4", "", "", "", "", ""]
         ]
         # Test
-        download(input_repo_file, input_data_dir, input_data_types)
+        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
         actual = list()
         with open(os.path.join(input_data_dir, "pull_requests/pull_requests.csv"), "r") as f:
             csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
@@ -1959,7 +1962,7 @@ class TestDownload(unittest.TestCase):
             "COMMENT_URL", "COMMENT_TEXT"
         ]
         # Test
-        download(input_repo_file, input_data_dir, input_data_types)
+        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
         actual = list()
         with open(os.path.join(input_data_dir, "commits/commits.csv"), "r") as f:
             csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
@@ -1984,7 +1987,7 @@ class TestDownload(unittest.TestCase):
         actual_commits = list()
         actual_pull_requests = list()
         # Test
-        download(input_repo_file, input_data_dir, input_data_types)
+        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
         with open(os.path.join(input_data_dir, "issues/issues.csv"), "r") as f:
             csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
             for entry in csv_reader:
@@ -2016,6 +2019,106 @@ class TestDownload(unittest.TestCase):
         self.assertListEqual(expected_pull_requests_3, actual_pull_requests)
         # Cleanup
         shutil.rmtree(input_data_dir)
+
+
+class TestDeduplicate(unittest.TestCase):
+    """
+    Test cases for functions in src.deduplicate.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+
+    def test_deduplicate(self):
+        """
+        Test src.deduplicate:deduplicate().        
+        """
+        #### Case 1 -- overwrite=False
+        # Set up
+        input_data_dir = os.path.join(CWD, "test_files/test_data5/")
+        input_overwrite=False
+        old_issues, old_commits, old_pull_requests = getDataFilepaths(input_data_dir)
+        dedup_issues = old_issues.split(".csv")[0] + "_dedup.csv"
+        dedup_commits = old_commits.split(".csv")[0] + "_dedup.csv"
+        dedup_pull_requests = old_pull_requests.split(".csv")[0] + "_dedup.csv"
+        expected_issues_diff = False
+        expected_commits_diff = False
+        expected_pull_requests_diff = True
+        expected_issues_header_count = 1
+        expected_commits_header_count = 1
+        expected_pull_requests_header_count = 1
+        # Test
+        deduplicate(input_data_dir, input_overwrite)
+        # Test 1
+        actual_issues_diff = filecmp.cmp(old_issues, dedup_issues, shallow=False)
+        actual_commits_diff = filecmp.cmp(old_commits, dedup_commits, shallow=False)
+        actual_pull_requests_diff = filecmp.cmp(old_pull_requests, dedup_pull_requests, shallow=False)
+        self.assertEqual(expected_issues_diff, actual_issues_diff)
+        self.assertEqual(expected_commits_diff, actual_commits_diff)
+        self.assertEqual(expected_pull_requests_diff, actual_pull_requests_diff)
+        # Test 2
+        actual_issues_header_count = 0
+        with open(dedup_issues, "r") as f:
+            csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+            for row in csv_reader:
+                if row == ISSUES_HEADER:
+                    actual_issues_header_count += 1
+        self.assertEqual(expected_issues_header_count, actual_issues_header_count)
+        actual_commits_header_count = 0
+        with open(dedup_commits, "r") as f:
+            csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+            for row in csv_reader:
+                if row == COMMITS_HEADER:
+                    actual_commits_header_count += 1
+        self.assertEqual(expected_commits_header_count, actual_commits_header_count)
+        actual_pull_requests_header_count = 0
+        with open(dedup_pull_requests, "r") as f:
+            csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+            for row in csv_reader:
+                if row == PULL_REQUESTS_HEADER:
+                    actual_pull_requests_header_count += 1
+        self.assertEqual(expected_pull_requests_header_count, actual_pull_requests_header_count)
+        # Cleanup
+        os.remove(dedup_issues)
+        os.remove(dedup_commits)
+        os.remove(dedup_pull_requests)
+
+        #### Case 2 -- overwrite=True
+        # Setup
+        input_data_dir = os.path.join(CWD, "test_files/test_data5/")
+        input_overwrite=True
+        old_issues, old_commits, old_pull_requests = getDataFilepaths(input_data_dir)
+        backup_issues = old_issues.split(".csv")[0] + "_backup.csv"
+        backup_commits = old_commits.split(".csv")[0] + "_backup.csv"
+        backup_pull_requests = old_pull_requests.split(".csv")[0] + "_backup.csv"
+        shutil.copyfile(old_issues, backup_issues)
+        shutil.copyfile(old_commits, backup_commits)
+        shutil.copyfile(old_pull_requests, backup_pull_requests)
+        dedup_issues = old_issues.split(".csv")[0] + "_dedup.csv"
+        dedup_commits = old_commits.split(".csv")[0] + "_dedup.csv"
+        dedup_pull_requests = old_pull_requests.split(".csv")[0] + "_dedup.csv"
+        expected_issues_dedup_exists = False
+        expected_commits_dedup_exists = False
+        expected_pull_requests_dedup_exists = False
+        # Test
+        deduplicate(input_data_dir, input_overwrite)
+        actual_issues_dedup_exists = doesPathExist(dedup_issues)
+        actual_commits_dedup_exists = doesPathExist(dedup_commits)
+        actual_pull_requests_dedup_exists = doesPathExist(dedup_pull_requests)
+        self.assertEqual(expected_issues_dedup_exists, actual_issues_dedup_exists)
+        self.assertEqual(expected_commits_dedup_exists, actual_commits_dedup_exists)
+        self.assertEqual(expected_pull_requests_dedup_exists, actual_pull_requests_dedup_exists)
+        # Cleanup
+        os.remove(old_issues)
+        os.remove(old_commits)
+        os.remove(old_pull_requests)
+        os.rename(backup_issues, old_issues)
+        os.rename(backup_commits, old_commits)
+        os.rename(backup_pull_requests, old_pull_requests)
+
 
 
 class TestLoad(unittest.TestCase):
@@ -2184,7 +2287,7 @@ class TestLoad(unittest.TestCase):
                            "_REQUEST_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHOR, COMMENT_URL, COMM"
                            "ENT_TEXT]."
         }
-        download(input_repo_file, input_data_dir, input_data_types)
+        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
         input_append = False
         # Test
         load(input_hdf5_file, input_data_dir, input_append)
@@ -2215,7 +2318,7 @@ class TestLoad(unittest.TestCase):
         input_data_types = "all"
         os.mkdir(input_data_dir)
         validateDataDir(input_data_dir)
-        download(input_repo_file, input_data_dir, input_data_types)
+        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
         input_append = True
         expected_issues = [
             [

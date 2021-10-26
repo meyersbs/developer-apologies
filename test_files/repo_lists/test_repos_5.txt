@@ -1,0 +1,2 @@
+https://github.com/meyersbs/gedit-text-stats
+https://github.com/meyersbs/tvdb-dl-nfo

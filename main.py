@@ -51,7 +51,7 @@ def dedupCommand(args):
     assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
 
     # Pass arguments to src.deduplicate:deduplicate()
-    deduplicate(args.data_dir)
+    deduplicate(args.data_dir, args.overwrite)
 
 
 def loadCommand(args):
@@ -245,7 +245,12 @@ if __name__ == "__main__":
         "data_dir", type=str, help="The path to a directory where data is downloaded and ready to "
         "be deduplicated. Relative paths will be canonicalized."
     )
-    dedup_parser.setDefaults(func=dedupCommand)
+    dedup_parser.add_argument(
+        "--overwrite", default=False, action="store_true", help="If included, the deduplicated "
+        "CSV file will overwrite the old CSV file. Using this flag is not recommended unless you "
+        "have backups of your data."
+    )
+    dedup_parser.set_defaults(func=dedupCommand)
 
     #### LOAD COMMAND
     load_parser = command_parsers.add_parser(
