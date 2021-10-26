@@ -699,7 +699,7 @@ class TestGraphQL(unittest.TestCase):
                                                         	"author": {"login": "meyersbs"},
                                                         	"bodyText": "Dummy comment.",
                                                         	"createdAt": "2021-08-24T12:52:30Z",
-                                                        	"url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#commitcomment-55353873"
+                                                        	"url": "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#r55353873"
                                                         }
                                                     }
                                                 ],
@@ -2165,7 +2165,7 @@ class TestLoad(unittest.TestCase):
                 "1", "Update README.md",
                 "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08",
                 "", "2021-08-24T12:52:30Z", "meyersbs",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#commitcomment-55353873",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#r55353873",
                 "Dummy comment."
             ]
         ]
@@ -2364,7 +2364,7 @@ class TestLoad(unittest.TestCase):
                 "1", "Update README.md",
                 "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08",
                 "", "2021-08-24T12:52:30Z", "meyersbs",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#commitcomment-55353873",
+                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#r55353873",
                 "Dummy comment."
             ],
             [
@@ -2672,9 +2672,11 @@ class TestSearch(unittest.TestCase):
             "https://github.com/styled-components/styled-components", "https://github.com/pixijs/pixijs",
             "https://github.com/vuetifyjs/vuetify", "https://github.com/immutable-js/immutable-js",
             "https://github.com/vitejs/vite", "https://github.com/ant-design/ant-design-pro",
-            "https://github.com/anuraghazra/github-readme-stats", 'https://github.com/open-guides/og-aws',
-            'https://github.com/CorentinJ/Real-Time-Voice-Cloning',
-            'https://github.com/swisskyrepo/PayloadsAllTheThings'
+            "https://github.com/anuraghazra/github-readme-stats", "https://github.com/open-guides/og-aws",
+            "https://github.com/CorentinJ/Real-Time-Voice-Cloning",
+            "https://github.com/swisskyrepo/PayloadsAllTheThings", "https://github.com/lerna/lerna",
+            "https://github.com/willmcgugan/rich", "https://github.com/commaai/openpilot",
+            "https://github.com/preactjs/preact", "https://github.com/PowerShell/PowerShell"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
@@ -2790,7 +2792,7 @@ class TestPreprocess(unittest.TestCase):
         ]
         load(input_hdf5_file, data_dir, append)
         # Test data before write
-        actual = preprocess(input_hdf5_file, input_num_procs)
+        actual = preprocess(input_hdf5_file, input_num_procs, test=True)
         actual_issue_lemmas = list(actual[0])
         actual_commit_lemmas = list(actual[1])
         actual_pull_request_lemmas = list(actual[2])

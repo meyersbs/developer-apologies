@@ -60,7 +60,7 @@ def _lemmatize(comment):
     return lemmatized_comment
 
 
-def preprocess(hdf5_file, num_procs):
+def preprocess(hdf5_file, num_procs, test=False):
     """
     Clean up comments by lowercasing, removing punctuation and non-space whitespace, and
     lemmatizing.
@@ -68,16 +68,22 @@ def preprocess(hdf5_file, num_procs):
     GIVEN:
       hdf5_file (str) -- path to a populated HDF5 file
       num_procs (int) -- number of processes (CPUs) to use for multiprocessing
+      test (bool) -- flag for unit tests
 
     RETURN:
       issue_lemmas (np.array) -- lemmatized issue comments
       commit_lemmas (np.array) -- lemmatized commit comments
       pull_request_lemmas (np.array) -- lemmatized pull request comments
     """
-    # Return variables
+    # Instantiate variables
     issue_lemmas = None
     commit_lemmas = None
     pull_request_lemmas = None
+
+    # Return variables
+    i_lemmas = None
+    c_lemmas = None
+    p_lemmas = None
 
     # Grab the data
     f = h5py.File(hdf5_file, "r+") # read/write mode
@@ -124,6 +130,8 @@ def preprocess(hdf5_file, num_procs):
         # Lemmatize comments
         issue_lemmas = np.array(pool.map(_lemmatize, issue_comments), dtype=str)
         del issue_comments
+        if test:
+            i_lemmas = np.copy(issue_lemmas)
         print("Hi 5")
         # Add header
         issue_lemmas = np.insert(issue_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
@@ -156,6 +164,8 @@ def preprocess(hdf5_file, num_procs):
         # Lemmatize comments
         commit_lemmas = np.array(pool.map(_lemmatize, commit_comments), dtype=str)
         del commit_comments
+        if test:
+            c_lemmas = np.copy(commit_lemmas)
         # Add header
         commit_lemmas = np.insert(commit_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
         # Reshape the lemmas array
@@ -183,6 +193,8 @@ def preprocess(hdf5_file, num_procs):
         # Lemmatize comments
         pull_request_lemmas = np.array(pool.map(_lemmatize, pull_request_comments), dtype=str)
         del pull_request_comments
+        if test:
+            p_lemmas = np.copy(pull_request_lemmas)
         # Add header
         pull_request_lemmas = np.insert(pull_request_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
         # Reshape the lemmas array
@@ -200,7 +212,7 @@ def preprocess(hdf5_file, num_procs):
     print("Lemmatized comments saved to: {}".format(hdf5_file))
 
     # Return lemmatized comments (this is used for unit tests)
-    return [issue_lemmas, commit_lemmas, pull_request_lemmas]
+    return [i_lemmas, c_lemmas, p_lemmas]
 
 
 #### MAIN ##########################################################################################

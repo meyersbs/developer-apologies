@@ -331,13 +331,13 @@ def _formatCSV(data, repo_url, data_types):
         if len(data[0]) > 0:
             repo_name = data[0]["data"]["repository"]["name"]
             repo_owner = data[0]["data"]["repository"]["owner"]["login"]
-        elif len(data[1]) > 0:
+        elif len(data[1]) > 0: # pragma: no cover
             repo_name = data[1]["data"]["repository"]["name"]
             repo_owner = data[1]["data"]["repository"]["owner"]["login"]
-        elif len(data[2]) > 0:
+        elif len(data[2]) > 0: # pragma: no cover
             repo_name = data[2]["data"]["repository"]["name"]
             repo_owner = data[2]["data"]["repository"]["owner"]["login"]
-        else:
+        else: # pragma: no cover
             # Getting here is highly unlikely
             return [], [], []
     else:
