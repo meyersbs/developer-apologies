@@ -468,7 +468,7 @@ def runQuery(repo_owner, repo_name, data_types):
         results =_getAllCommits(repo_owner, repo_name)
     elif data_types == "all":
         results = _getAllData(repo_owner, repo_name)
-    else:
+    else: # pragma: no cover
         # Something is very wrong if we end up here
         return None
 
