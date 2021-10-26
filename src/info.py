@@ -13,25 +13,13 @@ from pprint import PrettyPrinter
 
 #### PACKAGE IMPORTS ###############################################################################
 from src.helpers import doesPathExist, getDataFilepaths, getFileSizeMB, getFileCreationTime, \
-    getFileModifiedTime
+    getFileModifiedTime, fixNullBytes
 
 
 #### GLOBALS #######################################################################################
 PP = PrettyPrinter(width=120)
 
 #### FUNCTIONS #####################################################################################
-def _fixNullBytes(file_pointer):
-    """
-    Helper function for _getStats(). Replaces null bytes with "<NULL>" so csv.reader() doesn't
-    produce an error.
-
-    GIVEN:
-      file_pointer (...) -- pointer to an open file
-    """
-    for line in file_pointer:
-        yield line.replace("\0", "<NULL>")
-
-
 def _getStats(filepath):
     """
     Helper function for infoData(). Count the number of repos, (issues or commits or pull requests),
@@ -52,7 +40,7 @@ def _getStats(filepath):
     num_comments = 0
 
     with open(filepath, "r") as f:
-        csv_reader = csv.reader(_fixNullBytes(f), delimiter=",", quotechar="\"")
+        csv_reader = csv.reader(fixNullBytes(f), delimiter=",", quotechar="\"")
 
         next(csv_reader) # Skip header row
         # For each entry
@@ -120,6 +108,7 @@ def infoData(data_dir, verbose=True):
         repos_list.extend(repos)
 
     num_repos = len(list(set(repos_list)))
+    #print(sorted(repos_list))
 
     if verbose: # pragma: no cover
         print("Data Directory: {}".format(data_dir))

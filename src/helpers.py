@@ -130,6 +130,17 @@ class InvalidGitHubURLError(Exception):
 
 
 #### FUNCTIONS #####################################################################################
+def fixNullBytes(file_pointer):
+    """
+    Replaces null bytes with "<NULL>" so csv.reader() doesn't produce an error.
+
+    GIVEN:
+      file_pointer (...) -- pointer to an open file
+    """
+    for line in file_pointer:
+        yield line.replace("\0", "<NULL>")
+
+
 def canonicalize(path):
     """
     Helper function to canonicalize filepaths.
@@ -222,7 +233,16 @@ def numpyByteArrayToStrList(numpy_byte_array):
     RETURN:
       string_list (list) -- list containing regular strings
     """
-    string_list = numpy_byte_array.astype(str).tolist()
+    string_list = np.char.decode(numpy_byte_array.astype(np.bytes_), "UTF-8")
+    #print(type(string_list))
+    #print("Hello 1")
+    #string_list = string_list.astype(str)
+    #print(type(string_list))
+    #print("Hello 2")
+    string_list = string_list.tolist()
+    #print(type(string_list))
+    #print("Hello 3")
+    #string_list = numpy_byte_array.astype(str).tolist()
     return string_list
 
 
@@ -241,6 +261,7 @@ def sanitizeUnicode(str_list):
         element_copy = element
         for bad_char in BAD_CHARS:
             element_copy = element_copy.replace(bad_char, "BAD_CHAR")
+        element_copy = element_copy.encode("utf-8", "ignore").decode("utf-8", "ignore")
         new_str_list.append(element_copy)
 
     return new_str_list

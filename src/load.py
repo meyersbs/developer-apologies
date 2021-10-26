@@ -12,7 +12,7 @@ from pathlib import Path
 
 #### PACKAGE IMPORTS ###############################################################################
 from src.download import ISSUES_HEADER, COMMITS_HEADER, PULL_REQUESTS_HEADER
-from src.helpers import doesPathExist, sanitizeUnicode
+from src.helpers import doesPathExist, sanitizeUnicode, fixNullBytes
 
 
 #### GLOBALS #######################################################################################
@@ -33,7 +33,7 @@ def _load(filepath):
     # Read data from disk
     data = list()
     with open(filepath, "r", encoding="utf-8") as f:
-        csv_reader = csv.reader(f, delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
+        csv_reader = csv.reader(fixNullBytes(f), delimiter=",", quoting=csv.QUOTE_MINIMAL, quotechar="\"")
         for entry in csv_reader:
             data.append(entry)
 
