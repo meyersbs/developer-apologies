@@ -8,6 +8,7 @@ import sys
 
 
 #### PROJECT IMPORTS ###############################################################################
+from src.deduplicate import deduplicate
 from src.delete import delete
 from src.download import download
 from src.graphql import getRateLimitInfo
@@ -37,6 +38,20 @@ def downloadCommand(args):
 
     # Pass arguments to src.download:download()
     download(args.repo_file, args.data_dir, args.data_types)
+
+
+def dedupCommand(args):
+    """
+    Parse arguments for `dedup` command and pass them to src.deduplicate:deduplicate().
+    """
+    # Canonicalize filepaths
+    args.data_dir = canonicalize(args.data_dir)
+
+    # Check assertions
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
+
+    # Pass arguments to src.deduplicate:deduplicate()
+    deduplicate(args.data_dir)
 
 
 def loadCommand(args):
@@ -220,6 +235,17 @@ if __name__ == "__main__":
         "and placed in a subdirectory, e.g. data_dir/issues/."
     )
     download_parser.set_defaults(func=downloadCommand)
+
+    #### DEDUPLICATE COMMAND
+    dedup_parser = command_parsers.add_parser(
+        "dedup", help="Remove duplicate header rows from downloaded data."
+    )
+
+    dedup_parser.add_argument(
+        "data_dir", type=str, help="The path to a directory where data is downloaded and ready to "
+        "be deduplicated. Relative paths will be canonicalized."
+    )
+    dedup_parser.setDefaults(func=dedupCommand)
 
     #### LOAD COMMAND
     load_parser = command_parsers.add_parser(
