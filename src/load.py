@@ -54,6 +54,9 @@ def load(hdf5_file, data_dir, append):
       hdf5_file (str) -- the absolute path to a file to format and load data into
       data_dir (str) -- the absolute path to a directory where data should be loaded from
       append (bool) -- whether to append to an existing file or create a new one
+
+    RETURN:
+      None
     """
     # Filepaths
     issues_file = os.path.join(data_dir, "issues/issues.csv")

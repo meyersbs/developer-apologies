@@ -322,7 +322,9 @@ def getDataFilepaths(data_dir):
       data_dir (str) -- absolute path to data
 
     RETURN:
-      
+      issues_file (str) -- absolute path to issues CSV
+      commits_file (str) -- absolute path to commits CSV
+      pull_requests_file (str) -- absolute path to pull requests CSV
     """
 
     issues_file = os.path.join(data_dir, "issues/issues.csv")

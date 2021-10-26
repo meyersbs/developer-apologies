@@ -556,7 +556,7 @@ class TestGraphQL(unittest.TestCase):
         input_repo_name = "developer-apologies" # Yes, that's this repo!
         input_data_types = "issues"
         actual = runQuery(input_repo_owner, input_repo_name, input_data_types)
-        self.assertEqual(2, actual["data"]["repository"]["issues"]["totalCount"])
+        self.assertEqual(3, actual["data"]["repository"]["issues"]["totalCount"])
         issues = actual["data"]["repository"]["issues"]["edges"]
         for issue in issues:
             if issue["node"]["number"] == 1:
@@ -1498,7 +1498,13 @@ class TestDownload(unittest.TestCase):
              "2021-08-19T21:46:16Z", "meyersbs", "Test Issue",
              "https://github.com/meyersbs/developer-apologies/issues/2", "Test Issue", "2021-08-20T13:23:06Z",
              "andymeneely", "https://github.com/meyersbs/developer-apologies/issues/2#issuecomment-902690150",
-             "Sorry, but I figured I'd add a data point. Sorrynotsorry."]
+             "Sorry, but I figured I'd add a data point. Sorrynotsorry."],
+            ["https://github.com/meyersbs/developer-apologies/", "developer-apologies", "meyersbs", "5",
+             "2021-09-23T16:13:11Z", "meyersbs", "Bug in src/download:_writeCSV()",
+             "https://github.com/meyersbs/developer-apologies/issues/5",
+             "When downloading data from multiple repositories, the function src/download:_writeCSV()"
+             " writes the columns headers once for every repo instead of just once for the entire CSV file.",
+             "", "", "", ""]
         ]
         # Test
         download(input_repo_file, input_data_dir, input_data_types)
