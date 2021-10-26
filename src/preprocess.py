@@ -5,6 +5,8 @@
 import h5py
 import multiprocessing as mproc
 import numpy as np
+#import os
+#import psutil
 import re
 import spacy
 import sys
@@ -94,33 +96,55 @@ def preprocess(hdf5_file, num_procs):
     if pull_requests.shape[0] > 0: # pragma: no cover
         do_pull_requests = True
 
+    del issues
+    del commits
+    del pull_requests
+
     # Create the process pool
     pool = mproc.Pool(num_procs)
 
     # There are pragmas here because coverage is confused.
     if do_issues: # pragma: no cover
+        print("\tPreprocessing issues...")
+        # Get issues
+        issues = f["issues"][...]
         # Get just the comments
         issue_comments = issues[:, 12]
+        print("Hi 1")
+        #print("{} MB".format(psutil.Process(os.getpid()).memory_info().rss / 2014 ** 2))
         # Remove header row
         issue_comments = np.delete(issue_comments, (0), axis=0)
+        print("Hi 2")
         # Convert bytestrings to strings
         issue_comments = numpyByteArrayToStrList(issue_comments)
+        print("Hi 3")
         # Remove punctuation and non-space whitespace
         issue_comments = np.array(pool.map(_stripNonWords, issue_comments), dtype=str)
+        print("Hi 4")
         # Lemmatize comments
         issue_lemmas = np.array(pool.map(_lemmatize, issue_comments), dtype=str)
+        del issue_comments
+        print("Hi 5")
         # Add header
-        lemmas = np.insert(issue_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
+        issue_lemmas = np.insert(issue_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
+        print("Hi 6")
         # Reshape the lemmas array
-        lemmas = np.array(lemmas, dtype=str).reshape((len(lemmas), 1))
+        issue_lemmas = np.array(issue_lemmas, dtype=str).reshape((len(issue_lemmas), 1))
+        print("Hi 7")
         # Resize dataset
         f["issues"].resize((issues.shape[0], issues.shape[1] + 1))
+        print("Hi 8")
         # Add lemmas to HDF5 file
-        f["issues"][...] = np.hstack((issues, lemmas))
+        f["issues"][...] = np.hstack((issues, issue_lemmas))
+        print("Hi 9")
+        del issues
     else: # pragma: no cover
         pass
 
     if do_commits: # pragma: no cover
+        print("\tPreprocessing commits...")
+        # Get commits
+        commits = f["commits"][...]
         # Get just the comments
         commit_comments = commits[:, 14]
         # Remove header row
@@ -131,18 +155,23 @@ def preprocess(hdf5_file, num_procs):
         commit_comments = np.array(pool.map(_stripNonWords, commit_comments), dtype=str)
         # Lemmatize comments
         commit_lemmas = np.array(pool.map(_lemmatize, commit_comments), dtype=str)
+        del commit_comments
         # Add header
-        lemmas = np.insert(commit_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
+        commit_lemmas = np.insert(commit_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
         # Reshape the lemmas array
-        lemmas = np.array(lemmas, dtype=str).reshape((len(lemmas), 1))
+        commit_lemmas = np.array(commit_lemmas, dtype=str).reshape((len(commit_lemmas), 1))
         # Resize dataset
         f["commits"].resize((commits.shape[0], commits.shape[1] + 1))
         # Add lemmas to HDF5 file
-        f["commits"][...] = np.hstack((commits, lemmas))
+        f["commits"][...] = np.hstack((commits, commit_lemmas))
+        del commits
     else: # pragma: no cover
         pass
 
     if do_pull_requests: # pragma: no cover
+        print("\tPreprocessing pull requests...")
+        # Get pull requests
+        pull_requests = f["pull_requests"][...]
         # Get just the comments
         pull_request_comments = pull_requests[:, 12]
         # Remove header row
@@ -153,14 +182,16 @@ def preprocess(hdf5_file, num_procs):
         pull_request_comments = np.array(pool.map(_stripNonWords, pull_request_comments), dtype=str)
         # Lemmatize comments
         pull_request_lemmas = np.array(pool.map(_lemmatize, pull_request_comments), dtype=str)
+        del pull_request_comments
         # Add header
-        lemmas = np.insert(pull_request_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
+        pull_request_lemmas = np.insert(pull_request_lemmas, 0, "COMMENT_TEXT_LEMMATIZED", axis=0)
         # Reshape the lemmas array
-        lemmas = np.array(lemmas, dtype=str).reshape((len(lemmas), 1))
+        pull_request_lemmas = np.array(pull_request_lemmas, dtype=str).reshape((len(pull_request_lemmas), 1))
         # Resize dataset
         f["pull_requests"].resize((pull_requests.shape[0], pull_requests.shape[1] + 1))
         # Add lemmas to HDF5 file
-        f["pull_requests"][...] = np.hstack((pull_requests, lemmas))
+        f["pull_requests"][...] = np.hstack((pull_requests, pull_request_lemmas))
+        del pull_requests
     else: # pragma: no cover
         pass
 
