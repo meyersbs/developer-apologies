@@ -97,3 +97,6 @@ time python3 main.py deduplicate zenodo/ --overwrite
 date
 time python3 scripts/prepare_data_zenodo.py zenodo/
 date
+mv zenodo/ 88_million_developer_comments/
+time zip -9 -r 88_million_developer_comments.zip 88_million_developer_comments/
+date
