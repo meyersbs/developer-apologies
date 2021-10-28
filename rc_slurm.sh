@@ -86,17 +86,16 @@ python3 -m spacy download en_core_web_sm
 # date
 
 # Step X: Prepare data for release
-echo "Preparing data for release..."
-date
-cp -r data_850_stars/ zenodo/
-date
-mv zenodo/C++/ zenodo/C-PlusPlus/
-mv zenodo/C#/ zenodo/C-Sharp/
-mv zenodo/F#/ zenodo/F-Sharp/
-time python3 main.py deduplicate zenodo/ --overwrite
-date
-time python3 scripts/prepare_data_zenodo.py zenodo/
-date
-mv zenodo/ 88_million_developer_comments/
-time zip -9 -r 88_million_developer_comments.zip 88_million_developer_comments/
-date
+# echo "Preparing data for release..."
+# date
+# cp -r -v data_850_stars/ zenodo/
+# date
+# mv zenodo/C++/ zenodo/C-PlusPlus/
+# mv zenodo/C#/ zenodo/C-Sharp/
+# mv zenodo/F#/ zenodo/F-Sharp/
+# date
+# time python3 -u scripts/prepare_data_for_zenodo.py zenodo/
+# date
+# mv zenodo/ 88_million_developer_comments/
+# time zip -9 -r 88_million_developer_comments.zip 88_million_developer_comments/
+# date
