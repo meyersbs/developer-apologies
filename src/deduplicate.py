@@ -37,7 +37,8 @@ def _overwrite(old_file, new_file): # pragma: no cover
         os.remove(old_file)
 
     # Rename new_file to old_file
-    os.rename(new_file, old_file)
+    if doesPathExist(new_file):
+        os.rename(new_file, old_file)
 
 
 def _deduplicate(old_file, new_file, header):
@@ -52,9 +53,9 @@ def _deduplicate(old_file, new_file, header):
     RETURN:
       None
     """
-    Path(new_file).touch()
     if doesPathExist(old_file):
         # Set up dedup file access
+        Path(new_file).touch()
         f_dedup = open(new_file, "a")
         dedup_writer = csv.writer(f_dedup, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
         # Keep track of whether we've seen the header row before
@@ -78,8 +79,7 @@ def _deduplicate(old_file, new_file, header):
                     dedup_writer.writerow(entry)
         f_dedup.close()
     else: # pragma: no cover
-        # Copy of the old_file to the new_file
-        copyfile(old_file, new_file)
+        pass
 
 
 def deduplicate(data_dir, overwrite=False):
