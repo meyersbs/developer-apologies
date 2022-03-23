@@ -111,10 +111,10 @@ def preprocessCommand(args):
     Parse arguments for 'preprocess' command and pass them to src.preprocess:preprocess().
     """
     # Canonicalize filepaths
-    args.hdf5_file = canonicalize(args.hdf5_file)
+    args.data_dir = canonicalize(args.data_dir)
 
     # Check assertions
-    assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
     assert args.num_procs <= mproc.cpu_count(), \
         "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
 
@@ -122,7 +122,7 @@ def preprocessCommand(args):
         args.num_procs = mproc.cpu_count()
 
     # Pass arguments to src.preprocess:preprocess().
-    preprocess(args.hdf5_file, args.num_procs)
+    preprocess(args.data_dir, args.num_procs, args.overwrite)
 
 
 def classifyCommand(args):
@@ -281,18 +281,23 @@ if __name__ == "__main__":
 
     #### PREPROCESS COMMAND
     preprocess_parser = command_parsers.add_parser(
-        "preprocess", help="For each dataset in the given HDF5 file, append a "
-        "'COMMENT_TEXT_LEMMATIZED' column that contains the comment text that (1) is lowercased, "
-        "(2) has punctuation removed, (3) has non-space whitespace removed, and (4) is lemmatized."
+        "preprocess", help="For each downloaded CSV file, append a 'COMMENT_TEXT_LEMMATIZED' column"
+        " that contains text that (1) is lowercased, (2) has punctuation removed, (3) has non-space"
+        " whitespace removed, and (4) is lemmatized."
     )
 
     preprocess_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of an HDF5 file that has already been populated "
-        "using the 'load' command. Relative paths will be canonicalized."
+        "data_dir", type=str, help="The path to a directory where data is downloaded and ready to "
+        "be preprocessed. Relative paths will be canonicalized."
     )
     preprocess_parser.add_argument(
         "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing. Enter "
         "'0' to use all available CPUs."
+    )
+    preprocess_parser.add_argument(
+        "--overwrite", default=False, action="store_true", help="If included, the lemmatized "
+        "CSV file will overwrite the old CSV file. Using this flag is not recommended unless you "
+        "have backups of your data."
     )
     preprocess_parser.set_defaults(func=preprocessCommand)
 

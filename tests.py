@@ -2368,12 +2368,15 @@ class TestPreprocess(unittest.TestCase):
         """
         Test src.preprocess:preprocess().
         """
-        #### Case 1 -- num_procs=1
+        #### Case 1 -- num_procs=1, overwrite=False
         # Setup
-        input_hdf5_file = os.path.join(CWD, "test_files/test2.hdf5")
+        input_data_dir = os.path.join(CWD, "test_files/test_data2/")
         input_num_procs = 1
-        data_dir = os.path.join(CWD, "test_files/test_data2/")
-        append = False
+        input_overwrite = False
+        old_issues, old_commits, old_pull_requests = getDataFilepaths(input_data_dir)
+        pre_issues = old_issues.split(".csv")[0] + "_preprocessed.csv"
+        pre_commits = old_commits.split(".csv")[0] + "_preprocessed.csv"
+        pre_pull_requests = old_pull_requests.split(".csv")[0] + "_preprocessed.csv"
         expected_issue_lemmas = [
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
             "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
@@ -2394,7 +2397,7 @@ class TestPreprocess(unittest.TestCase):
             "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89",
             "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100", "101", "", "", "",
             "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" 
         ]
         expected_pull_request_lemmas = [
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
@@ -2406,26 +2409,16 @@ class TestPreprocess(unittest.TestCase):
             "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100",
             "101", ""
         ]
-        load(input_hdf5_file, data_dir, append)
-        # Test data before write
-        actual = preprocess(input_hdf5_file, input_num_procs, test=True)
-        actual_issue_lemmas = list(actual[0])
-        actual_commit_lemmas = list(actual[1])
-        actual_pull_request_lemmas = list(actual[2])
+        # Test
+        actual_issue_lemmas, actual_commit_lemmas, actual_pull_request_lemmas = \
+            preprocess(input_data_dir, input_num_procs, input_overwrite)
         self.assertListEqual(expected_issue_lemmas, actual_issue_lemmas)
         self.assertListEqual(expected_commit_lemmas, actual_commit_lemmas)
-        self.assertListEqual(expected_pull_request_lemmas, actual_pull_request_lemmas)
-        # Test data after write
-        f = h5py.File(input_hdf5_file)
-        actual_issue_lemmas = numpyByteArrayToStrList(f["issues"][...][:, -1])[1:]
-        self.assertListEqual(expected_issue_lemmas, actual_issue_lemmas)
-        actual_commit_lemmas = numpyByteArrayToStrList(f["commits"][...][:, -1])[1:]
-        self.assertListEqual(expected_commit_lemmas, actual_commit_lemmas)
-        actual_pull_request_lemmas = numpyByteArrayToStrList(f["pull_requests"][...][:, -1])[1:]
         self.assertListEqual(expected_pull_request_lemmas, actual_pull_request_lemmas)
         # Cleanup
-        h5py.File.close(f)
-        os.remove(input_hdf5_file)
+        os.remove(pre_issues)
+        os.remove(pre_commits)
+        os.remove(pre_pull_requests)
 
 
 class TestApologies(unittest.TestCase):
