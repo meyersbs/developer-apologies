@@ -13,7 +13,7 @@ from src.delete import delete
 from src.download import download
 from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
-from src.info import infoHDF5, infoData
+from src.info import infoData
 from src.preprocess import preprocess
 from src.search import search, topRepos
 
@@ -156,20 +156,6 @@ def infoDataCommand(args):
     
     # Pass arguments to src.info:infoData()
     infoData(args.data_dir)
-
-
-def infoHDF5Command(args):
-    """
-    Display useful information about an HDF5 file and its contents.
-    """
-    # Canonicalize filepaths
-    args.hdf5_file = canonicalize(args.hdf5_file)
-
-    # Check assertions
-    assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
-
-    # Pass arguments to src.info:infoHDF5()
-    infoHDF5(args.hdf5_file)
 
 
 def infoRateLimitCommand(args):
