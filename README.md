@@ -10,24 +10,6 @@ To better understand the lead-up to a vulnerability, we are exploring the concep
 
 ## Background
 
-### HDF5
-
-From the [official documentation](https://portal.hdfgroup.org/display/HDF5/HDF5): *"HDF5 is a data model, library, and file format for storing and managing data. It supports an unlimited variety of datatypes, and is designed for flexible and efficient I/O and for high volume and complex data. HDF5 is portable and is extensible, allowing applications to evolve in their use of HDF5. The HDF5 Technology suite includes tools and applications for managing, manipulating, viewing, and analyzing data in the HDF5 format."*
-
-There are seven main concepts in HDF5 that you need to understand:
-
-- **File:** The actual HDF5 file containing any data and metadata you want. HDF5 files store datasets like a nested directory structure (see Groups).
-- **Dataset:** Datasets contain data in the form of n-dimensional arrays with elements of the same type.
-- **Datatype:** The type of data stored in a dataset, *e.g.* 32-bit integers, structs, strings, serialized objects. Note that HDF5 works best with numerical datasets.
-- **Dataspace:** Metadata describing the layout of a dataset, *e.g.* 2D array, 3D array.
-- **Attribute:** Simple metadata (in the form of a dictionary) describing whatever you want about a dataset.
-- **Groups:** A group is a collection of related datasets, *e.g.* starting from the root group (`/`), you could have a groups for training data (`/training_data/`) and another for testing data (`/testing_data/`).
-- **Links:** Links between related objects (datasets and groups). These are typically links between objects within an HDF5 file, but can be used to link multiple HDF5 files together.
-
-There are two main libraries for interfacing with HDF5 files and functions: [H5py](https://docs.h5py.org/en/stable/index.html) and [PyTables](https://www.pytables.org/). This project uses H5py.
-
-**NOTE:** HDF5 has been completely revamped since HDF4; they are not interchangeable.
-
 ### NLP Concepts
 
 - **Lemmatization:** Lemmatization uses the context that a word appears in (the words on either side of it) to convert words into meaningful base forms (called **lemmas**). For example, the words *apology*, *apologies*, *apologize*, and *apologized* may all be converted to the same lemma (*apology*) depending on their context in a sentence.
