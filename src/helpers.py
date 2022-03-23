@@ -343,6 +343,25 @@ def getDataFilepaths(data_dir):
     return [issues_file, commits_file, pull_requests_file]
 
 
+def overwriteFile(old_file, new_file): # pragma: no cover
+    """
+    Overwrite old_file with new_file.
+
+    GIVEN:
+      old_file (str) -- path to file to overwrite
+      new_file (str) -- path to file to overwrite old_file with
+
+    RETURN:
+      None
+    """
+    # Delete old_file
+    if doesPathExist(old_file):
+        os.remove(old_file)
+
+    # Rename new_file to old_file
+    os.rename(new_file, old_file)
+
+
 #### MAIN ##########################################################################################
 if __name__ == "__main__": # pragma: no cover
     sys.exit("This file is not intended to be run independently. Please execute './main.py' to "
