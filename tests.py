@@ -14,15 +14,14 @@ import unittest.mock as mock
 
 
 #### PACKAGE IMPORTS ###############################################################################
-from src.apologies import classify, _countApologies
+from src.apologies import classify, _countApologies, _labelApologies
 from src.config import getAPIToken, EmptyAPITokenError
 from src.deduplicate import deduplicate
 from src.delete import delete
 from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
-    numpyByteArrayToStrList, InvalidGitHubURLError, getDataFilepaths, ISSUES_HEADER, \
-    COMMITS_HEADER, PULL_REQUESTS_HEADER
+    InvalidGitHubURLError, getDataFilepaths, ISSUES_HEADER, COMMITS_HEADER, PULL_REQUESTS_HEADER
 from src.info import infoData
 from src.preprocess import preprocess, _stripNonWords, _lemmatize
 from src.search import search, topRepos
@@ -2118,6 +2117,7 @@ class TestSearch(unittest.TestCase):
         expected = [
             ["https://github.com/cherrypie623/CherryPie-Addon-Repository", 2, "Python"],
             ["https://github.com/zhengjiwen/cherrypie", 1, "Python"],
+            ["https://github.com/NotReeceHarris/CherryPie", 0, "Python"],
             ["https://github.com/further-i-go-less-i-know/cherrypie-ssl-errors", 0, "Python"]
         ]
         # Test
@@ -2147,18 +2147,18 @@ class TestSearch(unittest.TestCase):
         input_save = True
         input_results = os.path.join(CWD, "search_results.txt")
         expected = [
-            ["https://github.com/freeCodeCamp/freeCodeCamp", 329259, "JavaScript"],
-            ["https://github.com/996icu/996.ICU", 258523, "Rust"],
-            ["https://github.com/EbookFoundation/free-programming-books", 201274, "None"],
-            ["https://github.com/jwasham/coding-interview-university", 190585, "None"],
-            ["https://github.com/vuejs/vue", 187493, "JavaScript"]
+            ["https://github.com/freeCodeCamp/freeCodeCamp", 342851, "JavaScript"],
+            ["https://github.com/996icu/996.ICU", 261483, "None"],
+            ["https://github.com/EbookFoundation/free-programming-books", 227318, "None"],
+            ["https://github.com/jwasham/coding-interview-university", 214863, "None"],
+            ["https://github.com/sindresorhus/awesome", 194592, "None"]
         ]
         expected_saved_results = [
             "https://github.com/freeCodeCamp/freeCodeCamp",
             "https://github.com/996icu/996.ICU",
             "https://github.com/EbookFoundation/free-programming-books",
             "https://github.com/jwasham/coding-interview-university",
-            "https://github.com/vuejs/vue"
+            "https://github.com/sindresorhus/awesome"
         ]
         # Test
         actual = search(input_term, input_stars, input_language, input_total, input_save, input_results, verbose=False)
@@ -2188,111 +2188,122 @@ class TestSearch(unittest.TestCase):
         input_results = os.path.join(CWD, "test_repo_urls.txt")
         input_verbose = False
         expected = [
-            "https://github.com/torvalds/linux", "https://github.com/netdata/netdata",
-            "https://github.com/Genymobile/scrcpy", "https://github.com/redis/redis",
-            "https://github.com/git/git", "https://github.com/php/php-src",
-            "https://github.com/obsproject/obs-studio", "https://github.com/wg/wrk",
-            "https://github.com/tensorflow/tensorflow", "https://github.com/electron/electron",
-            "https://github.com/microsoft/terminal", "https://github.com/apple/swift",
-            "https://github.com/bitcoin/bitcoin", "https://github.com/opencv/opencv",
-            "https://github.com/pytorch/pytorch", "https://github.com/protocolbuffers/protobuf",
-            "https://github.com/godotengine/godot", "https://github.com/tesseract-ocr/tesseract",
-            "https://github.com/x64dbg/x64dbg", "https://github.com/BVLC/caffe",
-            "https://github.com/grpc/grpc", "https://github.com/ocornut/imgui",
-            "https://github.com/microsoft/PowerToys", "https://github.com/shadowsocks/shadowsocks-windows",
-            "https://github.com/CyC2018/CS-Notes", "https://github.com/Snailclimb/JavaGuide",
-            "https://github.com/iluwatar/java-design-patterns", "https://github.com/MisterBooo/LeetCodeAnimation",
-            "https://github.com/spring-projects/spring-boot", "https://github.com/doocs/advanced-java",
-            "https://github.com/elastic/elasticsearch", "https://github.com/kdn251/interviews",
-            "https://github.com/macrozheng/mall", "https://github.com/ReactiveX/RxJava",
-            "https://github.com/spring-projects/spring-framework", "https://github.com/google/guava",
-            "https://github.com/TheAlgorithms/Java", "https://github.com/square/retrofit",
-            "https://github.com/kon9chunkit/GitHub-Chinese-Top-Charts", "https://github.com/apache/dubbo",
-            "https://github.com/PhilJay/MPAndroidChart", "https://github.com/airbnb/lottie-android",
-            "https://github.com/bumptech/glide", "https://github.com/freeCodeCamp/freeCodeCamp",
-            "https://github.com/vuejs/vue", "https://github.com/facebook/react",
-            "https://github.com/twbs/bootstrap", "https://github.com/trekhleb/javascript-algorithms",
-            "https://github.com/airbnb/javascript", "https://github.com/d3/d3",
-            "https://github.com/facebook/react-native", "https://github.com/facebook/create-react-app",
-            "https://github.com/axios/axios", "https://github.com/30-seconds/30-seconds-of-code",
-            "https://github.com/nodejs/node", "https://github.com/mrdoob/three.js",
-            "https://github.com/vercel/next.js", "https://github.com/mui-org/material-ui",
-            "https://github.com/goldbergyoni/nodebestpractices", "https://github.com/FortAwesome/Font-Awesome",
-            "https://github.com/awesome-selfhosted/awesome-selfhosted", "https://github.com/angular/angular.js",
-            "https://github.com/webpack/webpack", "https://github.com/hakimel/reveal.js",
-            "https://github.com/yangshun/tech-interview-handbook", "https://github.com/typicode/json-server",
-            "https://github.com/ryanmcdermott/clean-code-javascript", "https://github.com/atom/atom",
-            "https://github.com/jquery/jquery", "https://github.com/chartjs/Chart.js",
-            "https://github.com/socketio/socket.io", "https://github.com/expressjs/express",
-            "https://github.com/adam-p/markdown-here", "https://github.com/h5bp/html5-boilerplate",
-            "https://github.com/gatsbyjs/gatsby", "https://github.com/lodash/lodash",
-            "https://github.com/resume/resume.github.com", "https://github.com/Semantic-Org/Semantic-UI",
-            "https://github.com/tailwindlabs/tailwindcss", "https://github.com/moment/moment",
-            "https://github.com/scutan90/DeepLearning-500-questions", "https://github.com/jaywcjlove/awesome-mac",
-            "https://github.com/remix-run/react-router", "https://github.com/azl397985856/leetcode",
-            "https://github.com/leonardomso/33-js-concepts", "https://github.com/meteor/meteor",
-            "https://github.com/NARKOZ/hacker-scripts", "https://github.com/serverless/serverless",
-            "https://github.com/prettier/prettier", "https://github.com/juliangarnier/anime",
-            "https://github.com/yarnpkg/yarn", "https://github.com/babel/babel",
-            "https://github.com/ColorlibHQ/AdminLTE", "https://github.com/strapi/strapi",
-            "https://github.com/parcel-bundler/parcel", "https://github.com/iptv-org/iptv",
-            "https://github.com/Dogfalo/materialize", "https://github.com/nwjs/nw.js",
-            "https://github.com/TryGhost/Ghost", "https://github.com/nuxt/nuxt.js",
-            "https://github.com/mermaid-js/mermaid", "https://github.com/impress/impress.js",
-            "https://github.com/iamkun/dayjs", "https://github.com/mozilla/pdf.js",
-            "https://github.com/Unitech/pm2", "https://github.com/algorithm-visualizer/algorithm-visualizer",
-            "https://github.com/microsoft/Web-Dev-For-Beginners", "https://github.com/chinese-poetry/chinese-poetry",
-            "https://github.com/adobe/brackets", "https://github.com/GitSquared/edex-ui",
-            "https://github.com/Marak/faker.js", "https://github.com/hexojs/hexo",
-            "https://github.com/dcloudio/uni-app", "https://github.com/cypress-io/cypress",
-            "https://github.com/alvarotrigo/fullPage.js", "https://github.com/gulpjs/gulp",
-            "https://github.com/sahat/hackathon-starter", "https://github.com/videojs/video.js",
-            "https://github.com/Leaflet/Leaflet", "https://github.com/koajs/koa",
-            "https://github.com/yangshun/front-end-interview-handbook", "https://github.com/zenorocha/clipboard.js",
-            "https://github.com/quilljs/quill", "https://github.com/RocketChat/Rocket.Chat",
-            "https://github.com/photonstorm/phaser", "https://github.com/jondot/awesome-react-native",
-            "https://github.com/laravel/laravel", "https://github.com/danielmiessler/SecLists",
-            "https://github.com/blueimp/jQuery-File-Upload", "https://github.com/public-apis/public-apis",
-            "https://github.com/donnemartin/system-design-primer", "https://github.com/TheAlgorithms/Python",
-            "https://github.com/jackfrued/Python-100-Days", "https://github.com/vinta/awesome-python",
-            "https://github.com/ytdl-org/youtube-dl", "https://github.com/tensorflow/models",
-            "https://github.com/nvbn/thefuck", "https://github.com/django/django",
-            "https://github.com/pallets/flask", "https://github.com/keras-team/keras",
-            "https://github.com/httpie/httpie", "https://github.com/josephmisiti/awesome-machine-learning",
-            "https://github.com/huggingface/transformers", "https://github.com/ansible/ansible",
-            "https://github.com/scikit-learn/scikit-learn", "https://github.com/521xueweihan/HelloGitHub",
-            "https://github.com/psf/requests", "https://github.com/home-assistant/core",
-            "https://github.com/soimort/you-get", "https://github.com/scrapy/scrapy",
-            "https://github.com/ageitgey/face_recognition", "https://github.com/minimaxir/big-list-of-naughty-strings",
-            "https://github.com/apache/superset", "https://github.com/python/cpython",
-            "https://github.com/deepfakes/faceswap", "https://github.com/3b1b/manim",
-            "https://github.com/tiangolo/fastapi", "https://github.com/localstack/localstack",
-            "https://github.com/fighting41love/funNLP", "https://github.com/shadowsocks/shadowsocks",
-            "https://github.com/0voice/interview_internal_reference", "https://github.com/isocpp/CppCoreGuidelines",
-            "https://github.com/apachecn/AiLearning", "https://github.com/pandas-dev/pandas",
-            "https://github.com/XX-net/XX-Net", "https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap",
-            "https://github.com/testerSunshine/12306", "https://github.com/rails/rails",
-            "https://github.com/jekyll/jekyll", "https://github.com/discourse/discourse",
-            "https://github.com/fastlane/fastlane", "https://github.com/huginn/huginn",
-            "https://github.com/ohmyzsh/ohmyzsh", "https://github.com/gothinkster/realworld",
-            "https://github.com/nvm-sh/nvm", "https://github.com/papers-we-love/papers-we-love",
-            "https://github.com/pi-hole/pi-hole", "https://github.com/microsoft/vscode",
-            "https://github.com/angular/angular", "https://github.com/ant-design/ant-design",
-            "https://github.com/microsoft/TypeScript", "https://github.com/puppeteer/puppeteer",
-            "https://github.com/storybookjs/storybook", "https://github.com/reduxjs/redux",
-            "https://github.com/sveltejs/svelte", "https://github.com/apache/echarts",
-            "https://github.com/cdr/code-server", "https://github.com/ionic-team/ionic-framework",
-            "https://github.com/grafana/grafana", "https://github.com/nestjs/nest",
-            "https://github.com/vercel/hyper", "https://github.com/facebook/jest",
-            "https://github.com/DefinitelyTyped/DefinitelyTyped",
-            "https://github.com/styled-components/styled-components", "https://github.com/pixijs/pixijs",
-            "https://github.com/vuetifyjs/vuetify", "https://github.com/immutable-js/immutable-js",
-            "https://github.com/vitejs/vite", "https://github.com/ant-design/ant-design-pro",
-            "https://github.com/anuraghazra/github-readme-stats", "https://github.com/open-guides/og-aws",
-            "https://github.com/CorentinJ/Real-Time-Voice-Cloning",
-            "https://github.com/swisskyrepo/PayloadsAllTheThings", "https://github.com/lerna/lerna",
-            "https://github.com/willmcgugan/rich", "https://github.com/commaai/openpilot",
-            "https://github.com/preactjs/preact", "https://github.com/PowerShell/PowerShell"
+            "https://github.com/0voice/interview_internal_reference", "https://github.com/d3/d3",
+            "https://github.com/30-seconds/30-seconds-of-code", "https://github.com/3b1b/manim",
+            "https://github.com/521xueweihan/HelloGitHub", "https://github.com/Anduin2017/HowToCook",
+            "https://github.com/BVLC/caffe", "https://github.com/Blankj/AndroidUtilCode",
+            "https://github.com/ColorlibHQ/AdminLTE", "https://github.com/Dogfalo/materialize", 
+            "https://github.com/CorentinJ/Real-Time-Voice-Cloning", "https://github.com/Eugeny/tabby",
+            "https://github.com/DefinitelyTyped/DefinitelyTyped", "https://github.com/GitSquared/edex-ui",
+            "https://github.com/FortAwesome/Font-Awesome", "https://github.com/Genymobile/scrcpy",
+            "https://github.com/GrowingGit/GitHub-Chinese-Top-Charts", "https://github.com/Homebrew/brew",
+            "https://github.com/Leaflet/Leaflet", "https://github.com/MisterBooo/LeetCodeAnimation",
+            "https://github.com/NARKOZ/hacker-scripts", "https://github.com/NationalSecurityAgency/ghidra",
+            "https://github.com/NervJS/taro", "https://github.com/PhilJay/MPAndroidChart",
+            "https://github.com/PowerShell/PowerShell", "https://github.com/ReactiveX/RxJava",
+            "https://github.com/RocketChat/Rocket.Chat", "https://github.com/Semantic-Org/Semantic-UI",
+            "https://github.com/Snailclimb/JavaGuide", "https://github.com/Textualize/rich",
+            "https://github.com/TheAlgorithms/Java", "https://github.com/TheAlgorithms/Python",
+            "https://github.com/TryGhost/Ghost", "https://github.com/Unitech/pm2",
+            "https://github.com/XX-net/XX-Net", "https://github.com/adam-p/markdown-here",
+            "https://github.com/adobe/brackets", "https://github.com/agalwood/Motrix",
+            "https://github.com/ageitgey/face_recognition", "https://github.com/airbnb/javascript",
+            "https://github.com/airbnb/lottie-android", "https://github.com/apple/swift",
+            "https://github.com/algorithm-visualizer/algorithm-visualizer",
+            "https://github.com/alvarotrigo/fullPage.js", "https://github.com/angular/angular",
+            "https://github.com/angular/angular.js", "https://github.com/ansible/ansible",
+            "https://github.com/ant-design/ant-design", "https://github.com/ant-design/ant-design-pro",
+            "https://github.com/anuraghazra/github-readme-stats", "https://github.com/apache/dubbo",
+            "https://github.com/apache/echarts", "https://github.com/apache/superset",
+            "https://github.com/apachecn/ailearning", "https://github.com/atom/atom",
+            "https://github.com/awesome-selfhosted/awesome-selfhosted", "https://github.com/axios/axios",
+            "https://github.com/azl397985856/leetcode", "https://github.com/babel/babel",
+            "https://github.com/bilibili/ijkplayer", "https://github.com/bitcoin/bitcoin",
+            "https://github.com/blueimp/jQuery-File-Upload", "https://github.com/bumptech/glide",
+            "https://github.com/chartjs/Chart.js", "https://github.com/chinese-poetry/chinese-poetry",
+            "https://github.com/coder/code-server", "https://github.com/commaai/openpilot",
+            "https://github.com/cypress-io/cypress", "https://github.com/d2l-ai/d2l-zh",
+            "https://github.com/danielmiessler/SecLists", "https://github.com/dcloudio/uni-app",
+            "https://github.com/deepfakes/faceswap", "https://github.com/discourse/discourse",
+            "https://github.com/django/django", "https://github.com/donnemartin/system-design-primer",
+            "https://github.com/doocs/advanced-java", "https://github.com/dylanaraps/pure-bash-bible",
+            "https://github.com/elastic/elasticsearch", "https://github.com/electron/electron",
+            "https://github.com/expressjs/express", "https://github.com/facebook/create-react-app",
+            "https://github.com/facebook/docusaurus", "https://github.com/facebook/jest",
+            "https://github.com/facebook/react", "https://github.com/facebook/react-native",
+            "https://github.com/faif/python-patterns", "https://github.com/fastlane/fastlane",
+            "https://github.com/fighting41love/funNLP", "https://github.com/gatsbyjs/gatsby",
+            "https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap",
+            "https://github.com/freeCodeCamp/freeCodeCamp", "https://github.com/geekxh/hello-algorithm",
+            "https://github.com/getsentry/sentry", "https://github.com/git/git",
+            "https://github.com/godotengine/godot", "https://github.com/goldbergyoni/nodebestpractices",
+            "https://github.com/google-research/bert", "https://github.com/google/guava",
+            "https://github.com/gothinkster/realworld", "https://github.com/grafana/grafana",
+            "https://github.com/grpc/grpc", "https://github.com/gulpjs/gulp",
+            "https://github.com/h5bp/html5-boilerplate", "https://github.com/hakimel/reveal.js",
+            "https://github.com/hexojs/hexo", "https://github.com/home-assistant/core",
+            "https://github.com/huggingface/transformers", "https://github.com/huginn/huginn",
+            "https://github.com/iamkun/dayjs", "https://github.com/iluwatar/java-design-patterns",
+            "https://github.com/immutable-js/immutable-js", "https://github.com/impress/impress.js",
+            "https://github.com/ionic-team/ionic-framework", "https://github.com/iperov/DeepFaceLab",
+            "https://github.com/iptv-org/iptv", "https://github.com/isocpp/CppCoreGuidelines",
+            "https://github.com/jackfrued/Python-100-Days", "https://github.com/jaywcjlove/awesome-mac",
+            "https://github.com/jekyll/jekyll", "https://github.com/jondot/awesome-react-native",
+            "https://github.com/josephmisiti/awesome-machine-learning", "https://github.com/jquery/jquery",
+            "https://github.com/juliangarnier/anime", "https://github.com/kamranahmedse/developer-roadmap",
+            "https://github.com/kdn251/interviews", "https://github.com/keras-team/keras",
+            "https://github.com/koajs/koa", "https://github.com/laravel/laravel",
+            "https://github.com/leonardomso/33-js-concepts", "https://github.com/lerna/lerna",
+            "https://github.com/localstack/localstack", "https://github.com/lodash/lodash",
+            "https://github.com/macrozheng/mall", "https://github.com/marktext/marktext",
+            "https://github.com/mermaid-js/mermaid", "https://github.com/meteor/meteor",
+            "https://github.com/microsoft/PowerToys", "https://github.com/microsoft/TypeScript",
+            "https://github.com/microsoft/Web-Dev-For-Beginners", "https://github.com/microsoft/playwright",
+            "https://github.com/microsoft/terminal", "https://github.com/microsoft/vscode",
+            "https://github.com/minimaxir/big-list-of-naughty-strings", "https://github.com/moment/moment",
+            "https://github.com/mozilla/pdf.js", "https://github.com/mrdoob/three.js",
+            "https://github.com/mui/material-ui", "https://github.com/nativefier/nativefier",
+            "https://github.com/nestjs/nest", "https://github.com/netdata/netdata",
+            "https://github.com/nodejs/node", "https://github.com/nolimits4web/swiper",
+            "https://github.com/nuxt/nuxt.js", "https://github.com/nvbn/thefuck",
+            "https://github.com/nvm-sh/nvm", "https://github.com/nwjs/nw.js",
+            "https://github.com/obsproject/obs-studio", "https://github.com/ocornut/imgui",
+            "https://github.com/ohmyzsh/ohmyzsh", "https://github.com/open-guides/og-aws",
+            "https://github.com/opencv/opencv", "https://github.com/pallets/flask",
+            "https://github.com/pandas-dev/pandas", "https://github.com/papers-we-love/papers-we-love",
+            "https://github.com/parcel-bundler/parcel", "https://github.com/photonstorm/phaser",
+            "https://github.com/php/php-src", "https://github.com/pi-hole/pi-hole",
+            "https://github.com/pixijs/pixijs", "https://github.com/preactjs/preact",
+            "https://github.com/prettier/prettier", "https://github.com/protocolbuffers/protobuf",
+            "https://github.com/psf/requests", "https://github.com/public-apis/public-apis",
+            "https://github.com/puppeteer/puppeteer", "https://github.com/python/cpython",
+            "https://github.com/pytorch/pytorch", "https://github.com/quilljs/quill",
+            "https://github.com/rails/rails", "https://github.com/redis/redis",
+            "https://github.com/reduxjs/redux", "https://github.com/remix-run/react-router",
+            "https://github.com/resume/resume.github.com", "https://github.com/sahat/hackathon-starter",
+            "https://github.com/ryanmcdermott/clean-code-javascript", "https://github.com/scrapy/scrapy",
+            "https://github.com/scikit-learn/scikit-learn", "https://github.com/serverless/serverless",
+            "https://github.com/scutan90/DeepLearning-500-questions", "https://github.com/socketio/socket.io",
+            "https://github.com/shadowsocks/shadowsocks", "https://github.com/shadowsocks/shadowsocks-windows",
+            "https://github.com/sherlock-project/sherlock", "https://github.com/soimort/you-get",
+            "https://github.com/spring-projects/spring-boot", "https://github.com/square/retrofit",
+            "https://github.com/spring-projects/spring-framework", "https://github.com/storybookjs/storybook",
+            "https://github.com/strapi/strapi", "https://github.com/styled-components/styled-components",
+            "https://github.com/sveltejs/svelte", "https://github.com/swisskyrepo/PayloadsAllTheThings",
+            "https://github.com/tailwindlabs/tailwindcss", "https://github.com/tensorflow/models",
+            "https://github.com/tensorflow/tensorflow", "https://github.com/tesseract-ocr/tesseract",
+            "https://github.com/testerSunshine/12306", "https://github.com/tiangolo/fastapi",
+            "https://github.com/torvalds/linux", "https://github.com/trekhleb/javascript-algorithms",
+            "https://github.com/twbs/bootstrap", "https://github.com/typescript-cheatsheets/react",
+            "https://github.com/typicode/json-server", "https://github.com/ventoy/Ventoy",
+            "https://github.com/vercel/hyper", "https://github.com/vercel/next.js",
+            "https://github.com/videojs/video.js", "https://github.com/vinta/awesome-python",
+            "https://github.com/vitejs/vite", "https://github.com/vuejs/vue",
+            "https://github.com/vuetifyjs/vuetify", "https://github.com/webpack/webpack",
+            "https://github.com/wg/wrk", "https://github.com/x64dbg/x64dbg",
+            "https://github.com/yangshun/front-end-interview-handbook",
+            "https://github.com/yangshun/tech-interview-handbook", "https://github.com/yarnpkg/yarn",
+            "https://github.com/ytdl-org/youtube-dl", "https://github.com/zenorocha/clipboard.js"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
@@ -2431,6 +2442,24 @@ class TestApologies(unittest.TestCase):
         """
         pass
 
+
+    def test__labelApologies(self):
+        """
+        Test src.apologies:_labelApologies().
+        """
+        # Setup
+        test_cases = [
+            "0", "1", "2", "3", "4", "5", "10", "156", "2345", "56789", "0"
+        ]
+        expected_labels = [
+            "0", "1", "1", "1", "1", "1", "1", "1", "1", "1", "0"
+        ]
+        actual_labels = list()
+        # Test
+        for case in test_cases:
+            actual_labels.append(_labelApologies(case))
+        self.assertListEqual(expected_labels, actual_labels)
+
     
     def test__countApologies(self):
         """
@@ -2464,59 +2493,82 @@ class TestApologies(unittest.TestCase):
         Test src.apologies:classify().
         """
         # Setup
-        input_hdf5_file = os.path.join(CWD, "test_files/test2.hdf5")
+        input_data_dir = os.path.join(CWD, "test_files/test_data3/")
         input_num_procs = 1
-        data_dir = os.path.join(CWD, "test_files/test_data2/")
-        append = False
-        expected_issue_apologies = [
-            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1"
+        input_overwrite = False
+        old_issues, old_commits, old_pull_requests = getDataFilepaths(input_data_dir)
+        class_issues = old_issues.split(".csv")[0] + "_classified.csv"
+        class_commits = old_commits.split(".csv")[0] + "_classified.csv"
+        class_pull_requests = old_pull_requests.split(".csv")[0] + "_classified.csv"
+        expected_issue_classes = [
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["1", "1"]
         ]
-        expected_commit_apologies = [
-            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0"
+        expected_commit_classes = [
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"]
         ]
-        expected_pull_request_apologies = [
-            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"
+        expected_pull_request_classes = [
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"]
         ]
-        load(input_hdf5_file, data_dir, append)
-        preprocess(input_hdf5_file, input_num_procs)
-        # Test data before write
-        actual = classify(input_hdf5_file, input_num_procs)
-        actual_issue_apologies = list(actual[0])
-        actual_commit_apologies = list(actual[1])
-        actual_pull_request_apologies = list(actual[2])
-        self.assertListEqual(expected_issue_apologies, actual_issue_apologies)
-        self.assertListEqual(expected_commit_apologies, actual_commit_apologies)
-        self.assertListEqual(expected_pull_request_apologies, actual_pull_request_apologies)
-        # Test data after write
-        f = h5py.File(input_hdf5_file)
-        actual_issue_apologies = numpyByteArrayToStrList(f["issues"][...][:, -1])
-        actual_commit_apologies = numpyByteArrayToStrList(f["commits"][...][:, -1])
-        actual_pull_request_apologies = numpyByteArrayToStrList(f["pull_requests"][...][:, -1])
-        self.assertListEqual(expected_issue_apologies, actual_issue_apologies)
-        self.assertListEqual(expected_commit_apologies, actual_commit_apologies)
-        self.assertListEqual(expected_pull_request_apologies, actual_pull_request_apologies)
+        # Test
+        actual_issue_classes, actual_commit_classes, actual_pull_request_classes = \
+            classify(input_data_dir, input_num_procs, input_overwrite)
+        self.assertListEqual(expected_issue_classes, actual_issue_classes)
+        self.assertListEqual(expected_commit_classes, actual_commit_classes)
+        self.assertListEqual(expected_pull_request_classes, actual_pull_request_classes)
         # Cleanup
-        h5py.File.close(f)
-        os.remove(input_hdf5_file)
+        os.remove(class_issues)
+        os.remove(class_commits)
+        os.remove(class_pull_requests)
 
 
 #### MAIN ##########################################################################################

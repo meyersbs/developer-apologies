@@ -130,10 +130,10 @@ def classifyCommand(args):
     Parse arguments for 'classify' command and pass them to src.apologies:classify().
     """
     # Canonicalize filepaths
-    args.hdf5_file = canonicalize(args.hdf5_file)
+    args.data_dir = canonicalize(args.data_dir)
 
     # Check assertions
-    assert doesPathExist(args.hdf_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
     assert args.num_procs <= mproc.cpu_count(), \
         "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
 
@@ -141,7 +141,7 @@ def classifyCommand(args):
         args.num_procs = mproc.cpu_count()
 
     # Pass arguments to src.apologies:classify().
-    classify(args.hdf5_file, args.num_procs)
+    classify(args.data_dir, args.num_procs, args.overwrite)
 
 
 def infoDataCommand(args):
@@ -309,12 +309,18 @@ if __name__ == "__main__":
     )
     
     classify_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of an HDF5 file that has already been populated "
-        "using the 'load' and 'preprocess' commands. Relative paths will be canonicalized."
+        "data_dir", type=str, help="The path to a directory with data that has already been "
+        "populated using the 'downloadload' and 'preprocess' commands. Relative paths will be"
+        " canonicalized."
     )
     classify_parser.add_argument(
         "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing. Enter "
         "'0' to use all available CPUs."
+    )
+    classify_parser.add_argument(
+        "--overwrite", default=False, action="store_true", help="If included, the classified "
+        "CSV file will overwrite the old CSV file. Using this flag is not recommended unless you "
+        "have backups of your data."
     )
     classify_parser.set_defaults(func=classifyCommand)
 

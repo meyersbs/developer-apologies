@@ -4,17 +4,15 @@
 #### PYTHON IMPORTS ################################################################################
 import csv
 import multiprocessing as mproc
-#import os
-#import psutil
 import re
 import spacy
 import sys
 from pathlib import Path
 from shutil import copyfile
 
+
 #### PACKAGE IMPORTS ###############################################################################
-from src.helpers import doesPathExist, fixNullBytes, getDataFilepaths, numpyByteArrayToStrList, \
-    overwriteFile, ISSUES_HEADER, COMMITS_HEADER, PULL_REQUESTS_HEADER
+from src.helpers import doesPathExist, fixNullBytes, getDataFilepaths, overwriteFile
 
 
 #### GLOBALS #######################################################################################
@@ -61,21 +59,30 @@ def _lemmatize(comment):
     return lemmatized_comment
 
 
-def _preprocess(old_file, new_file, header, num_procs):
+def _preprocess(old_file, new_file, num_procs):
     """
+    Helper function for preprocess(). Handles multiprocessing for preprocessing.
 
+    GIVEN:
+      old_file (str) -- path to CSV file to be preprocessed
+      new_file (str) -- path to new CSV file to store processed text
+      num_procs (int) -- number of processes (CPUs) to use for multiprocessing
+
+    RETURN:
+      new_file_comments (list) -- list of processed comment text
     """
     Path(new_file).touch()
     old_file_rows = list()
     old_file_comments = list()
     new_file_comments = list()
     comments_index = -1
+    header = list()
     if doesPathExist(old_file):
         # Read file contents to list
         with open(old_file, "r", encoding="utf=8") as f:
             csv_reader = csv.reader(fixNullBytes(f), delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
-            next(csv_reader) # Skip header row
+            header = next(csv_reader) # Skip header row
             for line in csv_reader:
                 old_file_rows.append(line)
        
@@ -107,8 +114,11 @@ def _preprocess(old_file, new_file, header, num_procs):
         # Copy old_file to new_file
         copyfile(old_file, new_file)
 
+    # Memory management
     del old_file_rows
     del old_file_comments
+
+    # Return lemmatized comments
     return new_file_comments
 
 
@@ -124,9 +134,9 @@ def preprocess(data_dir, num_procs, overwrite=True, test=False):
       test (bool) -- flag for unit tests
 
     RETURN:
-       issue_lemmas (list) -- lemmatized issue comments
-       commit_lemmas (list) -- lemmatized commit comments
-       pull_request_lemmas (list) -- lemmatized pull request comments
+       i_lemmas (list) -- lemmatized issue comments
+       c_lemmas (list) -- lemmatized commit comments
+       p_lemmas (list) -- lemmatized pull request comments
     """
     issues_file, commits_file, pull_requests_file = getDataFilepaths(data_dir)
 
@@ -134,9 +144,9 @@ def preprocess(data_dir, num_procs, overwrite=True, test=False):
     pre_commits_file = commits_file.split(".csv")[0] + "_preprocessed.csv"
     pre_pull_requests_file = pull_requests_file.split(".csv")[0] + "_preprocessed.csv"
 
-    i_lemmas = _preprocess(issues_file, pre_issues_file, ISSUES_HEADER, num_procs)
-    c_lemmas = _preprocess(commits_file, pre_commits_file, COMMITS_HEADER, num_procs)
-    p_lemmas = _preprocess(pull_requests_file, pre_pull_requests_file, PULL_REQUESTS_HEADER, num_procs)
+    i_lemmas = _preprocess(issues_file, pre_issues_file, num_procs)
+    c_lemmas = _preprocess(commits_file, pre_commits_file, num_procs)
+    p_lemmas = _preprocess(pull_requests_file, pre_pull_requests_file, num_procs)
 
     if overwrite: # pragma: no cover
         overwriteFile(issues_file, pre_issues_file)
