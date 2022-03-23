@@ -14,7 +14,6 @@ from src.download import download
 from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
 from src.info import infoHDF5, infoData
-from src.load import load
 from src.preprocess import preprocess
 from src.search import search, topRepos
 
@@ -52,29 +51,6 @@ def dedupCommand(args):
 
     # Pass arguments to src.deduplicate:deduplicate()
     deduplicate(args.data_dir, args.overwrite)
-
-
-def loadCommand(args):
-    """
-    Parse arguments for 'load' command and pass them to src.load:load().
-    """
-    # Canonicalize filepaths
-    args.hdf5_file = canonicalize(args.hdf5_file)
-    args.data_dir = canonicalize(args.data_dir)
-
-    # Check assertions
-    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir) 
-    if args.append:
-        assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
-
-    # Edge case
-    if doesPathExist(args.hdf5_file) and not args.append:
-        input("File '{}' already exists. Continuing will delete and recreate this file. Press "
-              "CTRL+C now to abort, or any key to continue. If you want to append new data to the "
-              "file, please re-run with the flag '--append'.".format(args.hdf5_file))
-    
-    # Pass arguments to src.load:load()
-    load(args.hdf5_file, args.data_dir, args.append)
 
 
 def deleteCommand(args):
@@ -251,26 +227,6 @@ if __name__ == "__main__":
         "have backups of your data."
     )
     dedup_parser.set_defaults(func=dedupCommand)
-
-    #### LOAD COMMAND
-    load_parser = command_parsers.add_parser(
-        "load", help="Load downloaded data into an HDF5 file."
-    )
-
-    load_parser.add_argument(
-        "--append", default=False, action="store_true", help="If included, data will be appended to"
-        " the HDF5 file. Otherwise, the file will be created/overwritten. Note that you can append "
-        "duplicate data with this flag."
-    )
-    load_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of the HDF5 file to create/open and load with "
-        "data. Relative paths will be canonicalized."
-    )
-    load_parser.add_argument(
-        "data_dir", type=str, help="The path to a directory where data is downloaded and ready to "
-        "be loaded. Relative paths will be canonicalized."
-    )
-    load_parser.set_defaults(func=loadCommand)
 
     #### DELETE COMMAND
     delete_parser = command_parsers.add_parser(
