@@ -335,17 +335,6 @@ if __name__ == "__main__":
     )
     info_data_parser.set_defaults(func=infoDataCommand)
 
-    #### INFO_HDF5 COMMAND
-    info_hdf5_parser = command_parsers.add_parser(
-        "info_hdf5", help="Display info about the data loaded into HDF5."
-    )
-
-    info_hdf5_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of an HDF5 file. Relative paths will be "
-        "canonicalized."
-    )
-    info_hdf5_parser.set_defaults(func=infoHDF5Command)
-
     #### INFO_RATE_LIMIT COMMAND
     info_rate_limit_parser = command_parsers.add_parser(
         "info_rate_limit", help="Display rate limiting info from GitHub's GraphQL API."
