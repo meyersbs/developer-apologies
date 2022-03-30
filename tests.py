@@ -21,9 +21,12 @@ from src.delete import delete
 from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
-    InvalidGitHubURLError, getDataFilepaths, ISSUES_HEADER, COMMITS_HEADER, PULL_REQUESTS_HEADER
+    InvalidGitHubURLError, getDataFilepaths, getSubDirNames, ISSUES_HEADER, COMMITS_HEADER, \
+    PULL_REQUESTS_HEADER
 from src.info import infoData
 from src.preprocess import preprocess, _stripNonWords, _lemmatize
+from src.random import _getPopulationFilepaths, _deduplicateHeaders, _getSourceFromFilepath, \
+    _getTargetColumns, _filterNonApologies, _getPopulationData, randomSample
 from src.search import search, topRepos
 
 
@@ -192,6 +195,18 @@ class TestHelpers(unittest.TestCase):
         self.assertListEqual(expected, actual)
         # Cleanup
         shutil.rmtree(data_dir) # Clean up before next test
+
+
+    def test_getSubDirNames(self):
+        """
+        Test src.helpers:getSubDirNames().
+        """
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data4/")
+        expected_sub_dirs = ["subdir1", "subdir2"]
+        # Test
+        actual_sub_dirs = getSubDirNames(data_dir)
+        self.assertListEqual(expected_sub_dirs, actual_sub_dirs)
 
 
     def test_getDataFilepaths(self):
@@ -548,7 +563,7 @@ class TestGraphQL(unittest.TestCase):
         input_data_types = "pull_requests"
         actual = runQuery(input_repo_owner, input_repo_name, input_data_types)
         pull_requests = actual["data"]["repository"]["pullRequests"]["edges"]
-        self.assertEqual(2, len(pull_requests))
+        self.assertEqual(3, len(pull_requests))
         self.assertEqual("Update README.md", pull_requests[0]["node"]["title"])
         self.assertEqual("andymeneely", pull_requests[0]["node"]["author"]["login"])
         self.assertEqual("", pull_requests[0]["node"]["bodyText"])
@@ -1892,7 +1907,13 @@ class TestDownload(unittest.TestCase):
              "https://github.com/meyersbs/developer-apologies/pull/3#issuecomment-903834642", "101"],
             ["https://github.com/meyersbs/developer-apologies/", "developer-apologies", "meyersbs", "4",
              "2021-08-24T17:59:32Z", "bnk5096", "Brandon-test",
-             "https://github.com/meyersbs/developer-apologies/pull/4", "", "", "", "", ""]
+             "https://github.com/meyersbs/developer-apologies/pull/4", "", "", "", "", ""],
+            ["https://github.com/meyersbs/developer-apologies/", "developer-apologies", "meyersbs", "6",
+             "2022-03-30T12:51:02Z", "meyersbs", "Remove hdf5",
+             "https://github.com/meyersbs/developer-apologies/pull/6", "We are removing HDF5 and working "
+             "with CSV files from now on. HDF5 is an interesting tool, but support for natural language "
+             "(strings) is too cumbersome for our needs.", "", "", "", ""]
+
         ]
         # Test
         download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
@@ -2303,7 +2324,9 @@ class TestSearch(unittest.TestCase):
             "https://github.com/wg/wrk", "https://github.com/x64dbg/x64dbg",
             "https://github.com/yangshun/front-end-interview-handbook",
             "https://github.com/yangshun/tech-interview-handbook", "https://github.com/yarnpkg/yarn",
-            "https://github.com/ytdl-org/youtube-dl", "https://github.com/zenorocha/clipboard.js"
+            "https://github.com/ytdl-org/youtube-dl", "https://github.com/zenorocha/clipboard.js",
+            "https://github.com/google/zx", "https://github.com/supabase/supabase",
+            "https://github.com/jaredpalmer/formik"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
@@ -2569,6 +2592,116 @@ class TestApologies(unittest.TestCase):
         os.remove(class_issues)
         os.remove(class_commits)
         os.remove(class_pull_requests)
+
+
+class TestRandom(unittest.TestCase):
+    """
+    Test cases for function in src.random.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+
+    def test__getSourceFromFilepath(self):
+        """
+        Test src.random:_getSourceFromFilepath().
+        """
+        # Setup
+        filepaths = [
+            "/path/to/data/commits/commits.csv",
+            "/path/to/data/issues/issues.csv",
+            "/path/to/data/pull_requests/pull_requests.csv",
+            "/path/to/data/issues/issues_preprocessed.csv"
+        ]
+        expected_sources = ["CO", "IS", "PR", None]
+        # Test
+        actual_sources = [_getSourceFromFilepath(fp) for fp in filepaths]
+        self.assertListEqual(expected_sources, actual_sources)
+
+
+    def test__getPopulationFilepaths(self):
+        """
+        Test src.random:_getPopulationFilepaths().
+        """
+        #### Case 1 -- source="IS"
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data4/")
+        source = "IS"
+        expected_paths = [
+            os.path.join(CWD, "test_files/test_data4/subdir1/issues/issues.csv"),
+            os.path.join(CWD, "test_files/test_data4/subdir2/issues/issues.csv")
+        ]
+        # Test
+        actual_paths = _getPopulationFilepaths(data_dir, source)
+        self.assertListEqual(expected_paths, actual_paths)
+
+        #### Case 2 -- source="CO"
+        # Setup
+        source = "CO"
+        expected_paths = [
+            os.path.join(CWD, "test_files/test_data4/subdir1/commits/commits.csv"),
+            os.path.join(CWD, "test_files/test_data4/subdir2/commits/commits.csv")
+        ]
+        # Test
+        actual_paths = _getPopulationFilepaths(data_dir, source)
+        self.assertListEqual(expected_paths, actual_paths)
+
+        #### Case 3 -- source="PR"
+        # Setup
+        source = "PR"
+        expected_paths = [
+            os.path.join(CWD, "test_files/test_data4/subdir1/pull_requests/pull_requests.csv"),
+            os.path.join(CWD, "test_files/test_data4/subdir2/pull_requests/pull_requests.csv")
+        ]
+        # Test
+        actual_paths = _getPopulationFilepaths(data_dir, source)
+        self.assertListEqual(expected_paths, actual_paths)
+
+        #### Case 4 -- source="ALL"
+        # Setup
+        source = "ALL"
+        expected_paths = [
+            os.path.join(CWD, "test_files/test_data4/subdir1/commits/commits.csv"),
+            os.path.join(CWD, "test_files/test_data4/subdir2/commits/commits.csv"),
+            os.path.join(CWD, "test_files/test_data4/subdir1/issues/issues.csv"),
+            os.path.join(CWD, "test_files/test_data4/subdir2/issues/issues.csv"),
+            os.path.join(CWD, "test_files/test_data4/subdir1/pull_requests/pull_requests.csv"),
+            os.path.join(CWD, "test_files/test_data4/subdir2/pull_requests/pull_requests.csv")
+        ]
+        # Test
+        actual_paths = _getPopulationFilepaths(data_dir, source)
+        self.assertListEqual(expected_paths, actual_paths)
+
+
+    def test__deduplicateHeaders(self):
+        """
+        Test src.random:_deduplicateHeaders().
+        """
+        # Setup
+        rows = [
+            ["HEADER_1", "HEADER_2", "HEADER_3"],
+            ["Batman", "Superman", "WonderWoman"],
+            ["Apples", "Oranges", "Bananas"],
+            ["HEADER_1", "HEADER_2", "HEADER_3"],
+            ["HEADER_1", "HEADER_2", "HEADER_3"],
+            ["Linux", "Windows", "Macintosh"],
+            ["HEADER_1", "HEADER_2", "HEADER_3"]
+        ]
+        header = ["HEADER_1", "HEADER_2", "HEADER_3"]
+        expected = [
+            ["Batman", "Superman", "WonderWoman"],
+            ["Apples", "Oranges", "Bananas"],
+            ["Linux", "Windows", "Macintosh"]
+        ]
+        # Test
+        actual = _deduplicateHeaders(rows, header)
+        self.assertListEqual(expected, actual)
+
+            
+
 
 
 #### MAIN ##########################################################################################

@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import csv
+import os
 import sys
 csv.field_size_limit(sys.maxsize)
 
@@ -33,13 +34,13 @@ def _getPopulationFilepaths(data_dir, source):
     for sub_dir in sub_dirs:
         is_file, co_file, pr_file = getDataFilepaths(os.path.join(data_dir, sub_dir))
 
-        if os.path.exists(co_file):
+        if os.path.exists(co_file): # pragma: no cover
             co_pop_paths.append(co_file)
 
-        if os.path.exists(is_file):
+        if os.path.exists(is_file): # pragma: no cover
             is_pop_paths.append(is_file)
 
-        if os.path.exists(pr_file):
+        if os.path.exists(pr_file): # pragma: no cover
             pr_pop_paths.append(pr_file)
 
     # Filter out sources we don't want to sample from

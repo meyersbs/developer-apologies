@@ -235,7 +235,7 @@ def getSubDirNames(top_dir):
     """
     Get the names of subdirectories, one level deep.
     """
-    return [d[i] for d in os.walk(top_dir)][0]
+    return [d[1] for d in os.walk(top_dir)][0]
 
 
 def getDataFilepaths(data_dir):

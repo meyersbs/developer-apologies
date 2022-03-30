@@ -8,6 +8,7 @@ import sys
 
 
 #### PROJECT IMPORTS ###############################################################################
+from src.apologies import classify
 from src.deduplicate import deduplicate
 from src.delete import delete
 from src.download import download
