@@ -22,7 +22,7 @@
 
 # Job Duration
 # Format: -t DD-HH:MM:SS
-#SBATCH -t 1-00:00:00
+#SBATCH -t 0-05:00:00
 
 # Job Account, Job Tier, Number of Cores
 # Format: -A <account_name> -p <onboard, tier1, tier2, tier3> -n <num_cpus>
@@ -30,7 +30,7 @@
 
 # Job Memory
 # Format: --mem=<num><k,m,g,t> (KB, MB, GB, TB)
-#SBATCH --mem=50g
+#SBATCH --mem=200g
 
 # Environment Settings
 echo "Loading environment"
@@ -83,4 +83,19 @@ python3 -m spacy download en_core_web_sm
 # date
 # time python3 -u main.py classify experiment.hdf5 0
 # time python3 -u main.py info_hdf5 experiment.hdf5
+# date
+
+# Step X: Prepare data for release
+# echo "Preparing data for release..."
+# date
+# cp -r -v data_850_stars/ zenodo/
+# date
+# mv zenodo/C++/ zenodo/C-PlusPlus/
+# mv zenodo/C#/ zenodo/C-Sharp/
+# mv zenodo/F#/ zenodo/F-Sharp/
+# date
+# time python3 -u scripts/prepare_data_for_zenodo.py zenodo/
+# date
+# mv zenodo/ 88_million_developer_comments/
+# time zip -9 -r 88_million_developer_comments.zip 88_million_developer_comments/
 # date
