@@ -2,14 +2,15 @@
 
 
 #### PYTHON IMPORTS ################################################################################
-import h5py
+import csv
 import multiprocessing as mproc
-import numpy as np
 import sys
+from pathlib import Path
+from shutil import copyfile
 
 
 #### PACKAGE IMPORTS ###############################################################################
-from src.helpers import numpyByteArrayToStrList
+from src.helpers import doesPathExist, fixNullBytes, getDataFilepaths, overwriteFile
 
 
 #### GLOBALS #######################################################################################
@@ -43,7 +44,26 @@ APOLOGY_COMPLEX_PHRASES = [
     ["i will never", "", "again"]
 ]
 
+
 #### FUNCTIONS #####################################################################################
+def _labelApologies(count):
+    """
+    Label apologies based on count of apology lemmas.
+
+    GIVEN:
+      count (str) -- string representation of number of apology lemmas
+
+    RETURN:
+      is_apology (str) -- string representation of apology label; 0 means not an apology, 1 means
+                          apology
+    """
+    is_apology = 0
+    if int(count) > 0:
+        is_apology = 1
+
+    return str(is_apology)
+
+
 def _countApologies(lemmas):
     """
     Count the occurrences of apology lemmas in the given lemmas.
@@ -64,110 +84,112 @@ def _countApologies(lemmas):
     return str(num_apology_lemmas)
 
 
-def classify(hdf5_file, num_procs):
+def _classify(old_file, new_file, num_procs):
+    """
+    Helper function for classify(). Handles multiprocessing for classification.
+
+    GIVEN:
+      old_file (str) -- path to CSV file to be classified
+      new_file (str) -- path to new CSV file to store classified data
+      num_procs (str) -- number of processes (CPUs) to use for multiprocessing
+
+    RETURN:
+      new_columns (list) -- 2D list of of [NUM_APOLOGY_LEMMAS, IS_APOLOGY]
+    """
+    Path(new_file).touch()
+    old_file_rows = list()
+    old_file_processed_comments = list()
+    new_file_num_apology_lemmas = list()
+    new_file_is_apology = list()
+    new_columns = list()
+    processed_comment_index = -1
+    header = list()
+    if doesPathExist(old_file):
+        # Read file contents to list
+        with open(old_file, "r", encoding="utf-8") as f:
+            csv_reader = csv.reader(fixNullBytes(f), delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+            header = next(csv_reader) # Skip header row
+            for line in csv_reader:
+                old_file_rows.append(line)
+
+        # Get processed comments only
+        for line in old_file_rows:
+            old_file_processed_comments.append(line[processed_comment_index])
+
+        # Create the process pool
+        pool = mproc.Pool(num_procs)
+
+        # Count apology lemmas
+        new_file_num_apology_lemmas = pool.map(_countApologies, old_file_processed_comments)
+
+        # Label apologies
+        new_file_is_apology = pool.map(_labelApologies, new_file_num_apology_lemmas)
+
+        # Combine columns
+        for i in range(0, len(new_file_num_apology_lemmas)):
+            new_columns.append([
+                new_file_num_apology_lemmas[i],
+                new_file_is_apology[i]
+            ])
+
+        # Update header with new columns
+        header.append("NUM_APOLOGY_LEMMAS")
+        header.append("IS_APOLOGY")
+
+        # Write new columns to new_file
+        with open(new_file, "w") as f:
+            class_writer = csv.writer(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+            class_writer.writerow(header)
+            for i in range(0, len(old_file_rows)):
+                new_row = old_file_rows[i] + new_columns[i]
+                class_writer.writerow(new_row)
+    else: # pragma: no cover
+        # Copy old_file to new_file
+        copyfile(old_file, new_file)
+
+    # Memory management
+    del old_file_rows
+    del old_file_processed_comments
+    del new_file_num_apology_lemmas
+    del new_file_is_apology
+
+    # Return counts of apology lemmas and data labels
+    return new_columns
+
+
+def classify(data_dir, num_procs, overwrite=True):
     """
     Count the number of apologies in each lemmatized comment.
 
     GIVEN:
-      hdf5_file (str) -- path to a populated HDF5 file
+      data_dir (str) -- path to the lemmatized data
       num_procs (int) -- number of processes (CPUs) to use for multiprocessing
+      overwrite (bool) -- whether or not to overwrite the old data file
 
     RETURN:
-      issue_apologies (np.array) -- apology counts for lemmatized issue comments
-      commit_apologies (np.array) -- apology counts for lemmatized commit comments
-      pull_request_apologies (np.array) -- apology counts for lemmatized pull request comments
+      i_classes (list) -- apology classifications for issues
+      c_classes (list) -- apology classifications for commits
+      p_classes (list) -- apology classifications for pull requests
     """
-    # Return variables
-    issue_apologies = list()
-    commit_apologies = list()
-    pull_request_apologies = list()
+    issues_file, commits_file, pull_requests_file = getDataFilepaths(data_dir)
 
-    # Grab the data
-    f = h5py.File(hdf5_file, "r+") # read/write mode 
-    issues = f["issues"][...]
-    commits = f["commits"][...]
-    pull_requests = f["pull_requests"][...]
+    class_issues_file = issues_file.split(".csv")[0] + "_classified.csv"
+    class_commits_file = commits_file.split(".csv")[0] + "_classified.csv"
+    class_pull_requests_file = pull_requests_file.split(".csv")[0] + "_classified.csv"
 
-    # Datasets might be empty, so we need to check this
-    do_issues = False
-    do_commits = False
-    do_pull_requests = False
-    if issues.shape[0] > 0: # pragma: no cover
-        do_issues = True
-    if commits.shape[0] > 0: # pragma: no cover
-        do_commits = True
-    if pull_requests.shape[0] > 0: # pragma: no cover
-        do_pull_requests = True
+    i_classes = _classify(issues_file, class_issues_file, num_procs)
+    c_classes = _classify(commits_file, class_commits_file, num_procs)
+    p_classes = _classify(pull_requests_file, class_pull_requests_file, num_procs)
 
-    # Create the process pool
-    pool = mproc.Pool(num_procs)
+    if overwrite: # pragma: no cover
+        overwriteFile(issues_file, class_issues_file)
+        overwriteFile(commits_file, class_commits_file)
+        overwriteFile(pull_requests_file, class_pull_requests_file)
 
-    # There are pragmas here because coverage is confused.
-    if do_issues: # pragma: no cover
-        # Get just the lemmas
-        issue_lemmas = issues[:, -1]
-        # Convert bytestrings to strings
-        issue_lemmas = numpyByteArrayToStrList(issue_lemmas)
-        # Classify apologies
-        issue_apologies = np.array(pool.map(_countApologies, issue_lemmas), dtype=str)
-        # Add header
-        issue_apologies = issue_apologies.tolist()
-        issue_apologies[0] = "NUM_APOLOGY_LEMMAS"
-        # Reshape the apologies array
-        apologies = np.array(issue_apologies, dtype=str).reshape((len(issue_apologies), 1))
-        # Resize dataset
-        f["issues"].resize((issues.shape[0], issues.shape[1] + 1))
-        # Add apology counts to HDF5 file
-        f["issues"][...] = np.hstack((issues, apologies))
-    else: # pragma: no cover
-        pass
-
-    if do_commits: # pragma: no cover
-        # Get just the lemmas
-        commit_lemmas = commits[:, -1]
-        # Convert bytestrings to strings
-        commit_lemmas = numpyByteArrayToStrList(commit_lemmas)
-        # Classify apologies
-        commit_apologies = np.array(pool.map(_countApologies, commit_lemmas), dtype=str)
-        # Add header
-        commit_apologies = commit_apologies.tolist()
-        commit_apologies[0] = "NUM_APOLOGY_LEMMAS"
-        # Reshape the apologies array
-        apologies = np.array(commit_apologies, dtype=str).reshape((len(commit_apologies), 1))
-        # Resize dataset
-        f["commits"].resize((commits.shape[0], commits.shape[1] + 1))
-        # Add apology counts to HDF5 file
-        f["commits"][...] = np.hstack((commits, apologies))
-    else: # pragma: no cover
-        pass
-
-    if do_pull_requests: # pragma: no cover
-        # Get just the lemmas
-        pull_request_lemmas = pull_requests[:, -1]
-        # Convert bytestrings to strings
-        pull_request_lemmas = numpyByteArrayToStrList(pull_request_lemmas)
-        # Classify apologies
-        pull_request_apologies = np.array(
-            pool.map(_countApologies, pull_request_lemmas), dtype=str)
-        # Add header
-        pull_request_apologies = pull_request_apologies.tolist()
-        pull_request_apologies[0] = "NUM_APOLOGY_LEMMAS"
-        # Reshape the apologies array
-        apologies = np.array(
-            pull_request_apologies, dtype=str).reshape((len(pull_request_apologies), 1))
-        # Resize dataset
-        f["pull_requests"].resize((pull_requests.shape[0], pull_requests.shape[1] + 1))
-        # Add apology counts to HDF5 file
-        f["pull_requests"][...] = np.hstack((pull_requests, apologies))
-    else: # pragma: no cover
-        pass
-
-    # Close HDF5 file
-    h5py.File.close(f)
-    print("Number of apologies saved to: {}".format(hdf5_file))
-
-    # Return number of apologies (this is used for unit tests)
-    return [issue_apologies, commit_apologies, pull_request_apologies]
+    # Return classifications (this is used for unit tests)
+    return [i_classes, c_classes, p_classes]
 
 
 #### MAIN ##########################################################################################

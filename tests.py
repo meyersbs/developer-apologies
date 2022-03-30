@@ -14,17 +14,15 @@ import unittest.mock as mock
 
 
 #### PACKAGE IMPORTS ###############################################################################
-from src.apologies import classify, _countApologies
+from src.apologies import classify, _countApologies, _labelApologies
 from src.config import getAPIToken, EmptyAPITokenError
 from src.deduplicate import deduplicate
 from src.delete import delete
 from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
-    numpyByteArrayToStrList, InvalidGitHubURLError, getDataFilepaths, ISSUES_HEADER, \
-    COMMITS_HEADER, PULL_REQUESTS_HEADER
-from src.info import infoData, infoHDF5
-from src.load import load
+    InvalidGitHubURLError, getDataFilepaths, ISSUES_HEADER, COMMITS_HEADER, PULL_REQUESTS_HEADER
+from src.info import infoData
 from src.preprocess import preprocess, _stripNonWords, _lemmatize
 from src.search import search, topRepos
 
@@ -275,48 +273,6 @@ class TestInfo(unittest.TestCase):
         # Test
         actual = infoData(data_dir, verbose=False)
         self.assertListEqual(expected, actual)
-
-
-    def test_infoHDF5(self):
-        """
-        Test src.info:infoHDF5().
-        """
-        input_hdf5_file = canonicalize("test_files/test.hdf5")
-        expected = OrderedDict([
-            ("filepath", "/home/benjamin/Code/developer-apologies/test_files/test.hdf5"),
-            ("keys", ["commits", "issues", "pull_requests"]),
-            ("filesize", "0.02 MB"),
-            ("creation", mock.ANY),
-            ("modified", mock.ANY),
-            ("commits", OrderedDict([
-                ("num_items", 13),
-                ("num_repos", 1),
-                ("description", "GitHub commits with relevant metadata and comments. Columns: [REPO"
-                                "_URL, REPO_NAME, REPO_OWNER, COMMIT_OID, COMMIT_CREATION_DATE, COM"
-                                "MIT_AUTHOR, COMMIT_ADDITIONS, COMMIT_DELETIONS, COMMIT_HEADLINE, C"
-                                "OMMIT_URL, COMMIT_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHOR, COM"
-                                "MENT_URL, COMMENT_TEXT].")
-            ])),
-            ("issues", OrderedDict([
-                ("num_items", 2),
-                ("num_repos", 1),
-                ("description", "GitHub issues with relevant metadata and comments. Columns: [REPO_"
-                                "URL, REPO_NAME, REPO_OWNER, ISSUE_NUMBER, ISSUE_CREATION_DATE, ISS"
-                                "UE_AUTHOR, ISSUE_TITLE, ISSUE_URL, ISSUE_TEXT, COMMENT_CREATION_DA"
-                                "TE, COMMENT_AUTHOR, COMMENT_URL, COMMENT_TEXT].")
-            ])),
-            ("pull_requests", OrderedDict([
-                ("num_items", 0),
-                ("num_repos", 0),
-                ("description", "GitHub pull_requests with relevant metadata and comments. Columns:"
-                                " [REPO_URL, REPO_NAME, REPO_OWNER, PULL_REQUEST_NUMBER, PULL_REQUE"
-                                "ST_TITLE, PULL_REQUEST_AUTHOR, PULL_REQUEST_CREATION_DATE, PULL_RE"
-                                "QUEST_URL, PULL_REQUEST_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHO"
-                                "R, COMMENT_URL, COMMENT_TEXT].")
-            ]))
-        ])
-        actual = infoHDF5(input_hdf5_file, verbose=False)
-        self.assertDictEqual(expected, actual)
 
 
 class TestDelete(unittest.TestCase):
@@ -2120,450 +2076,6 @@ class TestDeduplicate(unittest.TestCase):
         os.rename(backup_pull_requests, old_pull_requests)
 
 
-
-class TestLoad(unittest.TestCase):
-    """
-    Test cases for function in src.download.
-    """
-    def setUp(self):
-        """
-        Necessary setup for test cases.
-        """
-        pass
-
-
-    def tearDown(self):
-        """
-        Necessary cleanup for these test cases.
-        """
-        try:
-            data_dir = os.path.join(CWD, "test_data/") 
-            shutil.rmtree(data_dir)
-        except FileNotFoundError:
-            pass # We don't want the directory to exist, so this is fine
-
-
-    def test_load(self):
-        """
-        Test src.load:load().
-        """
-        #### Case 1 -- append=False
-        # Setup
-        input_hdf5_file = os.path.join(CWD, "test_file.hdf5")
-        input_data_dir = os.path.join(CWD, "test_data/")
-        input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_2.txt")
-        input_data_types = "all"
-        os.mkdir(input_data_dir)
-        validateDataDir(input_data_dir)
-        expected_keys = ["commits", "issues", "pull_requests"]
-        expected_issues = [
-            [
-                "REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_CREATION_DATE",
-                "ISSUE_AUTHOR", "ISSUE_TITLE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
-                "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs", "1",
-                "2019-05-11T20:58:59Z", "meyersbs", "Ampersands in Metadata",
-                "https://github.com/meyersbs/tvdb-dl-nfo/issues/1",
-                "If a show has an ampersand (&) in its name or description, the following error wil"
-                "l occur:\n    PHP Warning:  SimpleXMLElement::addChild(): unterminated entity refe"
-                "rence\n\nThe tvshow.nfo file is still generated, but the field containing the ampe"
-                "rsand will be empty.", "", "", "", ""
-            ]
-        ]
-        expected_issues_attrs = {
-            "description": "GitHub issues with relevant metadata and comments. Columns: [REPO_URL, "
-                           "REPO_NAME, REPO_OWNER, ISSUE_NUMBER, ISSUE_CREATION_DATE, ISSUE_AUTHOR,"
-                           " ISSUE_TITLE, ISSUE_URL, ISSUE_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTH"
-                           "OR, COMMENT_URL, COMMENT_TEXT]."
-        }
-        expected_commits = [
-            [
-                "REPO_URL", "REPO_NAME", "REPO_OWNER", "COMMIT_OID", "COMMIT_CREATION_DATE",
-                "COMMIT_AUTHOR", "COMMIT_ADDITIONS", "COMMIT_DELETIONS", "COMMIT_HEADLINE",
-                "COMMIT_URL", "COMMIT_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR",
-                "COMMENT_URL", "COMMENT_TEXT"
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "75614c09991b4313b1b999971aadd1d6d38f6ce7", "2019-05-07T19:32:43Z", "meyersbs", "23",
-                "0", "Initial commit",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/75614c09991b4313b1b999971aadd1d6d38f6ce7",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "ae38a7f77d211c7678d1a518e797d0668598b472", "2019-05-07T20:01:02Z", "meyersbs", "78",
-                "1", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/ae38a7f77d211c7678d1a518e797d0668598b472",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "1445c6376609dbf6c6017b19ed418d1cd73f2f6e", "2019-05-07T23:38:41Z", "meyersbs", "30",
-                "4", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/1445c6376609dbf6c6017b19ed418d1cd73f2f6e",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "110efd9108faee147fa2430702999312d68f2329", "2019-05-07T23:41:41Z", "meyersbs", "12",
-                "1", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/110efd9108faee147fa2430702999312d68f2329",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308", "2019-05-07T23:45:06Z", "meyersbs", "59",
-                "0", "Create tvdb-dl-nfo.php",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "09929a23b30307ebbb426637d420b69216aa9772", "2019-05-07T23:45:44Z", "meyersbs", "10",
-                "0", "Create install.sh",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/09929a23b30307ebbb426637d420b69216aa9772",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "bd163c63771e2e314470ce36a251b8e8ab9ce712", "2019-05-11T20:51:19Z", "meyersbs", "13",
-                "3", "Change directory structure. Create apikey.txt",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/bd163c63771e2e314470ce36a251b8e8ab9ce712",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "23af721b3f70cdde0bcc3dc58ba3750dbab34b46", "2019-05-11T20:51:50Z", "meyersbs", "6",
-                "3", "Read API Key from file rather than CLI.",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/23af721b3f70cdde0bcc3dc58ba3750dbab34b46",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "c399298846a2bcdbc4daa53076b5f9899d8f916b", "2019-05-11T20:52:00Z", "meyersbs", "16",
-                "13", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/c399298846a2bcdbc4daa53076b5f9899d8f916b",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "f307305e5a12208baa4cb01f188e8fa20d7a6ef3", "2019-05-11T21:04:23Z", "meyersbs", "3",
-                "3", "Fix #1",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/f307305e5a12208baa4cb01f188e8fa20d7a6ef3",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6", "2019-11-27T19:03:34Z", "meyersbs", "6",
-                "2", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "5b2009b8db3299cdb810b20caaaea88adb5ebe08", "2019-11-27T19:09:42Z", "meyersbs", "1",
-                "1", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08",
-                "", "2021-08-24T12:52:30Z", "meyersbs",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#r55353873",
-                "Dummy comment."
-            ]
-        ]
-        expected_commits_attrs = {
-            "description": "GitHub commits with relevant metadata and comments. Columns: [REPO_URL,"
-                           " REPO_NAME, REPO_OWNER, COMMIT_OID, COMMIT_CREATION_DATE, COMMIT_AUTHOR"
-                           ", COMMIT_ADDITIONS, COMMIT_DELETIONS, COMMIT_HEADLINE, COMMIT_URL, COMM"
-                           "IT_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHOR, COMMENT_URL, COMMENT_TE"
-                           "XT]."
-        }
-        expected_pull_requests = list()
-        expected_pull_requests_attrs = {
-            "description": "GitHub pull_requests with relevant metadata and comments. Columns: [REP"
-                           "O_URL, REPO_NAME, REPO_OWNER, PULL_REQUEST_NUMBER, PULL_REQUEST_TITLE, "
-                           "PULL_REQUEST_AUTHOR, PULL_REQUEST_CREATION_DATE, PULL_REQUEST_URL, PULL"
-                           "_REQUEST_TEXT, COMMENT_CREATION_DATE, COMMENT_AUTHOR, COMMENT_URL, COMM"
-                           "ENT_TEXT]."
-        }
-        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
-        input_append = False
-        # Test
-        load(input_hdf5_file, input_data_dir, input_append)
-        f = h5py.File(input_hdf5_file, "r")
-        actual_keys = list(f.keys())
-        actual_issues = numpyByteArrayToStrList(f["issues"][:])
-        actual_commits = numpyByteArrayToStrList(f["commits"][:])
-        actual_pull_requests = numpyByteArrayToStrList(f["pull_requests"][:])
-        actual_issues_attrs = dict(f["issues"].attrs)
-        actual_commits_attrs = dict(f["commits"].attrs)
-        actual_pull_requests_attrs = dict(f["pull_requests"].attrs)
-        self.assertListEqual(expected_keys, actual_keys)
-        self.assertListEqual(expected_issues, actual_issues)
-        self.assertListEqual(expected_commits, actual_commits)
-        self.assertListEqual(expected_pull_requests, actual_pull_requests)
-        self.assertDictEqual(expected_issues_attrs, actual_issues_attrs)
-        self.assertDictEqual(expected_commits_attrs, actual_commits_attrs)
-        self.assertDictEqual(expected_pull_requests_attrs, actual_pull_requests_attrs)
-        # Cleanup
-        shutil.rmtree(input_data_dir)
-        h5py.File.close(f)
-
-        #### Case 2 -- append=True
-        # Setup
-        input_hdf5_file = os.path.join(CWD, "test_file.hdf5")
-        input_data_dir = os.path.join(CWD, "test_data_2/")
-        input_repo_file = os.path.join(CWD, "test_files/repo_lists/test_repos_4.txt")
-        input_data_types = "all"
-        os.mkdir(input_data_dir)
-        validateDataDir(input_data_dir)
-        download(input_repo_file, input_data_dir, input_data_types, overwrite=True)
-        input_append = True
-        expected_issues = [
-            [
-                "REPO_URL", "REPO_NAME", "REPO_OWNER", "ISSUE_NUMBER", "ISSUE_CREATION_DATE",
-                "ISSUE_AUTHOR", "ISSUE_TITLE", "ISSUE_URL", "ISSUE_TEXT", "COMMENT_CREATION_DATE",
-                "COMMENT_AUTHOR", "COMMENT_URL", "COMMENT_TEXT"
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs", "1",
-                "2019-05-11T20:58:59Z", "meyersbs", "Ampersands in Metadata",
-                "https://github.com/meyersbs/tvdb-dl-nfo/issues/1",
-                "If a show has an ampersand (&) in its name or description, the following error wil"
-                "l occur:\n    PHP Warning:  SimpleXMLElement::addChild(): unterminated entity refe"
-                "rence\n\nThe tvshow.nfo file is still generated, but the field containing the ampe"
-                "rsand will be empty.",
-                "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs", "1",
-                "2018-11-07T20:03:46Z", "sojusnik", "Layout improvements",
-                "https://github.com/meyersbs/gedit-text-stats/issues/1",
-                'Your useful plugin has a small vertical offset (about 2px) in comparison to the ot'
-                'her text in the status bar. Also the space between "CharCount" and "Reiner Text" c'
-                'ould be bigger for aesthetical reasons, imho.\nHappens on Gedit 3.30.1 on Ubuntu 1'
-                '8.10 with the Numix theme.',
-                "2018-11-07T20:30:21Z", "meyersbs",
-                "https://github.com/meyersbs/gedit-text-stats/issues/1#issuecomment-436766586",
-                "Thank you for pointing this out. Unfortunately, I do not see the same error on Ged"
-                "it 3.28.1 on Ubuntu 18.04 with the BlackMATE theme.\nI will look into it, but it m"
-                "ay be a while before I have the time. If you find or can implement a fix, I welcom"
-                "e you to submit a pull-request for review!"
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs", "1",
-                "2018-11-07T20:03:46Z", "sojusnik", "Layout improvements",
-                "https://github.com/meyersbs/gedit-text-stats/issues/1",
-                'Your useful plugin has a small vertical offset (about 2px) in comparison to the ot'
-                'her text in the status bar. Also the space between "CharCount" and "Reiner Text" c'
-                'ould be bigger for aesthetical reasons, imho.\nHappens on Gedit 3.30.1 on Ubuntu 1'
-                '8.10 with the Numix theme.',
-                "2018-11-13T21:11:56Z", "sojusnik",
-                "https://github.com/meyersbs/gedit-text-stats/issues/1#issuecomment-438438136",
-                "Since I'm code illiterate I have to rely on your contribution. Thanks in advance!"
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs", "1",
-                "2018-11-07T20:03:46Z", "sojusnik", "Layout improvements",
-                "https://github.com/meyersbs/gedit-text-stats/issues/1",
-                'Your useful plugin has a small vertical offset (about 2px) in comparison to the ot'
-                'her text in the status bar. Also the space between "CharCount" and "Reiner Text" c'
-                'ould be bigger for aesthetical reasons, imho.\nHappens on Gedit 3.30.1 on Ubuntu 1'
-                '8.10 with the Numix theme.',
-                "2018-12-19T16:18:23Z", "meyersbs",
-                "https://github.com/meyersbs/gedit-text-stats/issues/1#issuecomment-448653856",
-                "I cannot recreate the vertical offset bug that @sojusnik described. I welcome cont"
-                "ributions from other developers if anyone can recreate and fix the bug."
-            ]
-        ]
-        expected_commits = [
-            [
-                "REPO_URL", "REPO_NAME", "REPO_OWNER", "COMMIT_OID", "COMMIT_CREATION_DATE",
-                "COMMIT_AUTHOR", "COMMIT_ADDITIONS", "COMMIT_DELETIONS", "COMMIT_HEADLINE",
-                "COMMIT_URL", "COMMIT_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR",
-                "COMMENT_URL", "COMMENT_TEXT"
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "75614c09991b4313b1b999971aadd1d6d38f6ce7", "2019-05-07T19:32:43Z", "meyersbs", "23",
-                "0", "Initial commit",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/75614c09991b4313b1b999971aadd1d6d38f6ce7",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "ae38a7f77d211c7678d1a518e797d0668598b472", "2019-05-07T20:01:02Z", "meyersbs", "78",
-                "1", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/ae38a7f77d211c7678d1a518e797d0668598b472",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "1445c6376609dbf6c6017b19ed418d1cd73f2f6e", "2019-05-07T23:38:41Z", "meyersbs", "30",
-                "4", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/1445c6376609dbf6c6017b19ed418d1cd73f2f6e",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "110efd9108faee147fa2430702999312d68f2329", "2019-05-07T23:41:41Z", "meyersbs", "12",
-                "1", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/110efd9108faee147fa2430702999312d68f2329",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308", "2019-05-07T23:45:06Z", "meyersbs", "59",
-                "0", "Create tvdb-dl-nfo.php",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/eb9c54a516ed2ae17b9b9b8ad22d854f9bf60308",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "09929a23b30307ebbb426637d420b69216aa9772", "2019-05-07T23:45:44Z", "meyersbs", "10",
-                "0", "Create install.sh",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/09929a23b30307ebbb426637d420b69216aa9772",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "bd163c63771e2e314470ce36a251b8e8ab9ce712", "2019-05-11T20:51:19Z", "meyersbs", "13",
-                "3", "Change directory structure. Create apikey.txt",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/bd163c63771e2e314470ce36a251b8e8ab9ce712",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "23af721b3f70cdde0bcc3dc58ba3750dbab34b46", "2019-05-11T20:51:50Z", "meyersbs", "6",
-                "3", "Read API Key from file rather than CLI.",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/23af721b3f70cdde0bcc3dc58ba3750dbab34b46",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "c399298846a2bcdbc4daa53076b5f9899d8f916b", "2019-05-11T20:52:00Z", "meyersbs", "16",
-                "13", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/c399298846a2bcdbc4daa53076b5f9899d8f916b",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "f307305e5a12208baa4cb01f188e8fa20d7a6ef3", "2019-05-11T21:04:23Z", "meyersbs", "3",
-                "3", "Fix #1",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/f307305e5a12208baa4cb01f188e8fa20d7a6ef3",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6", "2019-11-27T19:03:34Z", "meyersbs", "6",
-                "2", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/ba20e4c9218d445ab74ff26855e6bed2f3c4c5d6",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/tvdb-dl-nfo", "tvdb-dl-nfo", "meyersbs",
-                "5b2009b8db3299cdb810b20caaaea88adb5ebe08", "2019-11-27T19:09:42Z", "meyersbs", "1",
-                "1", "Update README.md",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08",
-                "", "2021-08-24T12:52:30Z", "meyersbs",
-                "https://github.com/meyersbs/tvdb-dl-nfo/commit/5b2009b8db3299cdb810b20caaaea88adb5ebe08#r55353873",
-                "Dummy comment."
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
-                "69aeccf9c824a1b0da6711c97c1e3e1bf997c554", "2016-12-09T18:41:04Z", "meyersbs", "23",
-                "0", "Initial commit",
-                "https://github.com/meyersbs/gedit-text-stats/commit/69aeccf9c824a1b0da6711c97c1e3e1bf997c554",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
-                "0572c2d8da209a407a74b7a5e06918e8c019ad62", "2016-12-09T18:41:29Z", "meyersbs", "1",
-                "1", "Update LICENSE",
-                "https://github.com/meyersbs/gedit-text-stats/commit/0572c2d8da209a407a74b7a5e06918e8c019ad62",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
-                "1758bd16de74f12db54afe299b5b8ec11f48a605", "2016-12-09T21:52:09Z", "meyersbs", "86",
-                "0", "Plugin displays Character Count, Word Count, and Sentence Count. WillBAD_CHAR",
-                "https://github.com/meyersbs/gedit-text-stats/commit/1758bd16de74f12db54afe299b5b8ec11f48a605",
-                "BAD_CHAR add more features later.",
-                "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
-                "b3b533630c6f955f8fb5fd8c06faeca664027c42", "2016-12-09T22:04:01Z", "meyersbs", "36",
-                "0", "Update README.md",
-                "https://github.com/meyersbs/gedit-text-stats/commit/b3b533630c6f955f8fb5fd8c06faeca664027c42",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
-                "26ea166966eca25e4f88b6728438b06073054fa9", "2016-12-10T02:18:48Z", "meyersbs", "9",
-                "0", "Created install script.",
-                "https://github.com/meyersbs/gedit-text-stats/commit/26ea166966eca25e4f88b6728438b06073054fa9",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
-                "8c8f4eb7bbd8cfe9046fcf7f3a57b465083935b3", "2016-12-10T02:19:17Z", "meyersbs", "0",
-                "0", "Rename LICENSE to LICENSE.md",
-                "https://github.com/meyersbs/gedit-text-stats/commit/8c8f4eb7bbd8cfe9046fcf7f3a57b465083935b3",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
-                "3aec2be95dd2660c8c6d7941a6400f4f53a67b4d", "2016-12-10T02:21:38Z", "meyersbs", "6",
-                "4", "Update README.md",
-                "https://github.com/meyersbs/gedit-text-stats/commit/3aec2be95dd2660c8c6d7941a6400f4f53a67b4d",
-                "", "", "", "", ""
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs",
-                "c5515b7e7e4525d6767409b00cd03cb40090e705", "2018-08-22T20:07:29Z", "meyersbs", "9",
-                "1", "Legacy commit: Added line count.",
-                "https://github.com/meyersbs/gedit-text-stats/commit/c5515b7e7e4525d6767409b00cd03cb40090e705",
-                "", "", "", "", ""
-            ]
-        ]
-        expected_pull_requests = [
-            [
-                "REPO_URL", "REPO_NAME", "REPO_OWNER", "PULL_REQUEST_NUMBER", "PULL_REQUEST_TITLE",
-                "PULL_REQUEST_AUTHOR", "PULL_REQUEST_CREATION_DATE", "PULL_REQUEST_URL",
-                "PULL_REQUEST_TEXT", "COMMENT_CREATION_DATE", "COMMENT_AUTHOR", "COMMENT_URL",
-                "COMMENT_TEXT"
-            ],
-            [
-                "https://github.com/meyersbs/gedit-text-stats", "gedit-text-stats", "meyersbs", "2",
-                "2021-08-25T18:50:19Z", "meyersbs", "Update README.md",
-                "https://github.com/meyersbs/gedit-text-stats/pull/2", "", "", "", "", ""
-            ]
-        ]
-        # Test
-        load(input_hdf5_file, input_data_dir, input_append)
-        f = h5py.File(input_hdf5_file, "r")
-        actual_keys = list(f.keys())
-        actual_issues = numpyByteArrayToStrList(f["issues"][:])
-        actual_commits = numpyByteArrayToStrList(f["commits"][:])
-        actual_pull_requests = numpyByteArrayToStrList(f["pull_requests"][:])
-        actual_issues_attrs = dict(f["issues"].attrs)
-        actual_commits_attrs = dict(f["commits"].attrs)
-        actual_pull_requests_attrs = dict(f["pull_requests"].attrs)
-        self.assertListEqual(expected_keys, actual_keys)
-        self.assertListEqual(expected_issues, actual_issues)
-        self.assertListEqual(expected_commits, actual_commits)
-        self.assertListEqual(expected_pull_requests, actual_pull_requests)
-        self.assertDictEqual(expected_issues_attrs, actual_issues_attrs)
-        self.assertDictEqual(expected_commits_attrs, actual_commits_attrs)
-        self.assertDictEqual(expected_pull_requests_attrs, actual_pull_requests_attrs)
-        # Cleanup
-        shutil.rmtree(input_data_dir)
-        h5py.File.close(f)
-        os.remove(input_hdf5_file)
-
-
 class TestSearch(unittest.TestCase):
     """
     Test cases for function in src.search.
@@ -2605,6 +2117,7 @@ class TestSearch(unittest.TestCase):
         expected = [
             ["https://github.com/cherrypie623/CherryPie-Addon-Repository", 2, "Python"],
             ["https://github.com/zhengjiwen/cherrypie", 1, "Python"],
+            ["https://github.com/NotReeceHarris/CherryPie", 0, "Python"],
             ["https://github.com/further-i-go-less-i-know/cherrypie-ssl-errors", 0, "Python"]
         ]
         # Test
@@ -2634,18 +2147,18 @@ class TestSearch(unittest.TestCase):
         input_save = True
         input_results = os.path.join(CWD, "search_results.txt")
         expected = [
-            ["https://github.com/freeCodeCamp/freeCodeCamp", 329259, "JavaScript"],
-            ["https://github.com/996icu/996.ICU", 258523, "Rust"],
-            ["https://github.com/EbookFoundation/free-programming-books", 201274, "None"],
-            ["https://github.com/jwasham/coding-interview-university", 190585, "None"],
-            ["https://github.com/vuejs/vue", 187493, "JavaScript"]
+            ["https://github.com/freeCodeCamp/freeCodeCamp", 342851, "JavaScript"],
+            ["https://github.com/996icu/996.ICU", 261483, "None"],
+            ["https://github.com/EbookFoundation/free-programming-books", 227318, "None"],
+            ["https://github.com/jwasham/coding-interview-university", 214863, "None"],
+            ["https://github.com/sindresorhus/awesome", 194592, "None"]
         ]
         expected_saved_results = [
             "https://github.com/freeCodeCamp/freeCodeCamp",
             "https://github.com/996icu/996.ICU",
             "https://github.com/EbookFoundation/free-programming-books",
             "https://github.com/jwasham/coding-interview-university",
-            "https://github.com/vuejs/vue"
+            "https://github.com/sindresorhus/awesome"
         ]
         # Test
         actual = search(input_term, input_stars, input_language, input_total, input_save, input_results, verbose=False)
@@ -2675,111 +2188,122 @@ class TestSearch(unittest.TestCase):
         input_results = os.path.join(CWD, "test_repo_urls.txt")
         input_verbose = False
         expected = [
-            "https://github.com/torvalds/linux", "https://github.com/netdata/netdata",
-            "https://github.com/Genymobile/scrcpy", "https://github.com/redis/redis",
-            "https://github.com/git/git", "https://github.com/php/php-src",
-            "https://github.com/obsproject/obs-studio", "https://github.com/wg/wrk",
-            "https://github.com/tensorflow/tensorflow", "https://github.com/electron/electron",
-            "https://github.com/microsoft/terminal", "https://github.com/apple/swift",
-            "https://github.com/bitcoin/bitcoin", "https://github.com/opencv/opencv",
-            "https://github.com/pytorch/pytorch", "https://github.com/protocolbuffers/protobuf",
-            "https://github.com/godotengine/godot", "https://github.com/tesseract-ocr/tesseract",
-            "https://github.com/x64dbg/x64dbg", "https://github.com/BVLC/caffe",
-            "https://github.com/grpc/grpc", "https://github.com/ocornut/imgui",
-            "https://github.com/microsoft/PowerToys", "https://github.com/shadowsocks/shadowsocks-windows",
-            "https://github.com/CyC2018/CS-Notes", "https://github.com/Snailclimb/JavaGuide",
-            "https://github.com/iluwatar/java-design-patterns", "https://github.com/MisterBooo/LeetCodeAnimation",
-            "https://github.com/spring-projects/spring-boot", "https://github.com/doocs/advanced-java",
-            "https://github.com/elastic/elasticsearch", "https://github.com/kdn251/interviews",
-            "https://github.com/macrozheng/mall", "https://github.com/ReactiveX/RxJava",
-            "https://github.com/spring-projects/spring-framework", "https://github.com/google/guava",
-            "https://github.com/TheAlgorithms/Java", "https://github.com/square/retrofit",
-            "https://github.com/kon9chunkit/GitHub-Chinese-Top-Charts", "https://github.com/apache/dubbo",
-            "https://github.com/PhilJay/MPAndroidChart", "https://github.com/airbnb/lottie-android",
-            "https://github.com/bumptech/glide", "https://github.com/freeCodeCamp/freeCodeCamp",
-            "https://github.com/vuejs/vue", "https://github.com/facebook/react",
-            "https://github.com/twbs/bootstrap", "https://github.com/trekhleb/javascript-algorithms",
-            "https://github.com/airbnb/javascript", "https://github.com/d3/d3",
-            "https://github.com/facebook/react-native", "https://github.com/facebook/create-react-app",
-            "https://github.com/axios/axios", "https://github.com/30-seconds/30-seconds-of-code",
-            "https://github.com/nodejs/node", "https://github.com/mrdoob/three.js",
-            "https://github.com/vercel/next.js", "https://github.com/mui-org/material-ui",
-            "https://github.com/goldbergyoni/nodebestpractices", "https://github.com/FortAwesome/Font-Awesome",
-            "https://github.com/awesome-selfhosted/awesome-selfhosted", "https://github.com/angular/angular.js",
-            "https://github.com/webpack/webpack", "https://github.com/hakimel/reveal.js",
-            "https://github.com/yangshun/tech-interview-handbook", "https://github.com/typicode/json-server",
-            "https://github.com/ryanmcdermott/clean-code-javascript", "https://github.com/atom/atom",
-            "https://github.com/jquery/jquery", "https://github.com/chartjs/Chart.js",
-            "https://github.com/socketio/socket.io", "https://github.com/expressjs/express",
-            "https://github.com/adam-p/markdown-here", "https://github.com/h5bp/html5-boilerplate",
-            "https://github.com/gatsbyjs/gatsby", "https://github.com/lodash/lodash",
-            "https://github.com/resume/resume.github.com", "https://github.com/Semantic-Org/Semantic-UI",
-            "https://github.com/tailwindlabs/tailwindcss", "https://github.com/moment/moment",
-            "https://github.com/scutan90/DeepLearning-500-questions", "https://github.com/jaywcjlove/awesome-mac",
-            "https://github.com/remix-run/react-router", "https://github.com/azl397985856/leetcode",
-            "https://github.com/leonardomso/33-js-concepts", "https://github.com/meteor/meteor",
-            "https://github.com/NARKOZ/hacker-scripts", "https://github.com/serverless/serverless",
-            "https://github.com/prettier/prettier", "https://github.com/juliangarnier/anime",
-            "https://github.com/yarnpkg/yarn", "https://github.com/babel/babel",
-            "https://github.com/ColorlibHQ/AdminLTE", "https://github.com/strapi/strapi",
-            "https://github.com/parcel-bundler/parcel", "https://github.com/iptv-org/iptv",
-            "https://github.com/Dogfalo/materialize", "https://github.com/nwjs/nw.js",
-            "https://github.com/TryGhost/Ghost", "https://github.com/nuxt/nuxt.js",
-            "https://github.com/mermaid-js/mermaid", "https://github.com/impress/impress.js",
-            "https://github.com/iamkun/dayjs", "https://github.com/mozilla/pdf.js",
-            "https://github.com/Unitech/pm2", "https://github.com/algorithm-visualizer/algorithm-visualizer",
-            "https://github.com/microsoft/Web-Dev-For-Beginners", "https://github.com/chinese-poetry/chinese-poetry",
-            "https://github.com/adobe/brackets", "https://github.com/GitSquared/edex-ui",
-            "https://github.com/Marak/faker.js", "https://github.com/hexojs/hexo",
-            "https://github.com/dcloudio/uni-app", "https://github.com/cypress-io/cypress",
-            "https://github.com/alvarotrigo/fullPage.js", "https://github.com/gulpjs/gulp",
-            "https://github.com/sahat/hackathon-starter", "https://github.com/videojs/video.js",
-            "https://github.com/Leaflet/Leaflet", "https://github.com/koajs/koa",
-            "https://github.com/yangshun/front-end-interview-handbook", "https://github.com/zenorocha/clipboard.js",
-            "https://github.com/quilljs/quill", "https://github.com/RocketChat/Rocket.Chat",
-            "https://github.com/photonstorm/phaser", "https://github.com/jondot/awesome-react-native",
-            "https://github.com/laravel/laravel", "https://github.com/danielmiessler/SecLists",
-            "https://github.com/blueimp/jQuery-File-Upload", "https://github.com/public-apis/public-apis",
-            "https://github.com/donnemartin/system-design-primer", "https://github.com/TheAlgorithms/Python",
-            "https://github.com/jackfrued/Python-100-Days", "https://github.com/vinta/awesome-python",
-            "https://github.com/ytdl-org/youtube-dl", "https://github.com/tensorflow/models",
-            "https://github.com/nvbn/thefuck", "https://github.com/django/django",
-            "https://github.com/pallets/flask", "https://github.com/keras-team/keras",
-            "https://github.com/httpie/httpie", "https://github.com/josephmisiti/awesome-machine-learning",
-            "https://github.com/huggingface/transformers", "https://github.com/ansible/ansible",
-            "https://github.com/scikit-learn/scikit-learn", "https://github.com/521xueweihan/HelloGitHub",
-            "https://github.com/psf/requests", "https://github.com/home-assistant/core",
-            "https://github.com/soimort/you-get", "https://github.com/scrapy/scrapy",
-            "https://github.com/ageitgey/face_recognition", "https://github.com/minimaxir/big-list-of-naughty-strings",
-            "https://github.com/apache/superset", "https://github.com/python/cpython",
-            "https://github.com/deepfakes/faceswap", "https://github.com/3b1b/manim",
-            "https://github.com/tiangolo/fastapi", "https://github.com/localstack/localstack",
-            "https://github.com/fighting41love/funNLP", "https://github.com/shadowsocks/shadowsocks",
-            "https://github.com/0voice/interview_internal_reference", "https://github.com/isocpp/CppCoreGuidelines",
-            "https://github.com/apachecn/AiLearning", "https://github.com/pandas-dev/pandas",
-            "https://github.com/XX-net/XX-Net", "https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap",
-            "https://github.com/testerSunshine/12306", "https://github.com/rails/rails",
-            "https://github.com/jekyll/jekyll", "https://github.com/discourse/discourse",
-            "https://github.com/fastlane/fastlane", "https://github.com/huginn/huginn",
-            "https://github.com/ohmyzsh/ohmyzsh", "https://github.com/gothinkster/realworld",
-            "https://github.com/nvm-sh/nvm", "https://github.com/papers-we-love/papers-we-love",
-            "https://github.com/pi-hole/pi-hole", "https://github.com/microsoft/vscode",
-            "https://github.com/angular/angular", "https://github.com/ant-design/ant-design",
-            "https://github.com/microsoft/TypeScript", "https://github.com/puppeteer/puppeteer",
-            "https://github.com/storybookjs/storybook", "https://github.com/reduxjs/redux",
-            "https://github.com/sveltejs/svelte", "https://github.com/apache/echarts",
-            "https://github.com/cdr/code-server", "https://github.com/ionic-team/ionic-framework",
-            "https://github.com/grafana/grafana", "https://github.com/nestjs/nest",
-            "https://github.com/vercel/hyper", "https://github.com/facebook/jest",
-            "https://github.com/DefinitelyTyped/DefinitelyTyped",
-            "https://github.com/styled-components/styled-components", "https://github.com/pixijs/pixijs",
-            "https://github.com/vuetifyjs/vuetify", "https://github.com/immutable-js/immutable-js",
-            "https://github.com/vitejs/vite", "https://github.com/ant-design/ant-design-pro",
-            "https://github.com/anuraghazra/github-readme-stats", "https://github.com/open-guides/og-aws",
-            "https://github.com/CorentinJ/Real-Time-Voice-Cloning",
-            "https://github.com/swisskyrepo/PayloadsAllTheThings", "https://github.com/lerna/lerna",
-            "https://github.com/willmcgugan/rich", "https://github.com/commaai/openpilot",
-            "https://github.com/preactjs/preact", "https://github.com/PowerShell/PowerShell"
+            "https://github.com/0voice/interview_internal_reference", "https://github.com/d3/d3",
+            "https://github.com/30-seconds/30-seconds-of-code", "https://github.com/3b1b/manim",
+            "https://github.com/521xueweihan/HelloGitHub", "https://github.com/Anduin2017/HowToCook",
+            "https://github.com/BVLC/caffe", "https://github.com/Blankj/AndroidUtilCode",
+            "https://github.com/ColorlibHQ/AdminLTE", "https://github.com/Dogfalo/materialize", 
+            "https://github.com/CorentinJ/Real-Time-Voice-Cloning", "https://github.com/Eugeny/tabby",
+            "https://github.com/DefinitelyTyped/DefinitelyTyped", "https://github.com/GitSquared/edex-ui",
+            "https://github.com/FortAwesome/Font-Awesome", "https://github.com/Genymobile/scrcpy",
+            "https://github.com/GrowingGit/GitHub-Chinese-Top-Charts", "https://github.com/Homebrew/brew",
+            "https://github.com/Leaflet/Leaflet", "https://github.com/MisterBooo/LeetCodeAnimation",
+            "https://github.com/NARKOZ/hacker-scripts", "https://github.com/NationalSecurityAgency/ghidra",
+            "https://github.com/NervJS/taro", "https://github.com/PhilJay/MPAndroidChart",
+            "https://github.com/PowerShell/PowerShell", "https://github.com/ReactiveX/RxJava",
+            "https://github.com/RocketChat/Rocket.Chat", "https://github.com/Semantic-Org/Semantic-UI",
+            "https://github.com/Snailclimb/JavaGuide", "https://github.com/Textualize/rich",
+            "https://github.com/TheAlgorithms/Java", "https://github.com/TheAlgorithms/Python",
+            "https://github.com/TryGhost/Ghost", "https://github.com/Unitech/pm2",
+            "https://github.com/XX-net/XX-Net", "https://github.com/adam-p/markdown-here",
+            "https://github.com/adobe/brackets", "https://github.com/agalwood/Motrix",
+            "https://github.com/ageitgey/face_recognition", "https://github.com/airbnb/javascript",
+            "https://github.com/airbnb/lottie-android", "https://github.com/apple/swift",
+            "https://github.com/algorithm-visualizer/algorithm-visualizer",
+            "https://github.com/alvarotrigo/fullPage.js", "https://github.com/angular/angular",
+            "https://github.com/angular/angular.js", "https://github.com/ansible/ansible",
+            "https://github.com/ant-design/ant-design", "https://github.com/ant-design/ant-design-pro",
+            "https://github.com/anuraghazra/github-readme-stats", "https://github.com/apache/dubbo",
+            "https://github.com/apache/echarts", "https://github.com/apache/superset",
+            "https://github.com/apachecn/ailearning", "https://github.com/atom/atom",
+            "https://github.com/awesome-selfhosted/awesome-selfhosted", "https://github.com/axios/axios",
+            "https://github.com/azl397985856/leetcode", "https://github.com/babel/babel",
+            "https://github.com/bilibili/ijkplayer", "https://github.com/bitcoin/bitcoin",
+            "https://github.com/blueimp/jQuery-File-Upload", "https://github.com/bumptech/glide",
+            "https://github.com/chartjs/Chart.js", "https://github.com/chinese-poetry/chinese-poetry",
+            "https://github.com/coder/code-server", "https://github.com/commaai/openpilot",
+            "https://github.com/cypress-io/cypress", "https://github.com/d2l-ai/d2l-zh",
+            "https://github.com/danielmiessler/SecLists", "https://github.com/dcloudio/uni-app",
+            "https://github.com/deepfakes/faceswap", "https://github.com/discourse/discourse",
+            "https://github.com/django/django", "https://github.com/donnemartin/system-design-primer",
+            "https://github.com/doocs/advanced-java", "https://github.com/dylanaraps/pure-bash-bible",
+            "https://github.com/elastic/elasticsearch", "https://github.com/electron/electron",
+            "https://github.com/expressjs/express", "https://github.com/facebook/create-react-app",
+            "https://github.com/facebook/docusaurus", "https://github.com/facebook/jest",
+            "https://github.com/facebook/react", "https://github.com/facebook/react-native",
+            "https://github.com/faif/python-patterns", "https://github.com/fastlane/fastlane",
+            "https://github.com/fighting41love/funNLP", "https://github.com/gatsbyjs/gatsby",
+            "https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap",
+            "https://github.com/freeCodeCamp/freeCodeCamp", "https://github.com/geekxh/hello-algorithm",
+            "https://github.com/getsentry/sentry", "https://github.com/git/git",
+            "https://github.com/godotengine/godot", "https://github.com/goldbergyoni/nodebestpractices",
+            "https://github.com/google-research/bert", "https://github.com/google/guava",
+            "https://github.com/gothinkster/realworld", "https://github.com/grafana/grafana",
+            "https://github.com/grpc/grpc", "https://github.com/gulpjs/gulp",
+            "https://github.com/h5bp/html5-boilerplate", "https://github.com/hakimel/reveal.js",
+            "https://github.com/hexojs/hexo", "https://github.com/home-assistant/core",
+            "https://github.com/huggingface/transformers", "https://github.com/huginn/huginn",
+            "https://github.com/iamkun/dayjs", "https://github.com/iluwatar/java-design-patterns",
+            "https://github.com/immutable-js/immutable-js", "https://github.com/impress/impress.js",
+            "https://github.com/ionic-team/ionic-framework", "https://github.com/iperov/DeepFaceLab",
+            "https://github.com/iptv-org/iptv", "https://github.com/isocpp/CppCoreGuidelines",
+            "https://github.com/jackfrued/Python-100-Days", "https://github.com/jaywcjlove/awesome-mac",
+            "https://github.com/jekyll/jekyll", "https://github.com/jondot/awesome-react-native",
+            "https://github.com/josephmisiti/awesome-machine-learning", "https://github.com/jquery/jquery",
+            "https://github.com/juliangarnier/anime", "https://github.com/kamranahmedse/developer-roadmap",
+            "https://github.com/kdn251/interviews", "https://github.com/keras-team/keras",
+            "https://github.com/koajs/koa", "https://github.com/laravel/laravel",
+            "https://github.com/leonardomso/33-js-concepts", "https://github.com/lerna/lerna",
+            "https://github.com/localstack/localstack", "https://github.com/lodash/lodash",
+            "https://github.com/macrozheng/mall", "https://github.com/marktext/marktext",
+            "https://github.com/mermaid-js/mermaid", "https://github.com/meteor/meteor",
+            "https://github.com/microsoft/PowerToys", "https://github.com/microsoft/TypeScript",
+            "https://github.com/microsoft/Web-Dev-For-Beginners", "https://github.com/microsoft/playwright",
+            "https://github.com/microsoft/terminal", "https://github.com/microsoft/vscode",
+            "https://github.com/minimaxir/big-list-of-naughty-strings", "https://github.com/moment/moment",
+            "https://github.com/mozilla/pdf.js", "https://github.com/mrdoob/three.js",
+            "https://github.com/mui/material-ui", "https://github.com/nativefier/nativefier",
+            "https://github.com/nestjs/nest", "https://github.com/netdata/netdata",
+            "https://github.com/nodejs/node", "https://github.com/nolimits4web/swiper",
+            "https://github.com/nuxt/nuxt.js", "https://github.com/nvbn/thefuck",
+            "https://github.com/nvm-sh/nvm", "https://github.com/nwjs/nw.js",
+            "https://github.com/obsproject/obs-studio", "https://github.com/ocornut/imgui",
+            "https://github.com/ohmyzsh/ohmyzsh", "https://github.com/open-guides/og-aws",
+            "https://github.com/opencv/opencv", "https://github.com/pallets/flask",
+            "https://github.com/pandas-dev/pandas", "https://github.com/papers-we-love/papers-we-love",
+            "https://github.com/parcel-bundler/parcel", "https://github.com/photonstorm/phaser",
+            "https://github.com/php/php-src", "https://github.com/pi-hole/pi-hole",
+            "https://github.com/pixijs/pixijs", "https://github.com/preactjs/preact",
+            "https://github.com/prettier/prettier", "https://github.com/protocolbuffers/protobuf",
+            "https://github.com/psf/requests", "https://github.com/public-apis/public-apis",
+            "https://github.com/puppeteer/puppeteer", "https://github.com/python/cpython",
+            "https://github.com/pytorch/pytorch", "https://github.com/quilljs/quill",
+            "https://github.com/rails/rails", "https://github.com/redis/redis",
+            "https://github.com/reduxjs/redux", "https://github.com/remix-run/react-router",
+            "https://github.com/resume/resume.github.com", "https://github.com/sahat/hackathon-starter",
+            "https://github.com/ryanmcdermott/clean-code-javascript", "https://github.com/scrapy/scrapy",
+            "https://github.com/scikit-learn/scikit-learn", "https://github.com/serverless/serverless",
+            "https://github.com/scutan90/DeepLearning-500-questions", "https://github.com/socketio/socket.io",
+            "https://github.com/shadowsocks/shadowsocks", "https://github.com/shadowsocks/shadowsocks-windows",
+            "https://github.com/sherlock-project/sherlock", "https://github.com/soimort/you-get",
+            "https://github.com/spring-projects/spring-boot", "https://github.com/square/retrofit",
+            "https://github.com/spring-projects/spring-framework", "https://github.com/storybookjs/storybook",
+            "https://github.com/strapi/strapi", "https://github.com/styled-components/styled-components",
+            "https://github.com/sveltejs/svelte", "https://github.com/swisskyrepo/PayloadsAllTheThings",
+            "https://github.com/tailwindlabs/tailwindcss", "https://github.com/tensorflow/models",
+            "https://github.com/tensorflow/tensorflow", "https://github.com/tesseract-ocr/tesseract",
+            "https://github.com/testerSunshine/12306", "https://github.com/tiangolo/fastapi",
+            "https://github.com/torvalds/linux", "https://github.com/trekhleb/javascript-algorithms",
+            "https://github.com/twbs/bootstrap", "https://github.com/typescript-cheatsheets/react",
+            "https://github.com/typicode/json-server", "https://github.com/ventoy/Ventoy",
+            "https://github.com/vercel/hyper", "https://github.com/vercel/next.js",
+            "https://github.com/videojs/video.js", "https://github.com/vinta/awesome-python",
+            "https://github.com/vitejs/vite", "https://github.com/vuejs/vue",
+            "https://github.com/vuetifyjs/vuetify", "https://github.com/webpack/webpack",
+            "https://github.com/wg/wrk", "https://github.com/x64dbg/x64dbg",
+            "https://github.com/yangshun/front-end-interview-handbook",
+            "https://github.com/yangshun/tech-interview-handbook", "https://github.com/yarnpkg/yarn",
+            "https://github.com/ytdl-org/youtube-dl", "https://github.com/zenorocha/clipboard.js"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
@@ -2855,12 +2379,15 @@ class TestPreprocess(unittest.TestCase):
         """
         Test src.preprocess:preprocess().
         """
-        #### Case 1 -- num_procs=1
+        #### Case 1 -- num_procs=1, overwrite=False
         # Setup
-        input_hdf5_file = os.path.join(CWD, "test_files/test2.hdf5")
+        input_data_dir = os.path.join(CWD, "test_files/test_data2/")
         input_num_procs = 1
-        data_dir = os.path.join(CWD, "test_files/test_data2/")
-        append = False
+        input_overwrite = False
+        old_issues, old_commits, old_pull_requests = getDataFilepaths(input_data_dir)
+        pre_issues = old_issues.split(".csv")[0] + "_preprocessed.csv"
+        pre_commits = old_commits.split(".csv")[0] + "_preprocessed.csv"
+        pre_pull_requests = old_pull_requests.split(".csv")[0] + "_preprocessed.csv"
         expected_issue_lemmas = [
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
             "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
@@ -2881,7 +2408,7 @@ class TestPreprocess(unittest.TestCase):
             "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89",
             "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100", "101", "", "", "",
             "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" 
         ]
         expected_pull_request_lemmas = [
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
@@ -2893,26 +2420,16 @@ class TestPreprocess(unittest.TestCase):
             "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100",
             "101", ""
         ]
-        load(input_hdf5_file, data_dir, append)
-        # Test data before write
-        actual = preprocess(input_hdf5_file, input_num_procs, test=True)
-        actual_issue_lemmas = list(actual[0])
-        actual_commit_lemmas = list(actual[1])
-        actual_pull_request_lemmas = list(actual[2])
+        # Test
+        actual_issue_lemmas, actual_commit_lemmas, actual_pull_request_lemmas = \
+            preprocess(input_data_dir, input_num_procs, input_overwrite)
         self.assertListEqual(expected_issue_lemmas, actual_issue_lemmas)
         self.assertListEqual(expected_commit_lemmas, actual_commit_lemmas)
-        self.assertListEqual(expected_pull_request_lemmas, actual_pull_request_lemmas)
-        # Test data after write
-        f = h5py.File(input_hdf5_file)
-        actual_issue_lemmas = numpyByteArrayToStrList(f["issues"][...][:, -1])[1:]
-        self.assertListEqual(expected_issue_lemmas, actual_issue_lemmas)
-        actual_commit_lemmas = numpyByteArrayToStrList(f["commits"][...][:, -1])[1:]
-        self.assertListEqual(expected_commit_lemmas, actual_commit_lemmas)
-        actual_pull_request_lemmas = numpyByteArrayToStrList(f["pull_requests"][...][:, -1])[1:]
         self.assertListEqual(expected_pull_request_lemmas, actual_pull_request_lemmas)
         # Cleanup
-        h5py.File.close(f)
-        os.remove(input_hdf5_file)
+        os.remove(pre_issues)
+        os.remove(pre_commits)
+        os.remove(pre_pull_requests)
 
 
 class TestApologies(unittest.TestCase):
@@ -2924,6 +2441,24 @@ class TestApologies(unittest.TestCase):
         Necessary setup for test cases.
         """
         pass
+
+
+    def test__labelApologies(self):
+        """
+        Test src.apologies:_labelApologies().
+        """
+        # Setup
+        test_cases = [
+            "0", "1", "2", "3", "4", "5", "10", "156", "2345", "56789", "0"
+        ]
+        expected_labels = [
+            "0", "1", "1", "1", "1", "1", "1", "1", "1", "1", "0"
+        ]
+        actual_labels = list()
+        # Test
+        for case in test_cases:
+            actual_labels.append(_labelApologies(case))
+        self.assertListEqual(expected_labels, actual_labels)
 
     
     def test__countApologies(self):
@@ -2958,59 +2493,82 @@ class TestApologies(unittest.TestCase):
         Test src.apologies:classify().
         """
         # Setup
-        input_hdf5_file = os.path.join(CWD, "test_files/test2.hdf5")
+        input_data_dir = os.path.join(CWD, "test_files/test_data3/")
         input_num_procs = 1
-        data_dir = os.path.join(CWD, "test_files/test_data2/")
-        append = False
-        expected_issue_apologies = [
-            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1"
+        input_overwrite = False
+        old_issues, old_commits, old_pull_requests = getDataFilepaths(input_data_dir)
+        class_issues = old_issues.split(".csv")[0] + "_classified.csv"
+        class_commits = old_commits.split(".csv")[0] + "_classified.csv"
+        class_pull_requests = old_pull_requests.split(".csv")[0] + "_classified.csv"
+        expected_issue_classes = [
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["1", "1"]
         ]
-        expected_commit_apologies = [
-            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0"
+        expected_commit_classes = [
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"]
         ]
-        expected_pull_request_apologies = [
-            "NUM_APOLOGY_LEMMAS", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"
+        expected_pull_request_classes = [
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"],
+            ["0", "0"], ["0", "0"], ["0", "0"], ["0", "0"]
         ]
-        load(input_hdf5_file, data_dir, append)
-        preprocess(input_hdf5_file, input_num_procs)
-        # Test data before write
-        actual = classify(input_hdf5_file, input_num_procs)
-        actual_issue_apologies = list(actual[0])
-        actual_commit_apologies = list(actual[1])
-        actual_pull_request_apologies = list(actual[2])
-        self.assertListEqual(expected_issue_apologies, actual_issue_apologies)
-        self.assertListEqual(expected_commit_apologies, actual_commit_apologies)
-        self.assertListEqual(expected_pull_request_apologies, actual_pull_request_apologies)
-        # Test data after write
-        f = h5py.File(input_hdf5_file)
-        actual_issue_apologies = numpyByteArrayToStrList(f["issues"][...][:, -1])
-        actual_commit_apologies = numpyByteArrayToStrList(f["commits"][...][:, -1])
-        actual_pull_request_apologies = numpyByteArrayToStrList(f["pull_requests"][...][:, -1])
-        self.assertListEqual(expected_issue_apologies, actual_issue_apologies)
-        self.assertListEqual(expected_commit_apologies, actual_commit_apologies)
-        self.assertListEqual(expected_pull_request_apologies, actual_pull_request_apologies)
+        # Test
+        actual_issue_classes, actual_commit_classes, actual_pull_request_classes = \
+            classify(input_data_dir, input_num_procs, input_overwrite)
+        self.assertListEqual(expected_issue_classes, actual_issue_classes)
+        self.assertListEqual(expected_commit_classes, actual_commit_classes)
+        self.assertListEqual(expected_pull_request_classes, actual_pull_request_classes)
         # Cleanup
-        h5py.File.close(f)
-        os.remove(input_hdf5_file)
+        os.remove(class_issues)
+        os.remove(class_commits)
+        os.remove(class_pull_requests)
 
 
 #### MAIN ##########################################################################################

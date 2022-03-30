@@ -10,8 +10,8 @@ from shutil import copyfile
 
 
 #### PACKAGE IMPORTS ###############################################################################
-from src.helpers import doesPathExist, fixNullBytes, getDataFilepaths, ISSUES_HEADER, \
-    COMMITS_HEADER, PULL_REQUESTS_HEADER
+from src.helpers import doesPathExist, fixNullBytes, getDataFilepaths, overwriteFile, \
+    ISSUES_HEADER, COMMITS_HEADER, PULL_REQUESTS_HEADER
 
 
 #### GLOBALS #######################################################################################
@@ -21,26 +21,6 @@ from src.helpers import doesPathExist, fixNullBytes, getDataFilepaths, ISSUES_HE
 
 
 #### FUNCTIONS #####################################################################################
-def _overwrite(old_file, new_file): # pragma: no cover
-    """
-    Helper function for deduplicate(). Overwrite old_file with new_file.
-
-    GIVEN:
-      old_file (str) -- path to file to overwrite
-      new_file (str) -- path to file to overwrite old_file with
-
-    RETURN:
-      None
-    """
-    # Delete old_file
-    if doesPathExist(old_file):
-        os.remove(old_file)
-
-    # Rename new_file to old_file
-    if doesPathExist(new_file):
-        os.rename(new_file, old_file)
-
-
 def _deduplicate(old_file, new_file, header):
     """
     Helper function for deduplicate(). Remove duplicate header rows from downloaded CSV files.
@@ -104,9 +84,9 @@ def deduplicate(data_dir, overwrite=False):
     _deduplicate(pull_requests_file, dedup_pull_requests_file, PULL_REQUESTS_HEADER)
 
     if overwrite:
-        _overwrite(issues_file, dedup_issues_file)
-        _overwrite(commits_file, dedup_commits_file)
-        _overwrite(pull_requests_file, dedup_pull_requests_file)
+        overwriteFile(issues_file, dedup_issues_file)
+        overwriteFile(commits_file, dedup_commits_file)
+        overwriteFile(pull_requests_file, dedup_pull_requests_file)
 
 
 #### MAIN ##########################################################################################

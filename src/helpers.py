@@ -3,7 +3,6 @@
 
 #### PYTHON IMPORTS ################################################################################
 import datetime
-import numpy as np
 import os
 import sys
 from pathlib import Path
@@ -232,97 +231,6 @@ def parseRepoURL(repo_url):
     return repo_owner, repo_name
 
 
-def numpyByteArrayToStrList(numpy_byte_array):
-    """
-    Convert a numpy array containing byte strings to a regular list containing strings.
-
-    GIVEN:
-      numpy_byte_array (array) -- numpy array containing byte strings
-
-    RETURN:
-      string_list (list) -- list containing regular strings
-    """
-    string_list = np.char.decode(numpy_byte_array.astype(np.bytes_), "UTF-8")
-    #print(type(string_list))
-    #print("Hello 1")
-    #string_list = string_list.astype(str)
-    #print(type(string_list))
-    #print("Hello 2")
-    string_list = string_list.tolist()
-    #print(type(string_list))
-    #print("Hello 3")
-    #string_list = numpy_byte_array.astype(str).tolist()
-    return string_list
-
-
-def sanitizeUnicode(str_list):
-    """
-    Replace weird unicode characters that break numpy with "BAD_CHAR".
-
-    GIVEN:
-      str_list (list) -- list of strings to sanitize
-
-    RETURN:
-      new_str_list (list) -- sanitized copy of str_list
-    """
-    new_str_list = list()
-    for element in str_list:
-        element_copy = element
-        for bad_char in BAD_CHARS:
-            element_copy = element_copy.replace(bad_char, "BAD_CHAR")
-        element_copy = element_copy.encode("utf-8", "ignore").decode("utf-8", "ignore")
-        new_str_list.append(element_copy)
-
-    return new_str_list
-
-
-def getFileSizeMB(filepath):
-    """
-    Get the filesize (in MB) of the given file.
-
-    GIVEN:
-      filepath (str) -- absolute path to a file
-
-    RETURN:
-      size_mb (float) -- size of the file in MB
-    """
-    size_bytes = os.path.getsize(filepath)
-    size_mb = float(size_bytes) / (1024 * 1024)
-    return size_mb
-
-
-def getFileCreationTime(filepath):
-    """
-    Get the creation date for a file.
-
-    GIVEN:
-      filepath (str) -- absolute path to a file
-
-    RETURN:
-      creation_time (str) -- timestamp of the file's creation date
-    """
-    filename = Path(filepath)
-    creation_time = datetime.datetime.fromtimestamp(filename.stat().st_ctime)
-    creation_time = creation_time.strftime("%Y/%m/%d @ %H:%M:%S")
-    return creation_time
-
-
-def getFileModifiedTime(filepath):
-    """
-    Get the modification date for a file.
-
-    GIVEN:
-      filepath (str) -- absolute path to a file
-
-    RETURN:
-      modification_time (str) -- timestamp of the file's modification date
-    """
-    filename = Path(filepath)
-    modification_time = datetime.datetime.fromtimestamp(filename.stat().st_mtime)
-    modification_time = modification_time.strftime("%Y/%m/%d @ %H:%M:%S")
-    return modification_time
-
-
 def getDataFilepaths(data_dir):
     """
     Get filepaths for issues, commits, and pull requests in the given data_dir.
@@ -341,6 +249,25 @@ def getDataFilepaths(data_dir):
     pull_requests_file = os.path.join(data_dir, "pull_requests/pull_requests.csv")
 
     return [issues_file, commits_file, pull_requests_file]
+
+
+def overwriteFile(old_file, new_file): # pragma: no cover
+    """
+    Overwrite old_file with new_file.
+
+    GIVEN:
+      old_file (str) -- path to file to overwrite
+      new_file (str) -- path to file to overwrite old_file with
+
+    RETURN:
+      None
+    """
+    # Delete old_file
+    if doesPathExist(old_file):
+        os.remove(old_file)
+
+    # Rename new_file to old_file
+    os.rename(new_file, old_file)
 
 
 #### MAIN ##########################################################################################

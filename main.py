@@ -13,8 +13,7 @@ from src.delete import delete
 from src.download import download
 from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
-from src.info import infoHDF5, infoData
-from src.load import load
+from src.info import infoData
 from src.preprocess import preprocess
 from src.search import search, topRepos
 
@@ -52,29 +51,6 @@ def dedupCommand(args):
 
     # Pass arguments to src.deduplicate:deduplicate()
     deduplicate(args.data_dir, args.overwrite)
-
-
-def loadCommand(args):
-    """
-    Parse arguments for 'load' command and pass them to src.load:load().
-    """
-    # Canonicalize filepaths
-    args.hdf5_file = canonicalize(args.hdf5_file)
-    args.data_dir = canonicalize(args.data_dir)
-
-    # Check assertions
-    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir) 
-    if args.append:
-        assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
-
-    # Edge case
-    if doesPathExist(args.hdf5_file) and not args.append:
-        input("File '{}' already exists. Continuing will delete and recreate this file. Press "
-              "CTRL+C now to abort, or any key to continue. If you want to append new data to the "
-              "file, please re-run with the flag '--append'.".format(args.hdf5_file))
-    
-    # Pass arguments to src.load:load()
-    load(args.hdf5_file, args.data_dir, args.append)
 
 
 def deleteCommand(args):
@@ -135,10 +111,10 @@ def preprocessCommand(args):
     Parse arguments for 'preprocess' command and pass them to src.preprocess:preprocess().
     """
     # Canonicalize filepaths
-    args.hdf5_file = canonicalize(args.hdf5_file)
+    args.data_dir = canonicalize(args.data_dir)
 
     # Check assertions
-    assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
     assert args.num_procs <= mproc.cpu_count(), \
         "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
 
@@ -146,7 +122,7 @@ def preprocessCommand(args):
         args.num_procs = mproc.cpu_count()
 
     # Pass arguments to src.preprocess:preprocess().
-    preprocess(args.hdf5_file, args.num_procs)
+    preprocess(args.data_dir, args.num_procs, args.overwrite)
 
 
 def classifyCommand(args):
@@ -154,10 +130,10 @@ def classifyCommand(args):
     Parse arguments for 'classify' command and pass them to src.apologies:classify().
     """
     # Canonicalize filepaths
-    args.hdf5_file = canonicalize(args.hdf5_file)
+    args.data_dir = canonicalize(args.data_dir)
 
     # Check assertions
-    assert doesPathExist(args.hdf_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
     assert args.num_procs <= mproc.cpu_count(), \
         "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
 
@@ -165,7 +141,7 @@ def classifyCommand(args):
         args.num_procs = mproc.cpu_count()
 
     # Pass arguments to src.apologies:classify().
-    classify(args.hdf5_file, args.num_procs)
+    classify(args.data_dir, args.num_procs, args.overwrite)
 
 
 def infoDataCommand(args):
@@ -180,20 +156,6 @@ def infoDataCommand(args):
     
     # Pass arguments to src.info:infoData()
     infoData(args.data_dir)
-
-
-def infoHDF5Command(args):
-    """
-    Display useful information about an HDF5 file and its contents.
-    """
-    # Canonicalize filepaths
-    args.hdf5_file = canonicalize(args.hdf5_file)
-
-    # Check assertions
-    assert doesPathExist(args.hdf5_file), ASSERT_NOT_EXIST.format("hdf5_file", args.hdf5_file)
-
-    # Pass arguments to src.info:infoHDF5()
-    infoHDF5(args.hdf5_file)
 
 
 def infoRateLimitCommand(args):
@@ -251,26 +213,6 @@ if __name__ == "__main__":
         "have backups of your data."
     )
     dedup_parser.set_defaults(func=dedupCommand)
-
-    #### LOAD COMMAND
-    load_parser = command_parsers.add_parser(
-        "load", help="Load downloaded data into an HDF5 file."
-    )
-
-    load_parser.add_argument(
-        "--append", default=False, action="store_true", help="If included, data will be appended to"
-        " the HDF5 file. Otherwise, the file will be created/overwritten. Note that you can append "
-        "duplicate data with this flag."
-    )
-    load_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of the HDF5 file to create/open and load with "
-        "data. Relative paths will be canonicalized."
-    )
-    load_parser.add_argument(
-        "data_dir", type=str, help="The path to a directory where data is downloaded and ready to "
-        "be loaded. Relative paths will be canonicalized."
-    )
-    load_parser.set_defaults(func=loadCommand)
 
     #### DELETE COMMAND
     delete_parser = command_parsers.add_parser(
@@ -339,18 +281,23 @@ if __name__ == "__main__":
 
     #### PREPROCESS COMMAND
     preprocess_parser = command_parsers.add_parser(
-        "preprocess", help="For each dataset in the given HDF5 file, append a "
-        "'COMMENT_TEXT_LEMMATIZED' column that contains the comment text that (1) is lowercased, "
-        "(2) has punctuation removed, (3) has non-space whitespace removed, and (4) is lemmatized."
+        "preprocess", help="For each downloaded CSV file, append a 'COMMENT_TEXT_LEMMATIZED' column"
+        " that contains text that (1) is lowercased, (2) has punctuation removed, (3) has non-space"
+        " whitespace removed, and (4) is lemmatized."
     )
 
     preprocess_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of an HDF5 file that has already been populated "
-        "using the 'load' command. Relative paths will be canonicalized."
+        "data_dir", type=str, help="The path to a directory where data is downloaded and ready to "
+        "be preprocessed. Relative paths will be canonicalized."
     )
     preprocess_parser.add_argument(
         "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing. Enter "
         "'0' to use all available CPUs."
+    )
+    preprocess_parser.add_argument(
+        "--overwrite", default=False, action="store_true", help="If included, the lemmatized "
+        "CSV file will overwrite the old CSV file. Using this flag is not recommended unless you "
+        "have backups of your data."
     )
     preprocess_parser.set_defaults(func=preprocessCommand)
 
@@ -362,12 +309,18 @@ if __name__ == "__main__":
     )
     
     classify_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of an HDF5 file that has already been populated "
-        "using the 'load' and 'preprocess' commands. Relative paths will be canonicalized."
+        "data_dir", type=str, help="The path to a directory with data that has already been "
+        "populated using the 'downloadload' and 'preprocess' commands. Relative paths will be"
+        " canonicalized."
     )
     classify_parser.add_argument(
         "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing. Enter "
         "'0' to use all available CPUs."
+    )
+    classify_parser.add_argument(
+        "--overwrite", default=False, action="store_true", help="If included, the classified "
+        "CSV file will overwrite the old CSV file. Using this flag is not recommended unless you "
+        "have backups of your data."
     )
     classify_parser.set_defaults(func=classifyCommand)
 
@@ -381,17 +334,6 @@ if __name__ == "__main__":
         "paths will be canonicalized."
     )
     info_data_parser.set_defaults(func=infoDataCommand)
-
-    #### INFO_HDF5 COMMAND
-    info_hdf5_parser = command_parsers.add_parser(
-        "info_hdf5", help="Display info about the data loaded into HDF5."
-    )
-
-    info_hdf5_parser.add_argument(
-        "hdf5_file", type=str, help="The path/name of an HDF5 file. Relative paths will be "
-        "canonicalized."
-    )
-    info_hdf5_parser.set_defaults(func=infoHDF5Command)
 
     #### INFO_RATE_LIMIT COMMAND
     info_rate_limit_parser = command_parsers.add_parser(
