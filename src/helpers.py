@@ -231,6 +231,13 @@ def parseRepoURL(repo_url):
     return repo_owner, repo_name
 
 
+def getSubDirNames(top_dir):
+    """
+    Get the names of subdirectories, one level deep.
+    """
+    return [d[i] for d in os.walk(top_dir)][0]
+
+
 def getDataFilepaths(data_dir):
     """
     Get filepaths for issues, commits, and pull requests in the given data_dir.

@@ -15,6 +15,7 @@ from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
 from src.info import infoData
 from src.preprocess import preprocess
+from src.random import randomSample
 from src.search import search, topRepos
 
 
@@ -135,7 +136,7 @@ def classifyCommand(args):
     # Check assertions
     assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
     assert args.num_procs <= mproc.cpu_count(), \
-        "Argument 'num_procs' cannot be greater thanmaximum number of CPUs: {}.".format(mproc.cpu_count())
+        "Argument 'num_procs' cannot be greater than maximum number of CPUs: {}.".format(mproc.cpu_count())
 
     if args.num_procs == 0:
         args.num_procs = mproc.cpu_count()
@@ -163,6 +164,27 @@ def infoRateLimitCommand(args):
     Query GitHub's GraphQL API for rate limit information.
     """
     print(getRateLimitInfo())
+
+
+def randomSampleCommand(args):
+    """
+    Select a random sample of developer comments.
+    """
+    # Canonicalize filepaths
+    args.data_dir = canonicalize(args.data_dir)
+    args.output_file = canonicalize(args.output_file)
+
+    # Check assertions
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
+    assert args.size > 0, "Argument 'size'={} cannot be less than 1.".format(args.size)
+
+    # Verify overwriting
+    if doesPathExists(args.output_file):
+        input("The output_file='{}' already exists. Do you wish to overwrite it? Press CTRL+C now "
+              "to abort, or any key to continue and overwrite.".format(args.output_file))
+
+    # Pass arguments to src.random:randomSample()
+    randomSample(args.data_dir, args.size, args.apologies_only, args.source, args.output_file)
 
 
 #### MAIN ##########################################################################################
@@ -339,8 +361,34 @@ if __name__ == "__main__":
     info_rate_limit_parser = command_parsers.add_parser(
         "info_rate_limit", help="Display rate limiting info from GitHub's GraphQL API."
     )
-
     info_rate_limit_parser.set_defaults(func=infoRateLimitCommand)
+
+    #### RANDOM_SAMPLE COMMAND
+    random_parser = command_parsers.add_parser(
+        "random_sample", help="Select a random sample of developer comments based on the provided "
+        "criteria."
+    )
+
+    random_parser.add_argument(
+        "data_dir", type=str, help="The path for a directory containing processed and classified "
+        "data. Relative paths will be canonicalized."
+    )
+    random_parser.add_argument(
+        "size", type=int, help="The desired random sample size."
+    )
+    random_parser.add_argument(
+        "source", type=str, choices=["IS", "CO", "PR", "ALL"], help="The source of the data to "
+        "sample from; IS=issues, CO=commits, PR=pull requests, ALL=all saources."
+    )
+    random_parser.add_argument(
+        "output_file", type=str, help="The path for a file to save the random sample to."
+    )
+    random_parser.add_argument(
+        "--apologies_only", default=False, action="store_true", help="If included, random samples "
+        "will only be collected from comments classified as apologies."
+    )
+    random_parser.set_defaults(func=randomSampleCommand)
+
 
     #### PARSER ARGUMENTS
     args = parser.parse_args()
