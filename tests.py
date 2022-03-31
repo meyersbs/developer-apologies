@@ -26,7 +26,7 @@ from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoU
 from src.info import infoData
 from src.preprocess import preprocess, _stripNonWords, _lemmatize
 from src.random import _getPopulationFilepaths, _deduplicateHeaders, _getSourceFromFilepath, \
-    _getTargetColumns, _filterNonApologies, _getPopulationData, randomSample
+    _getTargetColumns, _filterNonApologies, _getPopulationData, randomSample, ABRIDGED_HEADER
 from src.search import search, topRepos
 
 
@@ -2701,7 +2701,83 @@ class TestRandom(unittest.TestCase):
         self.assertListEqual(expected, actual)
 
             
+    def test__randomSample(self):
+        """
+        Test src.random:randomSample().
+        """
+        #### Case 1
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data4/")
+        sample_size = 20
+        apologies_only = False
+        source = "ALL"
+        output_file = os.path.join(CWD, "test_files/random_sample_20.csv")
+        # Test
+        randomSample(data_dir, sample_size, apologies_only, source, output_file)
+        with open(output_file, "r", encoding="utf-8") as f:
+            csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
+            header = next(csv_reader)
+            rows = list()
+            for row in csv_reader:
+                rows.append(row)
+
+        self.assertEqual(sample_size, len(rows))
+        self.assertEqual(ABRIDGED_HEADER, header)
+        for row in rows:
+            self.assertEqual(len(ABRIDGED_HEADER), len(row))
+        # Cleanup
+        os.remove(output_file)
+
+        #### Case 2
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data4/")
+        sample_size = 100
+        apologies_only = False
+        source = "IS"
+        output_file = os.path.join(CWD, "test_files/random_sample_100.csv")
+        # Test
+        randomSample(data_dir, sample_size, apologies_only, source, output_file)
+        with open(output_file, "r", encoding="utf-8") as f:
+            csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+            header = next(csv_reader)
+            rows = list()
+            for row in csv_reader:
+                rows.append(row)
+
+        self.assertEqual(sample_size, len(rows))
+        self.assertEqual(ABRIDGED_HEADER, header)
+        for row in rows:
+            self.assertEqual(len(ABRIDGED_HEADER), len(row))
+            self.assertEqual(source, row[0])
+        # Cleanup
+        os.remove(output_file)
+
+        #### Case 3
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data4/")
+        sample_size = 1
+        apologies_only = True
+        source = "ALL"
+        output_file = os.path.join(CWD, "test_files/random_sample_1.csv")
+        # Test
+        randomSample(data_dir, sample_size, apologies_only, source, output_file)
+        with open(output_file, "r", encoding="utf-8") as f:
+            csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+            header = next(csv_reader)
+            rows = list()
+            for row in csv_reader:
+                rows.append(row)
+
+        self.assertEqual(sample_size, len(rows))
+        self.assertEqual(ABRIDGED_HEADER, header)
+        for row in rows:
+            self.assertEqual(len(ABRIDGED_HEADER), len(row))
+            self.assertEqual("1", row[-1])
+        # Cleanup
+        os.remove(output_file)
 
 
 #### MAIN ##########################################################################################
