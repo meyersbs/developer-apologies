@@ -171,7 +171,7 @@ def _getPopulationData(data_dir, apologies_only, source):
     return pop_data
     
 
-def randomSample(data_dir, sample_size, apologies_only, source, output_file):
+def randomSample(data_dir, sample_size, apologies_only, source, output_file, export_all):
     """
     Collect a random sample of developer comments and save to disk.
 
@@ -182,7 +182,8 @@ def randomSample(data_dir, sample_size, apologies_only, source, output_file):
                                from comments classified as apologies
       source (str) -- source of comments to sample from; IS=issues, CO=commits, PR=pull requests,
                       ALL=all sources
-      output_file (str) -- path to save random sample to
+      output_file (str) -- path to save random sample to, or directory to save multiple samples to
+      export_all (bool) -- whether to export multiple samples of 'sample_size' or just one
 
     RETURN:
       None
@@ -197,15 +198,40 @@ def randomSample(data_dir, sample_size, apologies_only, source, output_file):
     # Randomly select 'sample_size' elements from 'pop_data'
     sample_data = random.sample(pop_data, sample_size)
 
-    # Save samples to disk
-    with open(output_file, "w") as f:
-        csv_writer = csv.writer(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+    if not export_all:
+        # Randomly select 'sample_size' elements from 'pop_data'
+        sample_data = random.sample(pop_data, sample_size)
 
-        # Write header row
-        csv_writer.writerow(ABRIDGED_HEADER)
+        # Save samples to disk
+        with open(output_file, "w") as f:
+            csv_writer = csv.writer(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
-        for row in sample_data:
-            csv_writer.writerow(row)
+            # Write header row
+            csv_writer.writerow(ABRIDGED_HEADER)
+
+            for row in sample_data:
+                csv_writer.writerow(row)
+    else:
+        # Shuffle data
+        sample_data = random.sample(pop_data, len(pop_data))
+
+        # Create chunks of sample_size
+        chunks = list()
+        for i in range(0, len(sample_data), sample_size):
+            chunks.append(sample_data[i:i+sample_size])
+
+        # Export chunks to disk
+        for i in range(0, len(chunks)):
+            export_file = os.path.join(output_file, "random_sample_{}_{}.csv".format(sample_size, i))
+            with open(export_file, "w") as f:
+                csv_writer = csv.writer(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+                # Write header row
+                csv_writer.writerow(ABRIDGED_HEADER)
+
+                curr_chunk = chunks[i]
+                for row in curr_chunk:
+                    csv_writer.writerow(row)
 
 
 #### MAIN ##########################################################################################

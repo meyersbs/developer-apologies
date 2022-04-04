@@ -185,7 +185,8 @@ def randomSampleCommand(args):
               "to abort, or any key to continue and overwrite.".format(args.output_file))
 
     # Pass arguments to src.random:randomSample()
-    randomSample(args.data_dir, args.size, args.apologies_only, args.source, args.output_file)
+    randomSample(args.data_dir, args.size, args.apologies_only, args.source, args.output_file,
+        args.export_all)
 
 
 #### MAIN ##########################################################################################
@@ -382,11 +383,16 @@ if __name__ == "__main__":
         "sample from; IS=issues, CO=commits, PR=pull requests, ALL=all saources."
     )
     random_parser.add_argument(
-        "output_file", type=str, help="The path for a file to save the random sample to."
+        "output_file", type=str, help="The path for a file to save the random sample to, if "
+        "--export_all=False, otherwise the directory to save random samples to."
     )
     random_parser.add_argument(
         "--apologies_only", default=False, action="store_true", help="If included, random samples "
         "will only be collected from comments classified as apologies."
+    )
+    random_parser.add_argument(
+        "--export_all", default=False, action="store_true", help="Whether or not to export as many"
+        " samples of the given size or just one sample."
     )
     random_parser.set_defaults(func=randomSampleCommand)
 

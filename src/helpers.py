@@ -238,6 +238,13 @@ def getSubDirNames(top_dir):
     return [d[1] for d in os.walk(top_dir)][0]
 
 
+def getFilenames(top_dir):
+    """
+    Get the names of files, one level deep.
+    """
+    return [d[2] for d in os.walk(top_dir)][0]
+
+
 def getDataFilepaths(data_dir):
     """
     Get filepaths for issues, commits, and pull requests in the given data_dir.

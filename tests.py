@@ -21,8 +21,8 @@ from src.delete import delete
 from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
-    InvalidGitHubURLError, getDataFilepaths, getSubDirNames, ISSUES_HEADER, COMMITS_HEADER, \
-    PULL_REQUESTS_HEADER
+    InvalidGitHubURLError, getDataFilepaths, getSubDirNames, getFilenames, ISSUES_HEADER, \
+    COMMITS_HEADER, PULL_REQUESTS_HEADER
 from src.info import infoData
 from src.preprocess import preprocess, _stripNonWords, _lemmatize
 from src.random import _getPopulationFilepaths, _deduplicateHeaders, _getSourceFromFilepath, \
@@ -2326,17 +2326,15 @@ class TestSearch(unittest.TestCase):
             "https://github.com/yangshun/tech-interview-handbook", "https://github.com/yarnpkg/yarn",
             "https://github.com/ytdl-org/youtube-dl", "https://github.com/zenorocha/clipboard.js",
             "https://github.com/google/zx", "https://github.com/supabase/supabase",
-            "https://github.com/jaredpalmer/formik"
+            "https://github.com/jaredpalmer/formik", "https://github.com/eugenp/tutorials"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
         # This changes sometimes, so I'm leaving these debug statements to help figure out what
         # changed
-        #print(len(expected))
-        #print(len(actual))
-        #print(sorted(expected))
-        #print(sorted(actual))
+        #print("Remove:")
         #print(set(expected).difference(set(actual)))
+        #print("Add:")
         #print(set(actual).difference(set(expected)))
         self.assertListEqual(sorted(expected), sorted(actual))
 
@@ -2711,10 +2709,11 @@ class TestRandom(unittest.TestCase):
         sample_size = 20
         apologies_only = False
         source = "ALL"
-        output_file = os.path.join(CWD, "test_files/random_sample_20.csv")
+        output_path = os.path.join(CWD, "test_files/random_sample_20.csv")
+        export_all = False
         # Test
-        randomSample(data_dir, sample_size, apologies_only, source, output_file)
-        with open(output_file, "r", encoding="utf-8") as f:
+        randomSample(data_dir, sample_size, apologies_only, source, output_path, export_all)
+        with open(output_path, "r", encoding="utf-8") as f:
             csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
             header = next(csv_reader)
@@ -2727,7 +2726,7 @@ class TestRandom(unittest.TestCase):
         for row in rows:
             self.assertEqual(len(ABRIDGED_HEADER), len(row))
         # Cleanup
-        os.remove(output_file)
+        os.remove(output_path)
 
         #### Case 2
         # Setup
@@ -2735,10 +2734,11 @@ class TestRandom(unittest.TestCase):
         sample_size = 100
         apologies_only = False
         source = "IS"
-        output_file = os.path.join(CWD, "test_files/random_sample_100.csv")
+        output_path = os.path.join(CWD, "test_files/random_sample_100.csv")
+        export_all = False
         # Test
-        randomSample(data_dir, sample_size, apologies_only, source, output_file)
-        with open(output_file, "r", encoding="utf-8") as f:
+        randomSample(data_dir, sample_size, apologies_only, source, output_path, export_all)
+        with open(output_path, "r", encoding="utf-8") as f:
             csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
             header = next(csv_reader)
@@ -2752,7 +2752,7 @@ class TestRandom(unittest.TestCase):
             self.assertEqual(len(ABRIDGED_HEADER), len(row))
             self.assertEqual(source, row[0])
         # Cleanup
-        os.remove(output_file)
+        os.remove(output_path)
 
         #### Case 3
         # Setup
@@ -2760,10 +2760,11 @@ class TestRandom(unittest.TestCase):
         sample_size = 1
         apologies_only = True
         source = "ALL"
-        output_file = os.path.join(CWD, "test_files/random_sample_1.csv")
+        output_path = os.path.join(CWD, "test_files/random_sample_1.csv")
+        export_all = False
         # Test
-        randomSample(data_dir, sample_size, apologies_only, source, output_file)
-        with open(output_file, "r", encoding="utf-8") as f:
+        randomSample(data_dir, sample_size, apologies_only, source, output_path, export_all)
+        with open(output_path, "r", encoding="utf-8") as f:
             csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
             header = next(csv_reader)
@@ -2777,7 +2778,37 @@ class TestRandom(unittest.TestCase):
             self.assertEqual(len(ABRIDGED_HEADER), len(row))
             self.assertEqual("1", row[-1])
         # Cleanup
-        os.remove(output_file)
+        os.remove(output_path)
+
+        #### Case 4
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data4/")
+        sample_size = 50
+        apologies_only = False
+        source = "ALL"
+        output_path = os.path.join(CWD, "test_files/random_samples/")
+        os.mkdir(output_path)
+        export_all = True
+        # Test
+        randomSample(data_dir, sample_size, apologies_only, source, output_path, export_all)
+        filenames = getFilenames(output_path)
+        for fname in filenames:
+            with open(os.path.join(output_path, fname), "r", encoding="utf-8") as f:
+                csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+                header = next(csv_reader)
+
+                rows = list()
+                for row in csv_reader:
+                    self.assertEqual(len(ABRIDGED_HEADER), len(row))
+                    rows.append(row)
+            try:
+                self.assertEqual(sample_size, len(rows))
+            except:
+                self.assertLess(len(rows), sample_size)
+            self.assertEqual(ABRIDGED_HEADER, header)
+        # Cleanup
+        shutil.rmtree(output_path)
 
 
 #### MAIN ##########################################################################################
