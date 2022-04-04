@@ -23,7 +23,14 @@ SOURCE_COLUMN_MAP = {"IS": IS_COLUMN_DICT, "CO": CO_COLUMN_DICT, "PR": PR_COLUMN
 #### FUNCTIONS #####################################################################################
 def _getPopulationFilepaths(data_dir, source):
     """
+    For the given 'data_dir', get a list of paths matching the given 'source'.
 
+    GIVEN:
+      data_dir (str) -- path to a directory containing data
+      source (str) -- one of ["IS", "CO", "PR", "ALL"] indicating the target data source
+
+    RETURN:
+      pop_paths (list) -- list of filepaths matching target data source
     """
     # Get subdirs
     sub_dirs = getSubDirNames(data_dir)
@@ -66,7 +73,7 @@ def _getPopulationFilepaths(data_dir, source):
 
 def _deduplicateHeaders(rows, header):
     """
-
+    Remove duplicate header rows, if they exist.
     """
     try:
         while True:
@@ -79,7 +86,7 @@ def _deduplicateHeaders(rows, header):
 
 def _getSourceFromFilepath(filepath):
     """
-
+    Parse filepath to determine data source.
     """
     src = None
     if "commits.csv" in filepath:
@@ -94,7 +101,7 @@ def _getSourceFromFilepath(filepath):
 
 def _getTargetColumns(rows, source, filepath):
     """
-
+    Get a subset of columns from the raw data.
     """
     target_rows = list()
     if source != "ALL":
@@ -124,7 +131,7 @@ def _getTargetColumns(rows, source, filepath):
 
 def _filterNonApologies(pop_data):
     """
-
+    Filter out comments that do not contain apology lemmas.
     """
     filtered_pop_data = list()
     for row in pop_data:
@@ -138,7 +145,7 @@ def _filterNonApologies(pop_data):
 
 def _getPopulationData(data_dir, apologies_only, source):
     """
-
+    Get the data that we care about.
     """
     # Get filepaths to sample from
     pop_filepaths = _getPopulationFilepaths(data_dir, source)
