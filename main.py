@@ -18,6 +18,7 @@ from src.info import infoData
 from src.preprocess import preprocess
 from src.random import randomSample
 from src.search import search, topRepos
+from src.stats import stats
 
 
 #### GLOBALS #######################################################################################
@@ -187,6 +188,20 @@ def randomSampleCommand(args):
     # Pass arguments to src.random:randomSample()
     randomSample(args.data_dir, args.size, args.apologies_only, args.source, args.output_file,
         args.export_all)
+
+
+def statsCommand(args):
+    """
+    Compute statistics for apologies and non-apologies.
+    """
+    # Canonicalize filepaths
+    args.data_dir = canonicalize(args.data_dir)
+
+    # Check assertions
+    assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
+
+    # Pass arguments to src.stats:stats()
+    stats(args.data_dir)
 
 
 #### MAIN ##########################################################################################
@@ -396,6 +411,17 @@ if __name__ == "__main__":
     )
     random_parser.set_defaults(func=randomSampleCommand)
 
+    #### APOLOGY_STATS COMMAND
+    stats_parser = command_parsers.add_parser(
+        "apology_stats", help="Compute statistics for: (1) average apology length, (2) average non"
+        "-apology length, (3) average lemmas per apology, (4) frequency of lemmas."
+    )
+
+    stats_parser.add_argument(
+        "data_dir", type=str, help="The path for a directory containing processed and classified "
+        "data. Relative paths will be cononicalized."
+    )
+    stats_parser.set_defaults(func=statsCommand)
 
     #### PARSER ARGUMENTS
     args = parser.parse_args()
