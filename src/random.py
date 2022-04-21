@@ -106,22 +106,28 @@ def _getTargetColumns(rows, source, filepath):
     target_rows = list()
     if source != "ALL":
         for row in rows:
+            num_lemmas = row[SOURCE_COLUMN_MAP[source]["NUM_APOLOGY_LEMMAS"]]
             new_row = [
                 source,                                               # SOURCE
                 row[SOURCE_COLUMN_MAP[source]["COMMENT_URL"]],        # COMMENT_URL
                 row[SOURCE_COLUMN_MAP[source]["COMMENT_TEXT"]],       # COMMENT_TEXT
                 row[SOURCE_COLUMN_MAP[source]["NUM_APOLOGY_LEMMAS"]], # NUM_APOLOGY_LEMMAS
+                # Workaround for old data that does not have IS_APOLOGY field
+                #"1" if int(num_lemmas) > 0 else "0"
                 row[SOURCE_COLUMN_MAP[source]["IS_APOLOGY"]]          # IS_APOLOGY
             ]
             target_rows.append(new_row)
     else:
         for row in rows:
             src = _getSourceFromFilepath(filepath)
+            num_lemmas = row[SOURCE_COLUMN_MAP[src]["NUM_APOLOGY_LEMMAS"]]
             new_row = [
                 src,                                               # SOURCE
                 row[SOURCE_COLUMN_MAP[src]["COMMENT_URL"]],        # COMMENT_URL
                 row[SOURCE_COLUMN_MAP[src]["COMMENT_TEXT"]],       # COMMENT_TEXT
                 row[SOURCE_COLUMN_MAP[src]["NUM_APOLOGY_LEMMAS"]], # NUM_APOLOGY_LEMMAS
+                # Workaround for old data that does not have IS_APOLOGY field
+                #"1" if int(num_lemmas) > 0 else "0"
                 row[SOURCE_COLUMN_MAP[src]["IS_APOLOGY"]]          # IS_APOLOGY
             ]
             target_rows.append(new_row)
@@ -153,6 +159,7 @@ def _getPopulationData(data_dir, apologies_only, source):
     # Get data
     pop_data = list()
     for filepath in pop_filepaths:
+        #print(filepath)
         with open(filepath, "r", encoding="utf-8") as f:
             csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
@@ -167,6 +174,10 @@ def _getPopulationData(data_dir, apologies_only, source):
 
             # Get a subset of the columns that we care about
             rows = _getTargetColumns(rows, source, filepath)
+
+            # Filter out non-apologies
+            if apologies_only:
+                rows = _filterNonApologies(rows)
 
             # Add rows to population data
             pop_data.extend(rows)
@@ -197,15 +208,39 @@ def randomSample(data_dir, sample_size, apologies_only, source, output_file, exp
     """
     # Get data to sample from
     pop_data = _getPopulationData(data_dir, apologies_only, source)
+    print("Population Size: {}".format(len(pop_data)))
 
-    # Filter out non-apologies, if necessary
-    if apologies_only:
-        pop_data = _filterNonApologies(pop_data)
+    if export_all:
+        print("Exporting all data...")
+        # Shuffle data
+        print("Shuffling data...")
+        sample_data = random.sample(pop_data, len(pop_data))
+        print("Sample Data Size: {}".format(len(sample_data)))        
 
-    # Randomly select 'sample_size' elements from 'pop_data'
-    sample_data = random.sample(pop_data, sample_size)
+        # Create chunks of sample_size
+        print("Creating data chunks...")
+        chunks = list()
+        for i in range(0, len(sample_data), sample_size):
+            chunks.append(sample_data[i:i+sample_size])
+        print("Number of Chunks: {}".format(len(chunks)))
 
-    if not export_all:
+        # Export chunks to disk
+        for i in range(0, len(chunks)):
+            #print(i)
+            export_file = os.path.join(output_file, "random_sample_{}_{}.csv".format(sample_size, i))
+            with open(export_file, "w") as f:
+                csv_writer = csv.writer(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+                # Write header row
+                csv_writer.writerow(ABRIDGED_HEADER)
+
+                curr_chunk = chunks[i]
+                for row in curr_chunk:
+                    csv_writer.writerow(row)
+
+            print("Saved: {}".format(export_file))
+    else:
+        print("Exporting one random sample...")
         # Randomly select 'sample_size' elements from 'pop_data'
         sample_data = random.sample(pop_data, sample_size)
 
@@ -218,27 +253,6 @@ def randomSample(data_dir, sample_size, apologies_only, source, output_file, exp
 
             for row in sample_data:
                 csv_writer.writerow(row)
-    else:
-        # Shuffle data
-        sample_data = random.sample(pop_data, len(pop_data))
-
-        # Create chunks of sample_size
-        chunks = list()
-        for i in range(0, len(sample_data), sample_size):
-            chunks.append(sample_data[i:i+sample_size])
-
-        # Export chunks to disk
-        for i in range(0, len(chunks)):
-            export_file = os.path.join(output_file, "random_sample_{}_{}.csv".format(sample_size, i))
-            with open(export_file, "w") as f:
-                csv_writer = csv.writer(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
-
-                # Write header row
-                csv_writer.writerow(ABRIDGED_HEADER)
-
-                curr_chunk = chunks[i]
-                for row in curr_chunk:
-                    csv_writer.writerow(row)
 
 
 #### MAIN ##########################################################################################

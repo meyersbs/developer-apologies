@@ -180,7 +180,7 @@ def randomSampleCommand(args):
     assert args.size > 0, "Argument 'size'={} cannot be less than 1.".format(args.size)
 
     # Verify overwriting
-    if doesPathExists(args.output_file):
+    if doesPathExist(args.output_file):
         input("The output_file='{}' already exists. Do you wish to overwrite it? Press CTRL+C now "
               "to abort, or any key to continue and overwrite.".format(args.output_file))
 
@@ -399,7 +399,7 @@ if __name__ == "__main__":
 
     #### PARSER ARGUMENTS
     args = parser.parse_args()
-    #print(args)
+    print(args)
     args.func(args)
 
 
