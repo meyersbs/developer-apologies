@@ -28,6 +28,7 @@ from src.preprocess import preprocess, _stripNonWords, _lemmatize
 from src.random import _getPopulationFilepaths, _deduplicateHeaders, _getSourceFromFilepath, \
     _getTargetColumns, _filterNonApologies, _getPopulationData, randomSample, ABRIDGED_HEADER
 from src.search import search, topRepos
+from src.stats import stats
 
 
 #### GLOBALS #######################################################################################
@@ -2809,6 +2810,82 @@ class TestRandom(unittest.TestCase):
             self.assertEqual(ABRIDGED_HEADER, header)
         # Cleanup
         shutil.rmtree(output_path)
+
+
+class TestStats(unittest.TestCase):
+    """
+    Test cases for function in src.stats.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+
+    def test_stats(self):
+        """
+        Test src.stats:stats().
+        """
+        # Setup
+        data_dir = os.path.join(CWD, "test_files/test_data4/")
+        expected_stats_dict = {
+            "apologies": {
+                "total": 1,
+                "wc_total": 10,
+                "wc_individual": [10],
+                "wc_mean": 10.0,
+                "wc_median": 10,
+                "wc_min": 10,
+                "wc_max": 10,
+                "lc_total": 1,
+                "lc_individual": [1],
+                "lc_mean": 1.0,
+                "lc_median": 1,
+                "lc_min": 1,
+                "lc_max": 1
+            }, "non-apologies": {
+                "total": 387,
+                "wc_total": 482,
+                "wc_individual": [
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 56, 14, 24, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                "wc_mean": 1.2454780361757105,
+                "wc_median": 1,
+                "wc_min": 1,
+                "wc_max": 56
+            }, "lemmas": {
+                "apology": 0,
+                "apologise": 0,
+                "apologize": 0,
+                "blame": 0,
+                "excuse": 0,
+                "fault": 0,
+                "forgive": 0,
+                "mistake": 0,
+                "mistaken": 0,
+                "oops": 0,
+                "pardon": 0,
+                "regret": 0,
+                "sorry": 1
+            }
+        }
+        # Test
+        actual_stats_dict = stats(data_dir, verbose=False)
+        self.assertDictEqual(expected_stats_dict, actual_stats_dict)
 
 
 #### MAIN ##########################################################################################
