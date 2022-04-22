@@ -97,12 +97,13 @@ def _getTargetColumns(rows, filepath):
     target_rows = list()
     for row in rows:
         src = _getSourceFromFilepath(filepath)
-        new_row = [
-            row[SOURCE_COLUMN_MAP[src]["COMMENT_TEXT"]].split(" "),            # COMMENT_TEXT
-            row[SOURCE_COLUMN_MAP[src]["COMMENT_TEXT_LEMMATIZED"]].split(" "), # COMMENT_TEXT_LEMMATIZED
-            row[SOURCE_COLUMN_MAP[src]["NUM_APOLOGY_LEMMAS"]]                  # NUM_APOLOGY_LEMMAS
-        ]
-        target_rows.append(new_row)
+        if row[SOURCE_COLUMN_MAP[src]["COMMENT_TEXT"]] not in ["", "COMMENT_TEXT"]:
+            new_row = [
+                len(row[SOURCE_COLUMN_MAP[src]["COMMENT_TEXT"]].split(" ")),       # Word count
+                row[SOURCE_COLUMN_MAP[src]["COMMENT_TEXT_LEMMATIZED"]].split(" "), # COMMENT_TEXT_LEMMATIZED
+                row[SOURCE_COLUMN_MAP[src]["NUM_APOLOGY_LEMMAS"]]                  # NUM_APOLOGY_LEMMAS
+            ]
+            target_rows.append(new_row)
 
     return target_rows
 
@@ -207,7 +208,7 @@ def stats(data_dir, verbose=True):
         is_apology = True if int(row[2]) > 0 else False
         
         # Determine word count
-        word_count = len(row[0])
+        word_count = row[0]
 
         if is_apology:
             # Count the total frequency of apology lemmas
