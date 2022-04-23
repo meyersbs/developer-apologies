@@ -2829,6 +2829,7 @@ class TestStats(unittest.TestCase):
         """
         # Setup
         data_dir = os.path.join(CWD, "test_files/test_data4/")
+        num_procs = 1
         expected_stats_dict = {
             "apologies": {
                 "total": 1,
@@ -2881,7 +2882,7 @@ class TestStats(unittest.TestCase):
             }
         }
         # Test
-        actual_stats_dict = stats(data_dir, verbose=False)
+        actual_stats_dict = stats(data_dir, num_procs, verbose=False)
         self.assertDictEqual(expected_stats_dict, actual_stats_dict)
 
 

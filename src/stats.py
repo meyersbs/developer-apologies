@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import csv
+import multiprocessing as mproc
 import os
 import random
 import sys
@@ -118,6 +119,7 @@ def _getPopulationData(data_dir):
     # Get data
     pop_data = list()
     for filepath in pop_filepaths:
+        print(filepath)
         with open(filepath, "r", encoding="utf-8") as f:
             csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
@@ -143,7 +145,94 @@ def _getPopulationData(data_dir):
     return pop_data
 
 
-def stats(data_dir, verbose=True):
+def _stats(filepath):
+    """
+
+    """
+    print(filepath)
+    stats_dict = {
+        "apologies": {
+            "total": 0,
+            "wc_total": 0,
+            "wc_individual": list(),
+            "lc_total": 0,
+            "lc_individual": list(),
+        },
+        "non-apologies": {
+            "total": 0,
+            "wc_total": 0,
+            "wc_individual": list(),
+        },
+        "lemmas": {
+            "apology": 0,
+            "apologise": 0,
+            "apologize": 0,
+            "blame": 0,
+            "excuse": 0,
+            "fault": 0,
+            "forgive": 0,
+            "mistake": 0,
+            "mistaken": 0,
+            "oops": 0,
+            "pardon": 0,
+            "regret": 0,
+            "sorry": 0
+        }
+    }
+
+    pop_data = list()
+    with open(filepath, "r", encoding="utf-8") as f:
+        csv_reader = csv.reader(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+        # Get rows
+        rows = list()
+        header = next(csv_reader) # Skip header row
+        for entry in csv_reader:
+            rows.append(entry)
+
+        # Deduplicate header rows
+        rows = _deduplicateHeaders(rows, header)
+
+        # Get a subset of the columns that we care about
+        rows = _getTargetColumns(rows, filepath)
+
+        # Add rows to population data
+        pop_data.extend(rows)
+
+        # Memory management
+        del rows
+
+    for row in pop_data:
+        # Determine if current row is an apology
+        is_apology = True if int(row[2]) > 0 else False
+        
+        # Determine word count
+        word_count = row[0]
+
+        if is_apology:
+            # Count the total frequency of apology lemmas
+            lc = 0
+            for lemma in row[1]:
+                for apology in APOLOGY_LEMMAS:
+                    if apology == lemma:
+                        stats_dict["lemmas"][apology] += 1
+                        stats_dict["apologies"]["lc_total"] += 1
+                        lc += 1
+            stats_dict["apologies"]["lc_individual"].append(lc)
+
+        if is_apology:
+            stats_dict["apologies"]["total"] += 1
+            stats_dict["apologies"]["wc_total"] += word_count
+            stats_dict["apologies"]["wc_individual"].append(word_count)
+        else:
+            stats_dict["non-apologies"]["total"] += 1
+            stats_dict["non-apologies"]["wc_total"] += word_count
+            stats_dict["non-apologies"]["wc_individual"].append(word_count)
+
+    return stats_dict
+
+
+def stats(data_dir, num_procs, verbose=True):
     """
     Compute statistics for apology comments.
 
@@ -195,43 +284,32 @@ def stats(data_dir, verbose=True):
             "sorry": 0
         }
     }
+    # Get filepaths
+    pop_filepaths = _getPopulationFilepaths(data_dir)
 
     # Get the data
-    pop_data = _getPopulationData(data_dir)
+    #pop_data = _getPopulationData(data_dir)
 
-    cnt = 1
-    for row in pop_data:
-        if verbose: # pragma: no cover
-            print("{} / {}".format(cnt, len(pop_data)))
-            cnt += 1
-        # Determine if current row is an apology
-        is_apology = True if int(row[2]) > 0 else False
-        
-        # Determine word count
-        word_count = row[0]
+    pool = mproc.Pool(num_procs)
+    stats_list = pool.map(_stats, pop_filepaths)
 
-        if is_apology:
-            # Count the total frequency of apology lemmas
-            lc = 0
-            for lemma in row[1]:
-                for apology in APOLOGY_LEMMAS:
-                    if apology == lemma:
-                        stats_dict["lemmas"][apology] += 1
-                        stats_dict["apologies"]["lc_total"] += 1
-                        lc += 1
-            stats_dict["apologies"]["lc_individual"].append(lc)
+    for result in stats_list:
+        stats_dict["apologies"]["total"] += result["apologies"]["total"]
+        stats_dict["apologies"]["wc_total"] += result["apologies"]["wc_total"]
+        stats_dict["apologies"]["wc_individual"].extend(result["apologies"]["wc_individual"])
+        stats_dict["apologies"]["lc_total"] += result["apologies"]["lc_total"]
+        stats_dict["apologies"]["lc_individual"].extend(result["apologies"]["lc_individual"])
 
-        if is_apology:
-            stats_dict["apologies"]["total"] += 1
-            stats_dict["apologies"]["wc_total"] += word_count
-            stats_dict["apologies"]["wc_individual"].append(word_count)
-        else:
-            stats_dict["non-apologies"]["total"] += 1
-            stats_dict["non-apologies"]["wc_total"] += word_count
-            stats_dict["non-apologies"]["wc_individual"].append(word_count)
+        stats_dict["non-apologies"]["total"] += result["non-apologies"]["total"]
+        stats_dict["non-apologies"]["wc_total"] += result["non-apologies"]["wc_total"]
+        stats_dict["non-apologies"]["wc_individual"].extend(result["non-apologies"]["wc_individual"])
+
+        for apology in APOLOGY_LEMMAS:
+            stats_dict["lemmas"][apology] += result["lemmas"][apology]
 
     # Memory management
-    del pop_data
+    del pop_filepaths
+    del stats_list
 
     # Compute MEAN, MEDIAN, MIN, MAX
     stats_dict["apologies"]["wc_mean"] = stats_dict["apologies"]["wc_total"] / stats_dict["apologies"]["total"]

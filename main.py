@@ -199,9 +199,14 @@ def statsCommand(args):
 
     # Check assertions
     assert doesPathExist(args.data_dir), ASSERT_NOT_EXIST.format("data_dir", args.data_dir)
+    assert args.num_procs <= mproc.cpu_count(), \
+        "Argument 'num_procs' cannot be greater than maximum number of CPUs: {}.".format(mproc.cpu_count())
+
+    if args.num_procs == 0:
+        args.num_procs = mproc.cpu_count()
 
     # Pass arguments to src.stats:stats()
-    stats(args.data_dir)
+    stats(args.data_dir, args.num_procs)
 
 
 #### MAIN ##########################################################################################
@@ -420,6 +425,10 @@ if __name__ == "__main__":
     stats_parser.add_argument(
         "data_dir", type=str, help="The path for a directory containing processed and classified "
         "data. Relative paths will be cononicalized."
+    )
+    stats_parser.add_argument(
+        "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing. Enter "
+        "'0' to use all available CPUs."
     )
     stats_parser.set_defaults(func=statsCommand)
 
