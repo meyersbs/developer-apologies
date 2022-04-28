@@ -2169,7 +2169,7 @@ class TestSearch(unittest.TestCase):
         input_save = True
         input_results = os.path.join(CWD, "search_results.txt")
         expected = [
-            ["https://github.com/freeCodeCamp/freeCodeCamp", 342851, "JavaScript"],
+            ["https://github.com/freeCodeCamp/freeCodeCamp", 342851, "TypeScript"],
             ["https://github.com/996icu/996.ICU", 261483, "None"],
             ["https://github.com/EbookFoundation/free-programming-books", 227318, "None"],
             ["https://github.com/jwasham/coding-interview-university", 214863, "None"],
@@ -2327,7 +2327,8 @@ class TestSearch(unittest.TestCase):
             "https://github.com/yangshun/tech-interview-handbook", "https://github.com/yarnpkg/yarn",
             "https://github.com/ytdl-org/youtube-dl", "https://github.com/zenorocha/clipboard.js",
             "https://github.com/google/zx", "https://github.com/supabase/supabase",
-            "https://github.com/jaredpalmer/formik", "https://github.com/eugenp/tutorials"
+            "https://github.com/jaredpalmer/formik", "https://github.com/eugenp/tutorials",
+            "https://github.com/gorhill/uBlock", "https://github.com/carbon-app/carbon"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
