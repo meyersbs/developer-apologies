@@ -133,6 +133,7 @@ github_api_token.txt
 mysql-2019-06-01/*
 *.tar.gz
 data/*
+old_results/*
 dev_apologies.stderr
 dev_apologies.stdout
 main_output.txt
