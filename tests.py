@@ -2139,7 +2139,6 @@ class TestSearch(unittest.TestCase):
         expected = [
             ["https://github.com/cherrypie623/CherryPie-Addon-Repository", 2, "Python"],
             ["https://github.com/zhengjiwen/cherrypie", 1, "Python"],
-            ["https://github.com/NotReeceHarris/CherryPie", 0, "Python"],
             ["https://github.com/further-i-go-less-i-know/cherrypie-ssl-errors", 0, "Python"]
         ]
         # Test
@@ -2226,7 +2225,7 @@ class TestSearch(unittest.TestCase):
             "https://github.com/RocketChat/Rocket.Chat", "https://github.com/Semantic-Org/Semantic-UI",
             "https://github.com/Snailclimb/JavaGuide", "https://github.com/Textualize/rich",
             "https://github.com/TheAlgorithms/Java", "https://github.com/TheAlgorithms/Python",
-            "https://github.com/TryGhost/Ghost", "https://github.com/Unitech/pm2",
+            "https://github.com/TryGhost/Ghost", "https://github.com/skylot/jadx",
             "https://github.com/XX-net/XX-Net", "https://github.com/adam-p/markdown-here",
             "https://github.com/adobe/brackets", "https://github.com/agalwood/Motrix",
             "https://github.com/ageitgey/face_recognition", "https://github.com/airbnb/javascript",
@@ -2328,7 +2327,9 @@ class TestSearch(unittest.TestCase):
             "https://github.com/ytdl-org/youtube-dl", "https://github.com/zenorocha/clipboard.js",
             "https://github.com/google/zx", "https://github.com/supabase/supabase",
             "https://github.com/jaredpalmer/formik", "https://github.com/eugenp/tutorials",
-            "https://github.com/gorhill/uBlock", "https://github.com/carbon-app/carbon"
+            "https://github.com/gorhill/uBlock", "https://github.com/carbon-app/carbon",
+            "https://github.com/nlohmann/json", "https://github.com/SheetJS/sheetjs",
+            "https://github.com/vuejs/core"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
