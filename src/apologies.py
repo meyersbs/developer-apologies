@@ -18,6 +18,34 @@ APOLOGY_LEMMAS = [
     "apology", "apologise", "apologize", "blame", "excuse", "fault", "forgive", "mistake",
     "mistaken", "oops", "pardon", "regret", "sorry"
 ]
+NON_APOLOGY_LEMMA_PHRASES = [
+    # Apologize
+    ["not", "apologize"],
+    ["n't", "apologize"], # i.e. "won't apologize"
+    # Apologise
+    ["not", "apologise"],
+    ["n't", "apologise"], # i.e. "won't apologise"
+    # Blame
+    ["git", "blame"],
+    ["n't", "blame"], # i.e. "can't blame"
+    ["not", "to", "blame"],
+    # Fault
+    ["seg", "fault"],
+    ["segmentation", "fault"],
+    ["page", "fault"],
+    ["permission", "fault"],
+    ["protection", "fault"],
+    ["not", "-PRON-", "fault"], # i.e. "not my/our/your/his/her/their fault"
+    # Mistake
+    ["not", "a", "mistake"],
+    # Mistaken
+    ["not", "mistaken"], # i.e. "if I am not mistaken"
+    # Regret
+    ["n't", "regret"], # i.e. "won't regret"
+    # Sorry
+    ["better", "safe", "than", "sorry"],
+    ["not", "sorry"],
+]
 APOLOGY_SIMPLE_PHRASES = [
     "blame me", "excuse me", "forgive me", "i regret", "i shouldn't have", "i should not have",
     "i wasn't thinking", "i was confused", "i was not thinking", "i'm afraid", "i am afraid",
@@ -64,6 +92,32 @@ def _labelApologies(count):
     return str(is_apology)
 
 
+def _countNonApologies(lemmas):
+    """
+    Count the occurrences of non apology lemma phrases.
+
+    GIVEN:
+      lemmas (list -- list of lemmatized text
+
+    RETURN:
+      num_non_apologies -- number of occurrences of non apology lemma phrases
+    """
+    num_non_apologies = 0
+    for non_apology in NON_APOLOGY_LEMMA_PHRASES:
+        num_non_apologies += len(
+            [
+                # Read this starting with the second line: For each sublist of lemmas with
+                # length == len(non_apology), if the sublist == non_apology, append non_apology
+                # to the list. The length of the final list is the number of occurences of
+                # non_apology in lemmas.
+                non_apology for i in range(len(lemmas))
+                if lemmas[i : i + len(non_apology)] == non_apology
+            ]
+        )
+
+    return num_non_apologies
+
+
 def _countApologies(lemmas):
     """
     Count the occurrences of apology lemmas in the given lemmas.
@@ -74,12 +128,18 @@ def _countApologies(lemmas):
     RETURN:
       num_apology_lemmas (str) -- number of occurrences of apology lemmas
     """
+    # Count apology lemmas
     num_apology_lemmas = 0
     lems = lemmas.split(" ")
     for lem in lems:
         for apology in APOLOGY_LEMMAS:
             if apology == lem:
                 num_apology_lemmas += 1
+
+    # Count non apologies
+    num_non_apologies = _countNonApologies(lems)
+    # Subtract non apologies from apologies; if that's somehow negative, set to zero
+    num_apology_lemmas = max(num_apology_lemmas - num_non_apologies, 0)
 
     return str(num_apology_lemmas)
 
