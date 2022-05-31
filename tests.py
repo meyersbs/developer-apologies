@@ -2329,7 +2329,8 @@ class TestSearch(unittest.TestCase):
             "https://github.com/jaredpalmer/formik", "https://github.com/eugenp/tutorials",
             "https://github.com/gorhill/uBlock", "https://github.com/carbon-app/carbon",
             "https://github.com/nlohmann/json", "https://github.com/SheetJS/sheetjs",
-            "https://github.com/vuejs/core"
+            "https://github.com/vuejs/core", "https://github.com/jgraph/drawio-desktop",
+            "https://github.com/Unitech/pm2"
         ]
         # Test
         actual = topRepos(input_languages, input_stars, input_results, input_verbose)
@@ -2500,10 +2501,13 @@ class TestApologies(unittest.TestCase):
             "oops that should have be delete",
             "that be my fault for not unit testing",
             "I apologize I be so sorry about this",
-            "I do nothing wrong it work as intend"
+            "I do nothing wrong it work as intend",
+            "better safe than sorry",
+            "it 's not -PRON- fault",
+            "sorry but this is necessary. better safe than sorry",
         ]
         expected_apologies = [
-            "1", "1", "1", "1", "1", "0", "1", "1", "2", "0"
+            "1", "1", "1", "1", "1", "0", "1", "1", "2", "0", "0", "0", "1"
         ]
         actual_apologies = list()
         # Test

@@ -2,6 +2,7 @@
 
 
 #### PYTHON IMPORTS ################################################################################
+import collections
 import csv
 import multiprocessing as mproc
 import sys
@@ -242,6 +243,28 @@ def classify(data_dir, num_procs, overwrite=True):
     i_classes = _classify(issues_file, class_issues_file, num_procs)
     c_classes = _classify(commits_file, class_commits_file, num_procs)
     p_classes = _classify(pull_requests_file, class_pull_requests_file, num_procs)
+
+    if doesPathExist(issues_file): # pragma: no cover
+        i_classes_num_apologies = [elem[1] for elem in i_classes]
+        try:
+            class_issues_num_apologies = dict(collections.Counter(i_classes_num_apologies))["1"]
+        except KeyError:
+            class_issues_num_apologies = 0
+        print("IS Apologies: {}".format(class_issues_num_apologies))
+    if doesPathExist(commits_file): # pragma: no cover
+        c_classes_num_apologies = [elem[1] for elem in c_classes]
+        try:
+            class_commits_num_apologies = dict(collections.Counter(c_classes_num_apologies))["1"]
+        except KeyError:
+            class_commits_num_apologies = 0
+        print("CO Apologies: {}".format(class_commits_num_apologies))
+    if doesPathExist(pull_requests_file): # pragma: no cover
+        p_classes_num_apologies = [elem[1] for elem in p_classes]
+        try:
+            class_pull_requests_num_apologies = dict(collections.Counter(p_classes_num_apologies))["1"]
+        except KeyError:
+            class_pull_requests_num_apologies = 0
+        print("PR Apologies: {}".format(class_pull_requests_num_apologies))
 
     if overwrite: # pragma: no cover
         overwriteFile(issues_file, class_issues_file)
