@@ -14,8 +14,8 @@ from statistics import median
 
 #### GLOBALS #######################################################################################
 APOLOGY_LEMMAS = [
-    "apology", "apologise", "apologize", "blame", "excuse", "fault", "forgive", "mistake",
-    "mistaken", "oops", "pardon", "regret", "sorry"
+    "admit", "afraid", "apology", "apologise", "apologize", "blame", "excuse", "fault", "forgive",
+    "forgot", "mistake", "mistaken", "oops", "pardon", "regret", "sorry"
 ]
 
 
@@ -74,6 +74,8 @@ def aggregateStats(filepaths):
             "wc_max": -1
         },
         "lemmas": {
+            "admit": 0,
+            "afraid": 0,
             "apology": 0,
             "apologise": 0,
             "apologize": 0,
@@ -81,6 +83,7 @@ def aggregateStats(filepaths):
             "excuse": 0,
             "fault": 0,
             "forgive": 0,
+            "forgot": 0,
             "mistake": 0,
             "mistaken": 0,
             "oops": 0,
@@ -93,10 +96,11 @@ def aggregateStats(filepaths):
     for filepath in filepaths:
         print(filepath)
         # Get stats
+        print("\tGetting dictionary...")
         json_dict = _getJsonFromFile(filepath)
-        print("Got dictionary")
         
         # Aggregate stats
+        print("\tAggregating stats...")
         stats_dict["apologies"]["total"] += json_dict["apologies"]["total"]
         stats_dict["apologies"]["wc_total"] += json_dict["apologies"]["wc_total"]
         stats_dict["apologies"]["wc_individual"].extend(json_dict["apologies"]["wc_individual"])
@@ -113,6 +117,7 @@ def aggregateStats(filepaths):
         del json_dict
 
     # Compute MEAN, MEDIAN, MIN, MAX
+    print("Computing metrics...")
     stats_dict["apologies"]["wc_mean"] = stats_dict["apologies"]["wc_total"] / stats_dict["apologies"]["total"]
     stats_dict["apologies"]["wc_median"] = median(stats_dict["apologies"]["wc_individual"])
     stats_dict["apologies"]["wc_min"] = min(stats_dict["apologies"]["wc_individual"])
@@ -147,6 +152,8 @@ def aggregateStats(filepaths):
     print("     MAX WC: {}".format(stats_dict["non-apologies"]["wc_max"]))
 
     print("LEMMAS:")
+    print("      ADMIT: {}".format(stats_dict["lemmas"]["admit"]))
+    print("     AFRAID: {}".format(stats_dict["lemmas"]["afraid"]))
     print("    APOLOGY: {}".format(stats_dict["lemmas"]["apology"]))
     print("  APOLOGISE: {}".format(stats_dict["lemmas"]["apologise"]))
     print("  APOLOGIZE: {}".format(stats_dict["lemmas"]["apologize"]))
@@ -154,6 +161,7 @@ def aggregateStats(filepaths):
     print("     EXCUSE: {}".format(stats_dict["lemmas"]["excuse"]))
     print("      FAULT: {}".format(stats_dict["lemmas"]["fault"]))
     print("    FORGIVE: {}".format(stats_dict["lemmas"]["forgive"]))
+    print("     FORGOT: {}".format(stats_dict["lemmas"]["forgot"]))
     print("    MISTAKE: {}".format(stats_dict["lemmas"]["mistake"]))
     print("   MISTAKEN: {}".format(stats_dict["lemmas"]["mistaken"]))
     print("       OOPS: {}".format(stats_dict["lemmas"]["oops"]))
@@ -166,5 +174,5 @@ def aggregateStats(filepaths):
 if __name__ == "__main__":
     data_dir = canonicalize(sys.argv[1])
     filepaths = list(_getFilepaths(data_dir))
-    print(filepaths)
+    #print(filepaths)
     aggregateStats(filepaths)

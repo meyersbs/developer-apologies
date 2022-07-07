@@ -16,10 +16,13 @@ from src.helpers import doesPathExist, fixNullBytes, getDataFilepaths, overwrite
 
 #### GLOBALS #######################################################################################
 APOLOGY_LEMMAS = [
-    "apology", "apologise", "apologize", "blame", "excuse", "fault", "forgive", "mistake",
-    "mistaken", "oops", "pardon", "regret", "sorry"
+    "admit", "afraid", "apology", "apologise", "apologize", "blame", "excuse", "fault", "forgive",
+    "forgot", "mistake", "mistaken", "oops", "pardon", "regret", "sorry"
 ]
 NON_APOLOGY_LEMMA_PHRASES = [
+    # Afraid
+    ["n't", "afraid"],
+    ["not", "afraid"],
     # Apologize
     ["not", "apologize"],
     ["n't", "apologize"], # i.e. "won't apologize"
@@ -244,6 +247,7 @@ def classify(data_dir, num_procs, overwrite=True):
     c_classes = _classify(commits_file, class_commits_file, num_procs)
     p_classes = _classify(pull_requests_file, class_pull_requests_file, num_procs)
 
+    print(data_dir)
     if doesPathExist(issues_file): # pragma: no cover
         i_classes_num_apologies = [elem[1] for elem in i_classes]
         try:

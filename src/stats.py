@@ -3,6 +3,7 @@
 
 #### PYTHON IMPORTS ################################################################################
 import csv
+import json
 import multiprocessing as mproc
 import os
 import random
@@ -131,26 +132,26 @@ def _getRows(filepath): # pragma: no cover
             rows.append(entry)
 
         # Deduplicate header rows
+        print("\tDeduplicating...")
         rows = _deduplicateHeaders(rows, header)
 
         # Get a subset of the columns that we care about
+        print("\tGetting target columns...")
         rows = _getTargetColumns(rows, filepath)
 
         # Add rows to population data
+        print("\tGathering rows...")
         pop_data.extend(rows)
 
         # Memory management
+        print("\tCleaning up...")
         del rows
 
     # Return population data
     return pop_data
 
 
-def _stats(filepath): # pragma: no cover
-    """
-
-    Unit tests are confused, this code is definitely running.
-    """
+def _count(row):
     stats_dict = {
         "apologies": {
             "total": 0,
@@ -165,6 +166,8 @@ def _stats(filepath): # pragma: no cover
             "wc_individual": list(),
         },
         "lemmas": {
+            "admit": 0,
+            "afraid": 0,
             "apology": 0,
             "apologise": 0,
             "apologize": 0,
@@ -172,6 +175,7 @@ def _stats(filepath): # pragma: no cover
             "excuse": 0,
             "fault": 0,
             "forgive": 0,
+            "forgot": 0,
             "mistake": 0,
             "mistaken": 0,
             "oops": 0,
@@ -181,36 +185,113 @@ def _stats(filepath): # pragma: no cover
         }
     }
 
+    # Determine if the current row is an apology
+    is_apology = True if int(row[2]) > 0 else False
+
+    # Determine word count
+    word_count = row[0]
+
+    if is_apology:
+        # Count the total frequency of apology lemmas
+        lc = 0
+        for apology in APOLOGY_LEMMAS:
+            cnt = row[1].count(apology)
+            if cnt > 0:
+                stats_dict["lemmas"][apology] += cnt
+                stats_dict["apologies"]["lc_total"] += cnt
+                lc += cnt
+        stats_dict["apologies"]["lc_individual"].append(lc)
+
+    if is_apology:
+        stats_dict["apologies"]["total"] += 1
+        stats_dict["apologies"]["wc_total"] += word_count
+        stats_dict["apologies"]["wc_individual"].append(word_count)
+    else:
+        stats_dict["non-apologies"]["total"] += 1
+        stats_dict["non-apologies"]["wc_total"] += word_count
+        stats_dict["non-apologies"]["wc_individual"].append(word_count)
+
+    return stats_dict
+
+
+def _stats(filepath, num_procs): # pragma: no cover
+    """
+
+    Unit tests are confused, this code is definitely running.
+    """
+    print(filepath)
+    stats_dict = {
+        "apologies": {
+            "total": 0,
+            "wc_total": 0,
+            "wc_individual": list(),
+            "lc_total": 0,
+            "lc_individual": list(),
+        },
+        "non-apologies": {
+            "total": 0,
+            "wc_total": 0,
+            "wc_individual": list(),
+        },
+        "lemmas": {
+            "admit": 0,
+            "afraid": 0,
+            "apology": 0,
+            "apologise": 0,
+            "apologize": 0,
+            "blame": 0,
+            "excuse": 0,
+            "fault": 0,
+            "forgive": 0,
+            "forgot": 0,
+            "mistake": 0,
+            "mistaken": 0,
+            "oops": 0,
+            "pardon": 0,
+            "regret": 0,
+            "sorry": 0
+        }
+    }
+
+    json_filepath = filepath.split("/")[5] + "_" + filepath.split("/")[6] + ".json"
+    if doesPathExist(json_filepath):
+        return None
+
     # Get rows
     rows = _getRows(filepath)
 
-    # Process rows
-    for row in rows:
-        # Determine if current row is an apology
-        is_apology = True if int(row[2]) > 0 else False
-        
-        # Determine word count
-        word_count = row[0]
+    print("\tCounting...")
+    pool = mproc.Pool(num_procs)
+    stats_list = list(pool.imap_unordered(_count, rows, chunksize=100))
 
-        if is_apology:
-            # Count the total frequency of apology lemmas
-            lc = 0
-            for apology in APOLOGY_LEMMAS:
-                cnt = row[1].count(apology)
-                if cnt > 0:
-                    stats_dict["lemmas"][apology] += cnt
-                    stats_dict["apologies"]["lc_total"] += cnt
-                    lc += cnt
-            stats_dict["apologies"]["lc_individual"].append(lc)
+    print("\tAggregating...")
+    print("\n")
+    cnt = 1
+    total = len(stats_list)
+    for result in stats_list:
+        print("\t\t{} / {}".format(cnt, total), end="\r")
+        cnt += 1
+        stats_dict["apologies"]["total"] += result["apologies"]["total"]
+        stats_dict["apologies"]["wc_total"] += result["apologies"]["wc_total"]
+        stats_dict["apologies"]["wc_individual"] += result["apologies"]["wc_individual"]
+        stats_dict["apologies"]["lc_total"] += result["apologies"]["lc_total"]
+        stats_dict["apologies"]["lc_individual"] += result["apologies"]["lc_individual"]
 
-        if is_apology:
-            stats_dict["apologies"]["total"] += 1
-            stats_dict["apologies"]["wc_total"] += word_count
-            stats_dict["apologies"]["wc_individual"].append(word_count)
-        else:
-            stats_dict["non-apologies"]["total"] += 1
-            stats_dict["non-apologies"]["wc_total"] += word_count
-            stats_dict["non-apologies"]["wc_individual"].append(word_count)
+        stats_dict["non-apologies"]["total"] += result["non-apologies"]["total"]
+        stats_dict["non-apologies"]["wc_total"] += result["non-apologies"]["wc_total"]
+        stats_dict["non-apologies"]["wc_individual"] += result["non-apologies"]["wc_individual"]
+
+        for apology in APOLOGY_LEMMAS:
+            stats_dict["lemmas"][apology] += result["lemmas"][apology]
+
+    print("\n\n")
+    print("\tCleaning up...")
+    del rows
+
+    # Write stats to disk
+    print("\tWriting to disk...")
+    with open(json_filepath, "w") as f:
+        f.write(json.dumps(stats_dict))
 
     return stats_dict
 
@@ -252,6 +333,8 @@ def stats(data_dir, num_procs, verbose=True):
             "wc_max": -1
         },
         "lemmas": {
+            "admit": 0,
+            "afraid": 0,
             "apology": 0,
             "apologise": 0,
             "apologize": 0,
@@ -259,6 +342,7 @@ def stats(data_dir, num_procs, verbose=True):
             "excuse": 0,
             "fault": 0,
             "forgive": 0,
+            "forgot": 0,
             "mistake": 0,
             "mistaken": 0,
             "oops": 0,
@@ -268,10 +352,17 @@ def stats(data_dir, num_procs, verbose=True):
         }
     }
     # Get filepaths
-    pop_filepaths = _getPopulationFilepaths(data_dir)
+    #pop_filepaths = _getPopulationFilepaths(data_dir)
+    pop_filepaths = list()
+    pop_filepaths.append("/home/bsm9339/developer-apologies/data_aps3/Scratch/issues/issues.csv")
+    pop_filepaths.append("/home/bsm9339/developer-apologies/data_aps3/Scratch/commits/commits.csv")
+    pop_filepaths.append("/home/bsm9339/developer-apologies/data_aps3/Scratch/pull_requests/pull_requests.csv")
 
-    pool = mproc.Pool(num_procs)
-    stats_list = list(pool.imap_unordered(_stats, pop_filepaths))
+    stats_list = list()
+    for filepath in pop_filepaths:
+        stats_list.append(_stats(filepath, num_procs))
+
+    return None
 
     for result in stats_list:
         stats_dict["apologies"]["total"] += result["apologies"]["total"]
@@ -327,6 +418,8 @@ def stats(data_dir, num_procs, verbose=True):
         print("     MAX WC: {}".format(stats_dict["non-apologies"]["wc_max"]))
 
         print("LEMMAS:")
+        print("      ADMIT: {}".format(stats_dict["lemmas"]["admit"]))
+        print("     AFRAID: {}".format(stats_dict["lemmas"]["afraid"]))
         print("    APOLOGY: {}".format(stats_dict["lemmas"]["apology"]))
         print("  APOLOGISE: {}".format(stats_dict["lemmas"]["apologise"]))
         print("  APOLOGIZE: {}".format(stats_dict["lemmas"]["apologize"]))
@@ -334,6 +427,7 @@ def stats(data_dir, num_procs, verbose=True):
         print("     EXCUSE: {}".format(stats_dict["lemmas"]["excuse"]))
         print("      FAULT: {}".format(stats_dict["lemmas"]["fault"]))
         print("    FORGIVE: {}".format(stats_dict["lemmas"]["forgive"]))
+        print("     FORGOT: {}".format(stats_dict["lemmas"]["forgot"]))
         print("    MISTAKE: {}".format(stats_dict["lemmas"]["mistake"]))
         print("   MISTAKEN: {}".format(stats_dict["lemmas"]["mistaken"]))
         print("       OOPS: {}".format(stats_dict["lemmas"]["oops"]))
