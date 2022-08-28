@@ -5,6 +5,7 @@
 import collections
 import csv
 import multiprocessing as mproc
+import os
 import random
 import sys
 
@@ -72,11 +73,21 @@ def _countDeveloperApologies(file_path, comment_author_index, num_apology_lemmas
             comment_author = line[comment_author_index]
 
             if comment_author in developers_dict.keys():
-                developers_dict[comment_author]["apology_lemma_count"] += int(line[num_apology_lemmas_index])
+                developers_dict[comment_author]["num_apology_lemmas"] += int(line[num_apology_lemmas_index])
             else:
                 developers_dict[comment_author] = {
-                    "apology_lemma_count": int(line[num_apology_lemmas_index])
+                    "num_apology_lemmas": int(line[num_apology_lemmas_index])
                 }
+
+    try: # pragma: no cover
+        developers_dict.pop("")
+    except KeyError: # pragma: no cover
+        pass
+
+    try: #pragma: no cover
+        developers_dict.pop("None")
+    except KeyError: # pragma: no cover
+        pass
 
     return developers_dict
 
@@ -98,13 +109,13 @@ def _getDeveloperDicts(language_dir):
     p_dict = dict()
     issues_file, commits_file, pull_requests_file = getDataFilepaths(language_dir)
 
-    if doesPathExist(issues_file):
-        i_dict = _countDeveloperApologies(issues_file, 12, 16)
+    if doesPathExist(issues_file): # pragma: no cover
+        i_dict = _countDeveloperApologies(issues_file, 10, 14)
 
-    if doesPathExist(commits_file):
+    if doesPathExist(commits_file): # pragma: no cover
         c_dict = _countDeveloperApologies(commits_file, 12, 16)
 
-    if doesPathExist(pull_request_file):
+    if doesPathExist(pull_requests_file): # pragma: no cover
         p_dict = _countDeveloperApologies(pull_requests_file, 10, 14)
 
     developers_dict = _flattenDicts([i_dict, c_dict, p_dict])
@@ -122,11 +133,11 @@ def _writeToDisk(developer_dict):
     Write dictionary to disk in CSV format.
     """
     with open("developer_stats.csv", "w") as f:
-        csv_writer = csv.write(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+        csv_writer = csv.writer(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
 
         csv_writer.writerow(HEADER)
 
-        for k, v in developer_dict:
+        for k, v in developer_dict.items():
             row = [
                 k,                       # Username
                 v["num_apology_lemmas"], # Num Apology Lemmas
@@ -140,14 +151,16 @@ def developerStats(data_dir, num_procs):
     """
     developer_dict = dict()
 
-    language_dirs = getSubDirNames(data_dir)
+    language_dirs = list()
+    for d in getSubDirNames(data_dir):
+        language_dirs.append(os.path.join(data_dir, d))
     print(language_dirs)
 
     pool = mproc.Pool(num_procs)
 
     # Get a dictionary with username keys pointing to sub-dictionaries with keys for
     # "num_apology_lemmas"
-    developer_dicts = pool.map(_getDeveloperDicts(language_dirs))
+    developer_dicts = pool.map(_getDeveloperDicts, language_dirs)
     developer_dict = _flattenDicts(developer_dicts)
 
     # Get list of unique usernames from our dataset
@@ -158,6 +171,8 @@ def developerStats(data_dir, num_procs):
 
     # Write to Disk
     _writeToDisk(developer_dict)
+
+    return developer_dict
 
 
 #### MAIN ##########################################################################################

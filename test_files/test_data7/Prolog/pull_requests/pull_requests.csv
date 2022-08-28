@@ -1,0 +1,1032 @@
+REPO_URL,REPO_NAME,REPO_OWNER,PULL_REQUEST_NUMBER,PULL_REQUEST_TITLE,PULL_REQUEST_AUTHOR,PULL_REQUEST_CREATION_DATE,PULL_REQUEST_URL,PULL_REQUEST_TEXT,COMMENT_CREATION_DATE,COMMENT_AUTHOR,COMMENT_URL,COMMENT_TEXT,COMMENT_TEXT_LEMMATIZED,NUM_APOLOGY_LEMMAS,IS_APOLOGY
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,1,2019-07-23T16:36:49Z,GavinMendelGleason,Adding GPL v3,https://github.com/terminusdb/terminusdb/pull/1,Wanted a canonical license.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,3,2019-08-14T22:11:41Z,padraic7a,Update README.md,https://github.com/terminusdb/terminusdb/pull/3,Single typo,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,12,2019-09-27T18:01:49Z,pmoura,Predicate definition optimizations,https://github.com/terminusdb/terminusdb/pull/12,Several simple predicate definition optimizations found during an initial quick code review.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,13,2019-09-27T18:22:30Z,pmoura,Missing meta_predicate/1 directives in util predicates,https://github.com/terminusdb/terminusdb/pull/13,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,21,2019-09-30T19:54:43Z,pmoura,Replace calls to deprecated predicates,https://github.com/terminusdb/terminusdb/pull/21,Minor cleanup of three calls to deprecated predicates detected by running the Logtalk linter.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,22,2019-09-30T20:07:40Z,pmoura,Load library(apply_macros) to optimize metacalls and lambda expressions,https://github.com/terminusdb/terminusdb/pull/22,The performance boost should be noticeable.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,25,2019-10-01T14:26:09Z,pmoura,Add missing multifile/1 directives,https://github.com/terminusdb/terminusdb/pull/25,SWI-Prolog is actually quite permissive regarding missing multifile/1 directives. But it's still good programming style to include them whenever defining clauses for multifile predicates.,2019-10-01T17:33:52Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/25#issuecomment-537144844,Merged to dev.  Cheers pmoura!,merge to dev cheers pmoura,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,26,2019-10-01T14:52:59Z,padraic7a,typo in README?,https://github.com/terminusdb/terminusdb/pull/26,"""the docker"" to ""the docker image""",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,40,2019-11-16T12:11:31Z,pmoura,Replace calls to deprecated predicate string_to_atom/2,https://github.com/terminusdb/terminusdb/pull/40,Replace calls to deprecated predicate string_to_atom/2 predicate with calls to  the built-in predicate atom_string/2. Found by the Logtalk linter 😛,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,41,2019-11-16T12:24:26Z,pmoura,Avoid creating unused atoms by using sub_atom/5 instead of atom_concat/3,https://github.com/terminusdb/terminusdb/pull/41,Unused atoms just add to the atom garbage collector burden.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,42,2019-11-16T12:30:13Z,pmoura,Replace call to deprecated sign/2 predicate with call to sign/1 function,https://github.com/terminusdb/terminusdb/pull/42,Logtalk linter strikes again 😛,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,43,2019-11-16T12:52:06Z,pmoura,Replace call to deprecated abs/2 predicate with call to abs/1 function,https://github.com/terminusdb/terminusdb/pull/43,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,44,2019-11-16T16:27:02Z,pmoura,WIP: Add first version of the test workflow,https://github.com/terminusdb/terminusdb/pull/44,"This pull request adds a test workflow that runs automatically on push and pull request events. It provides a solution for any contributors without a setup for running the tests (e.g. those like me on macOS) as pull requests will be automatically checked and rejected if tests fail.
+Why the WIP tag?
+
+The workflow is currently costly due to all the dependencies that are installed. It's possible that some of them are no longer required. You know best so please review the workflow file. If after removing any unnecessary dependencies the time to run the workflow is still to big (GitHub gives ""only"" 2000 free minutes to open-source projects), then I suggested to trigger the workflow only on pull request events.
+The workflow succeeds even when the tests (run using ./start.pl test) fail. The tests themselves need to be modified so that running them results in a non-zero exit value in case of failure.
+
+Solving these two issues should allow this pull request to be merged.",2019-11-18T14:52:34Z,rrooij,https://github.com/terminusdb/terminusdb/pull/44#issuecomment-555049004,"Hey @pmoura, thanks a lot for your pull request. I do think however that we should just enable pull requests on our normal .travis.yml and disable the deploy stages for them. Because I have not implemented the conditions for the stages I disabled the pull request checking altogether. Do you think that is a better alternative than a seperate test for pull requests?",hey @pmoura thank a lot for -PRON- pull request i do think however that -PRON- should just enable pull request on -PRON- normal travisyml and disable the deploy stage for -PRON- because i have not implement the condition for the stage i disable the pull request check altogether do -PRON- think that be a well alternative than a seperate test for pull request,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,44,2019-11-16T16:27:02Z,pmoura,WIP: Add first version of the test workflow,https://github.com/terminusdb/terminusdb/pull/44,"This pull request adds a test workflow that runs automatically on push and pull request events. It provides a solution for any contributors without a setup for running the tests (e.g. those like me on macOS) as pull requests will be automatically checked and rejected if tests fail.
+Why the WIP tag?
+
+The workflow is currently costly due to all the dependencies that are installed. It's possible that some of them are no longer required. You know best so please review the workflow file. If after removing any unnecessary dependencies the time to run the workflow is still to big (GitHub gives ""only"" 2000 free minutes to open-source projects), then I suggested to trigger the workflow only on pull request events.
+The workflow succeeds even when the tests (run using ./start.pl test) fail. The tests themselves need to be modified so that running them results in a non-zero exit value in case of failure.
+
+Solving these two issues should allow this pull request to be merged.",2019-11-18T15:01:32Z,rrooij,https://github.com/terminusdb/terminusdb/pull/44#issuecomment-555053103,It should now already test pull requests. Can you submit a test pull request where you remove some trailing spaces from the README for instance?,-PRON- should now already test pull request can -PRON- submit a test pull request where -PRON- remove some trailing space from the readme for instance,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,44,2019-11-16T16:27:02Z,pmoura,WIP: Add first version of the test workflow,https://github.com/terminusdb/terminusdb/pull/44,"This pull request adds a test workflow that runs automatically on push and pull request events. It provides a solution for any contributors without a setup for running the tests (e.g. those like me on macOS) as pull requests will be automatically checked and rejected if tests fail.
+Why the WIP tag?
+
+The workflow is currently costly due to all the dependencies that are installed. It's possible that some of them are no longer required. You know best so please review the workflow file. If after removing any unnecessary dependencies the time to run the workflow is still to big (GitHub gives ""only"" 2000 free minutes to open-source projects), then I suggested to trigger the workflow only on pull request events.
+The workflow succeeds even when the tests (run using ./start.pl test) fail. The tests themselves need to be modified so that running them results in a non-zero exit value in case of failure.
+
+Solving these two issues should allow this pull request to be merged.",2019-11-18T15:30:24Z,pmoura,https://github.com/terminusdb/terminusdb/pull/44#issuecomment-555066837,I just merged the dev branch into this branch (add_test_workflow). Checks are running as expected.,i just merge the dev branch into this branch ( add_test_workflow ) check be run as expect,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,44,2019-11-16T16:27:02Z,pmoura,WIP: Add first version of the test workflow,https://github.com/terminusdb/terminusdb/pull/44,"This pull request adds a test workflow that runs automatically on push and pull request events. It provides a solution for any contributors without a setup for running the tests (e.g. those like me on macOS) as pull requests will be automatically checked and rejected if tests fail.
+Why the WIP tag?
+
+The workflow is currently costly due to all the dependencies that are installed. It's possible that some of them are no longer required. You know best so please review the workflow file. If after removing any unnecessary dependencies the time to run the workflow is still to big (GitHub gives ""only"" 2000 free minutes to open-source projects), then I suggested to trigger the workflow only on pull request events.
+The workflow succeeds even when the tests (run using ./start.pl test) fail. The tests themselves need to be modified so that running them results in a non-zero exit value in case of failure.
+
+Solving these two issues should allow this pull request to be merged.",2019-11-18T15:38:07Z,rrooij,https://github.com/terminusdb/terminusdb/pull/44#issuecomment-555070410,Looks to be running fine. Would you mind if I close this one then?,look to be run fine would -PRON- mind if i close this one then,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,44,2019-11-16T16:27:02Z,pmoura,WIP: Add first version of the test workflow,https://github.com/terminusdb/terminusdb/pull/44,"This pull request adds a test workflow that runs automatically on push and pull request events. It provides a solution for any contributors without a setup for running the tests (e.g. those like me on macOS) as pull requests will be automatically checked and rejected if tests fail.
+Why the WIP tag?
+
+The workflow is currently costly due to all the dependencies that are installed. It's possible that some of them are no longer required. You know best so please review the workflow file. If after removing any unnecessary dependencies the time to run the workflow is still to big (GitHub gives ""only"" 2000 free minutes to open-source projects), then I suggested to trigger the workflow only on pull request events.
+The workflow succeeds even when the tests (run using ./start.pl test) fail. The tests themselves need to be modified so that running them results in a non-zero exit value in case of failure.
+
+Solving these two issues should allow this pull request to be merged.",2019-11-18T15:42:03Z,pmoura,https://github.com/terminusdb/terminusdb/pull/44#issuecomment-555072202,"Regarding using TravisCI (or other external to GitHub service) or GitHub own actions and workflows, there are pros and cons to both. GitHub actions and workflows provide a nice level of integration right from the repo (e.g. searchable logs). The test workflow itself can be rewritten easily to use Docker instead of the setup-swi-prolog action. I personally also currently use TravisCI for the logtalk3 repo but I have started creating and  using GitHub actions and workflows in other repos. Both solutions work fine for preventing broken changes. Up to you. You can simply keep this PR open as an example of an alternative to TravisCI if the need arises or simply close it.",regard use travisci ( or other external to github service ) or github own action and workflow there be pro and con to both github action and workflow provide a nice level of integration right from the repo ( eg searchable log ) the test workflow -PRON- can be rewrite easily to use docker instead of the setup - swi - prolog action i personally also currently use travisci for the logtalk3 repo but i have start create and use github action and workflow in other repos both solution work fine for prevent broken change up to -PRON- -PRON- can simply keep this pr open as an example of an alternative to travisci if the need arise or simply close -PRON-,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,44,2019-11-16T16:27:02Z,pmoura,WIP: Add first version of the test workflow,https://github.com/terminusdb/terminusdb/pull/44,"This pull request adds a test workflow that runs automatically on push and pull request events. It provides a solution for any contributors without a setup for running the tests (e.g. those like me on macOS) as pull requests will be automatically checked and rejected if tests fail.
+Why the WIP tag?
+
+The workflow is currently costly due to all the dependencies that are installed. It's possible that some of them are no longer required. You know best so please review the workflow file. If after removing any unnecessary dependencies the time to run the workflow is still to big (GitHub gives ""only"" 2000 free minutes to open-source projects), then I suggested to trigger the workflow only on pull request events.
+The workflow succeeds even when the tests (run using ./start.pl test) fail. The tests themselves need to be modified so that running them results in a non-zero exit value in case of failure.
+
+Solving these two issues should allow this pull request to be merged.",2019-11-18T15:55:37Z,pmoura,https://github.com/terminusdb/terminusdb/pull/44#issuecomment-555078876,"P.S. If you're not familiar with GitHub actions and workflows execution, see e.g. this demo repo. Go to the commits list, click and hold on the green check mark, and click on the Details link.",ps if -PRON- be not familiar with github action and workflow execution see eg this demo repo go to the commits list click and hold on the green check mark and click on the detail link,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,45,2019-11-16T16:37:22Z,pmoura,WIP: Fix use module directives,https://github.com/terminusdb/terminusdb/pull/45,"This pull request changes use_module/1-2 directives to use just the name of the module files for local modules instead of using a library(File) argument. The main motivation for these changes is to avoid relying on the file search mechanism for the overloaded library alias for local modules and thus (1) improve loading times and (2) avoid the unlikely but still possible bug of loading a third-party and thus the wrong module due to an order issue during library(File) search. A possible alternative is to define and use an alias other than library. E.g. terminus_core.
+I marked this pull request as WIP due to the scope of the changes and also due to the pending merging of the automatic test workflow as I'm currently unable to test the changes locally on my macOS laptop.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,46,2019-11-17T09:24:48Z,pmoura,Fix test try/1 predicate to print failure message when test trows error,https://github.com/terminusdb/terminusdb/pull/46,,2019-11-18T14:37:52Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/46#issuecomment-555042360,Cheers! Much better now :D,cheer much better now d,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,52,2019-12-05T09:21:41Z,pmoura,Remove redundant module explicit qualification from cors_catch/2 definition,https://github.com/terminusdb/terminusdb/pull/52,"As cors_catch/2 is declared as a meta-predicate, the meta-argument is implicitly qualified by the runtime. Moreover, the predicate clause doesn't make use of the module qualifier.",2019-12-05T09:30:58Z,rrooij,https://github.com/terminusdb/terminusdb/pull/52#issuecomment-562046467,Thanks!,thanks,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,53,2019-12-05T10:47:15Z,pmoura,Fix database module use_module/1 directives for local modules,https://github.com/terminusdb/terminusdb/pull/53,This pull request changes use_module/1 directives in the database module to use just the name of the module files for local modules instead of using a library(File) argument. The main motivation for these changes is to avoid relying on the file search mechanism for the overloaded library alias for local modules and thus (1) improve loading times and (2) avoid the unlikely but still possible bug of loading a third-party and thus the wrong module due to an order issue during library(File) search.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,54,2019-12-05T18:14:39Z,pmoura,Fix call to deprecated abs/2 predicate,https://github.com/terminusdb/terminusdb/pull/54,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,56,2019-12-05T21:36:25Z,pmoura,Add missing exports to module xsd_parser,https://github.com/terminusdb/terminusdb/pull/56,"These missing exports were detected by the Logtalk make tool. The predicates (actually, non-terminals) are called from the validate_instance module.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,62,2019-12-06T09:37:45Z,pmoura,Fix api module missing use_module directives for prefixes and sdk,https://github.com/terminusdb/terminusdb/pull/62,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,63,2019-12-06T09:49:27Z,pmoura,Fix woql_compile module missing use module directive,https://github.com/terminusdb/terminusdb/pull/63,Also fixes #59.,2019-12-06T09:50:22Z,pmoura,https://github.com/terminusdb/terminusdb/pull/63#issuecomment-562506868,Sorry. Wrong branch.,sorry wrong branch,1,1
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,64,2019-12-06T09:51:17Z,pmoura,Fix woql_compile module missing use_module directive,https://github.com/terminusdb/terminusdb/pull/64,Also fixes #59.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,66,2019-12-06T11:18:13Z,pmoura,Add missing goal_expansion/2 multifile and dynamic directives,https://github.com/terminusdb/terminusdb/pull/66,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,70,2019-12-06T18:16:56Z,pmoura,Delete use_module/1 directives subsumed by reexport/1 directives,https://github.com/terminusdb/terminusdb/pull/70,The reexport/1 directive subsumes the use_module/1 directive. The latter is not necessary when the former is used. Same for the arity two variants.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,71,2019-12-06T18:50:33Z,pmoura,Add missing meta_predicate/1 directive for with_transaction/3 predicate,https://github.com/terminusdb/terminusdb/pull/71,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,72,2019-12-07T17:02:33Z,pmoura,Add missing operator directives to the capabilities and database modules,https://github.com/terminusdb/terminusdb/pull/72,These two modules don't import the modules defining those operators,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,73,2019-12-08T21:18:50Z,pmoura,Add missing import to module jsonld,https://github.com/terminusdb/terminusdb/pull/73,The jsonld module calls the get_global_jsonld_context/1 predicate exported by the prefixes module.,2019-12-08T21:19:16Z,pmoura,https://github.com/terminusdb/terminusdb/pull/73#issuecomment-562995285,Wrong base branch :(,wrong base branch (,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,73,2019-12-08T21:18:50Z,pmoura,Add missing import to module jsonld,https://github.com/terminusdb/terminusdb/pull/73,The jsonld module calls the get_global_jsonld_context/1 predicate exported by the prefixes module.,2019-12-08T21:33:46Z,pmoura,https://github.com/terminusdb/terminusdb/pull/73#issuecomment-562997182,Fixed base branch to dev.,fix base branch to dev,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,74,2019-12-10T08:56:05Z,pmoura,Add missing import of module prefixes to module sdk,https://github.com/terminusdb/terminusdb/pull/74,Thesdk module calls the get_collection_prefix_list/2 predicate exported by the prefixes module.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,80,2019-12-14T00:25:43Z,pmoura,Make utils:count/3 predicate tail recursive,https://github.com/terminusdb/terminusdb/pull/80,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,86,2020-01-14T13:35:02Z,dmytri,Dev,https://github.com/terminusdb/terminusdb/pull/86,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,93,2020-01-23T18:11:39Z,dmytri,base tag in index causes console bug,https://github.com/terminusdb/terminusdb/pull/93,base tag in index.tmp is causing a bad bug in the console,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,95,2020-02-03T23:08:41Z,pwin,typo - violtion,https://github.com/terminusdb/terminusdb/pull/95,typo of violation within vio:ClassInheritanceViolation,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,96,2020-02-03T23:12:59Z,pwin,typo - violtion,https://github.com/terminusdb/terminusdb/pull/96,changing typo in vio:ClassInheritanceViolation,2020-02-04T11:09:12Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/96#issuecomment-581857853,"This looks good, but the pull request should go into the dev branch so that it can be folded into a release.",this look good but the pull request should go into the dev branch so that -PRON- can be fold into a release,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,96,2020-02-03T23:12:59Z,pwin,typo - violtion,https://github.com/terminusdb/terminusdb/pull/96,changing typo in vio:ClassInheritanceViolation,2020-02-04T11:12:51Z,pwin,https://github.com/terminusdb/terminusdb/pull/96#issuecomment-581859236,"Ok. What would you like me to do? Resubmit, it will you just sort this
+simple change on the dev branch yourself?
+…
+On Tue, 4 Feb 2020, 04:09 Gavin Mendel-Gleason, ***@***.***> wrote:
+ This looks good, but the pull request should go into the dev branch so
+ that it can be folded into a release.
+
+ —
+ You are receiving this because you authored the thread.
+ Reply to this email directly, view it on GitHub
+ <#96>,
+ or unsubscribe
+ <https://github.com/notifications/unsubscribe-auth/AAIFYTBHEN23GF2ABGZHF4DRBFEFRANCNFSM4KPNURQQ>
+ .",ok what would -PRON- like -PRON- to do resubmit -PRON- will -PRON- just sort this simple change on the dev branch -PRON- … on tue 4 feb 2020 0409 gavin mendel - gleason * * * @ * * * * * * > write this look good but the pull request should go into the dev branch so that -PRON- can be fold into a release — -PRON- be receive this because -PRON- author the thread reply to this email directly view -PRON- on github < # 96 > or unsubscribe < https//githubcom / notification / unsubscribe - auth / aaifytbhen23gf2abgzhf4drbfefrancnfsm4kpnurqq >,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,96,2020-02-03T23:12:59Z,pwin,typo - violtion,https://github.com/terminusdb/terminusdb/pull/96,changing typo in vio:ClassInheritanceViolation,2020-02-04T11:16:33Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/96#issuecomment-581860722,"You can resubmit or I can just fix it. Thanks a lot for finding it!
+…
+On Tue, 4 Feb 2020 at 11:12, pwin ***@***.***> wrote:
+ Ok. What would you like me to do? Resubmit, it will you just sort this
+ simple change on the dev branch yourself?
+
+ On Tue, 4 Feb 2020, 04:09 Gavin Mendel-Gleason, ***@***.***>
+ wrote:
+
+ > This looks good, but the pull request should go into the dev branch so
+ > that it can be folded into a release.
+ >
+ > —
+ > You are receiving this because you authored the thread.
+ > Reply to this email directly, view it on GitHub
+ > <
+ #96
+ >,
+ > or unsubscribe
+ > <
+ https://github.com/notifications/unsubscribe-auth/AAIFYTBHEN23GF2ABGZHF4DRBFEFRANCNFSM4KPNURQQ
+ >
+ > .
+ >
+
+ —
+ You are receiving this because your review was requested.
+ Reply to this email directly, view it on GitHub
+ <#96>,
+ or unsubscribe
+ <https://github.com/notifications/unsubscribe-auth/AAPGVKQWKGXDZ7UHNGRKLEDRBFETJANCNFSM4KPNURQQ>
+ .",-PRON- can resubmit or i can just fix -PRON- thank a lot for find -PRON- … on tue 4 feb 2020 at 1112 pwin * * * @ * * * * * * > write ok what would -PRON- like -PRON- to do resubmit -PRON- will -PRON- just sort this simple change on the dev branch -PRON- on tue 4 feb 2020 0409 gavin mendel - gleason * * * @ * * * * * * > write > this look good but the pull request should go into the dev branch so > that -PRON- can be fold into a release > > — > -PRON- be receive this because -PRON- author the thread > reply to this email directly view -PRON- on github > < # 96 > > or unsubscribe > < https//githubcom / notification / unsubscribe - auth / aaifytbhen23gf2abgzhf4drbfefrancnfsm4kpnurqq > > > — -PRON- be receive this because -PRON- review be request reply to this email directly view -PRON- on github < # 96 > or unsubscribe < https//githubcom / notification / unsubscribe - auth / aapgvkqwkgxdz7uhngrkledrbfetjancnfsm4kpnurqq >,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,96,2020-02-03T23:12:59Z,pwin,typo - violtion,https://github.com/terminusdb/terminusdb/pull/96,changing typo in vio:ClassInheritanceViolation,2020-02-04T11:18:42Z,pwin,https://github.com/terminusdb/terminusdb/pull/96#issuecomment-581861535,"Gavin, it's 4 in the morning. Please can you just go ahead and fix it. That
+way it's done and I can sleep soundly in that knowledge. 😁
+
+On Tue, 4 Feb 2020, 04:16 Gavin Mendel-Gleason, <notifications@github.com>
+wrote:
+…
+ You can resubmit or I can just fix it. Thanks a lot for finding it!
+
+ On Tue, 4 Feb 2020 at 11:12, pwin ***@***.***> wrote:
+
+ > Ok. What would you like me to do? Resubmit, it will you just sort this
+ > simple change on the dev branch yourself?
+ >
+ > On Tue, 4 Feb 2020, 04:09 Gavin Mendel-Gleason, <
+ ***@***.***>
+ > wrote:
+ >
+ > > This looks good, but the pull request should go into the dev branch so
+ > > that it can be folded into a release.
+ > >
+ > > —
+ > > You are receiving this because you authored the thread.
+ > > Reply to this email directly, view it on GitHub
+ > > <
+ >
+ #96
+ > >,
+ > > or unsubscribe
+ > > <
+ >
+ https://github.com/notifications/unsubscribe-auth/AAIFYTBHEN23GF2ABGZHF4DRBFEFRANCNFSM4KPNURQQ
+ > >
+ > > .
+ > >
+ >
+ > —
+ > You are receiving this because your review was requested.
+ > Reply to this email directly, view it on GitHub
+ > <
+ #96
+ >,
+ > or unsubscribe
+ > <
+ https://github.com/notifications/unsubscribe-auth/AAPGVKQWKGXDZ7UHNGRKLEDRBFETJANCNFSM4KPNURQQ
+ >
+ > .
+ >
+
+ —
+ You are receiving this because you authored the thread.
+ Reply to this email directly, view it on GitHub
+ <#96>,
+ or unsubscribe
+ <https://github.com/notifications/unsubscribe-auth/AAIFYTF2VG5RYNQWWMPRWKTRBFFBFANCNFSM4KPNURQQ>
+ .",gavin -PRON- be 4 in the morning please can -PRON- just go ahead and fix -PRON- that way -PRON- be do and i can sleep soundly in that knowledge 😁 on tue 4 feb 2020 0416 gavin mendel - gleason < notifications@githubcom > write … -PRON- can resubmit or i can just fix -PRON- thank a lot for find -PRON- on tue 4 feb 2020 at 1112 pwin * * * @ * * * * * * > write > ok what would -PRON- like -PRON- to do resubmit -PRON- will -PRON- just sort this > simple change on the dev branch -PRON- > > on tue 4 feb 2020 0409 gavin mendel - gleason < * * * @ * * * * * * > > write > > > this look good but the pull request should go into the dev branch so > > that -PRON- can be fold into a release > > > > — > > -PRON- be receive this because -PRON- author the thread > > reply to this email directly view -PRON- on github > > < > # 96 > > > > or unsubscribe > > < > https//githubcom / notification / unsubscribe - auth / aaifytbhen23gf2abgzhf4drbfefrancnfsm4kpnurqq > > > > > > > > — > -PRON- be receive this because -PRON- review be request > reply to this email directly view -PRON- on github > < # 96 > > or unsubscribe > < https//githubcom / notification / unsubscribe - auth / aapgvkqwkgxdz7uhngrkledrbfetjancnfsm4kpnurqq > > > — -PRON- be receive this because -PRON- author the thread reply to this email directly view -PRON- on github < # 96 > or unsubscribe < https//githubcom / notification / unsubscribe - auth / aaifytf2vg5rynqwwmprwktrbffbfancnfsm4kpnurqq >,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,96,2020-02-03T23:12:59Z,pwin,typo - violtion,https://github.com/terminusdb/terminusdb/pull/96,changing typo in vio:ClassInheritanceViolation,2020-02-11T13:11:44Z,luke-feeney,https://github.com/terminusdb/terminusdb/pull/96#issuecomment-584627322,Heroics at 4am!,heroic at 4 a.m.,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,96,2020-02-03T23:12:59Z,pwin,typo - violtion,https://github.com/terminusdb/terminusdb/pull/96,changing typo in vio:ClassInheritanceViolation,2020-02-11T13:13:07Z,pwin,https://github.com/terminusdb/terminusdb/pull/96#issuecomment-584627868,"Indeed!
+…
+On Tue, 11 Feb 2020, 13:11 Luke Feeney, ***@***.***> wrote:
+ Heroics at 4am!
+
+ —
+ You are receiving this because you authored the thread.
+ Reply to this email directly, view it on GitHub
+ <#96>,
+ or unsubscribe
+ <https://github.com/notifications/unsubscribe-auth/AAIFYTCUIFW6LKL5BRPV3Y3RCKPZBANCNFSM4KPNURQQ>
+ .",indeed … on tue 11 feb 2020 1311 luke feeney * * * @ * * * * * * > write heroic at 4 a.m. — -PRON- be receive this because -PRON- author the thread reply to this email directly view -PRON- on github < # 96 > or unsubscribe < https//githubcom / notification / unsubscribe - auth / aaifytcuifw6lkl5brpv3y3rckpzbancnfsm4kpnurqq >,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,96,2020-02-03T23:12:59Z,pwin,typo - violtion,https://github.com/terminusdb/terminusdb/pull/96,changing typo in vio:ClassInheritanceViolation,2020-04-20T10:20:24Z,rrooij,https://github.com/terminusdb/terminusdb/pull/96#issuecomment-616453879,"It was already fixed now, so I will close this issue. Thanks for your pull request. 👍",-PRON- be already fix now so i will close this issue thank for -PRON- pull request 👍,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,107,2020-03-11T09:57:48Z,pmoura,Make intersperse/2 predicate deterministic,https://github.com/terminusdb/terminusdb/pull/107,"Tested by comparing results with original version.
+Note that this pull request doesn't change calls to this predicate. There are a few of them using once/1 wrappers that should no longer be required.",2020-03-11T10:00:46Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/107#issuecomment-597543119,Cheers!,cheer,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,108,2020-03-11T22:58:44Z,pmoura,Delete duplicated predicate export in terminus_bootstrap,https://github.com/terminusdb/terminusdb/pull/108,Another Logtalk linter complaint 😛,2020-03-11T22:59:35Z,rrooij,https://github.com/terminusdb/terminusdb/pull/108#issuecomment-597921438,Is there by the way any guide on running the Logtalk linter? I'd love to have the linter running in our CI,be there by the way any guide on run the logtalk linter -PRON- 'd love to have the linter run in -PRON- ci,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,108,2020-03-11T22:58:44Z,pmoura,Delete duplicated predicate export in terminus_bootstrap,https://github.com/terminusdb/terminusdb/pull/108,Another Logtalk linter complaint 😛,2020-03-11T23:09:19Z,pmoura,https://github.com/terminusdb/terminusdb/pull/108#issuecomment-597924302,"@rrooij I currently use a hand-written library/loader.lgt file that loads the Prolog files in the library directory, compiling the modules as objects. I still need to patch a few files to avoid some errors (the Logtalk compiler is far more strict than SWI-Prolog but there are also some key differences between modules and objects). The order of the files loaded from the loader.lgt file attempts to minimize warnings and thus is not arbitrary. Happy to share my knowledge here (e.g. via an online call via Skype or similar; let me know). I can also commit the loader.lgt file (its presence in the repo should not cause any issues).",@rrooij i currently use a hand - write library / loaderlgt file that load the prolog file in the library directory compile the module as object i still need to patch a few file to avoid some error ( the logtalk compiler be far more strict than swi - prolog but there be also some key difference between module and object ) the order of the file load from the loaderlgt file attempt to minimize warning and thus be not arbitrary happy to share -PRON- knowledge here ( eg via an online call via skype or similar let -PRON- know ) i can also commit the loaderlgt file ( -PRON- presence in the repo should not cause any issue ),0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,108,2020-03-11T22:58:44Z,pmoura,Delete duplicated predicate export in terminus_bootstrap,https://github.com/terminusdb/terminusdb/pull/108,Another Logtalk linter complaint 😛,2020-03-12T08:48:32Z,rrooij,https://github.com/terminusdb/terminusdb/pull/108#issuecomment-598072269,"@pmoura Great to hear, would be nice to talk about this. Feel free to share your loader.lgt as well.
+#51",@pmoura great to hear would be nice to talk about this feel free to share -PRON- loaderlgt as well # 51,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,108,2020-03-11T22:58:44Z,pmoura,Delete duplicated predicate export in terminus_bootstrap,https://github.com/terminusdb/terminusdb/pull/108,Another Logtalk linter complaint 😛,2020-03-17T18:23:54Z,pmoura,https://github.com/terminusdb/terminusdb/pull/108#issuecomment-600227122,"@rrooij  I'm currently using a small loader.lgt file that allows applying the Logtalk linter:
+% applies the Logtalk linter to all terminus-server
+% modules files that are loaded 
+%
+% usage:
+%	$ swilgt start.pl
+%	?- {loader}.
+
+:- initialization((
+	set_logtalk_flag(report, warnings),
+	logtalk_load([os(loader), types(loader)]),
+	logtalk_load_context(directory, Directory),
+	findall(
+		File,
+		(	current_module(Module),
+			module_property(Module, file(File)),
+			sub_atom(File, 0, _, _, Directory)
+		),
+		Files0
+	),
+        sort(Files0, Files),
+	forall(
+		list::member(File, Files),
+		ignore(logtalk_compile(File, [unknown_entities(silent)]))
+	) 
+)).
+You can experiment with it after installing Logtalk (latest version is recommended, currently at 3.36.0). Note that it will generate several warnings that are safe to ignore. It will also fail to lint a few modules due to compilation errors as they require manual patches to allow them to be compiled as objects. Those patches are not bugs in the modules but rather differences between objects and modules (notably, Logtalk is not based on a predicate prefixing mechanism as found in module systems). For example:
+!     Domain error: value prolog_frame_attribute(+,+,:) is not in domain meta_predicate_template
+!       in clause for predicate report_curl_command/1
+!       in file /Users/pmoura/terminus-server/core/util/test_utils.pl between lines 130-135
+
+The patch here would be to add before the clause triggering the error:
+:- meta_predicate(prolog_frame_attribute(*,*,*)).
+But such patch would cause issues and thus no point in submitting it.
+There are also a few false warnings regarding dict goals (no current workaround due to the way SWI-Prolog currently implements dicts). An example is:
+*     Goal is always false: A.instance_read_objects=[B]
+*       while compiling object database
+*       in file /Users/pmoura/terminus-server/core/transaction/database.pl between lines 238-272
+
+When the goal is checked, the SWI-Prolog compiler have not yet compiled the dict call.
+Anyway, give it a try. Happy to help clarify the warnings.",@rrooij -PRON- be currently use a small loaderlgt file that allow apply the logtalk linter % apply the logtalk linter to all terminus - server % module file that be load % % usage % $ swilgt startpl % - { loader } - initialization ( ( set_logtalk_flag(report warning ) logtalk_load([os(loader ) types(loader ) ] ) logtalk_load_context(directory directory ) findall ( file ( current_module(module ) module_property(module file(file ) ) sub_atom(file 0 _ _ directory ) ) files0 ) sort(files0 file ) forall ( listmember(file file ) ignore(logtalk_compile(file [ unknown_entities(silent ) ] ) ) ) ) ) -PRON- can experiment with -PRON- after instal logtalk ( late version be recommend currently at 3360 ) note that -PRON- will generate several warning that be safe to ignore -PRON- will also fail to lint a few module due to compilation error as -PRON- require manual patch to allow -PRON- to be compile as object those patch be not bug in the module but rather difference between object and module ( notably logtalk be not base on a predicate prefixing mechanism as find in module system ) for example domain error value prolog_frame_attribute(++ ) be not in domain meta_predicate_template in clause for predicate report_curl_command/1 in file /users / pmoura / terminus - server / core / util / test_utilspl between line 130 - 135 the patch here would be to add before the clause trigger the error - meta_predicate(prolog_frame_attribute ( * * * ) ) but such patch would cause issue and thus no point in submit -PRON- there be also a few false warning regard dict goal ( no current workaround due to the way swi - prolog currently implement dict ) an example be * goal be always false ainstance_read_objects=[b ] * while compile object database * in file /users / pmoura / terminus - server / core / transaction / databasepl between line 238 - 272 when the goal be check the swi - prolog compiler have not yet compile the dict call anyway give -PRON- a try happy to help clarify the warning,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,108,2020-03-11T22:58:44Z,pmoura,Delete duplicated predicate export in terminus_bootstrap,https://github.com/terminusdb/terminusdb/pull/108,Another Logtalk linter complaint 😛,2020-03-18T09:47:57Z,pmoura,https://github.com/terminusdb/terminusdb/pull/108#issuecomment-600523095,"P.S. If you install the Logtalk git version (instead of the stable one), it includes some improvements to the compilation of modules as objects that improve the accuracy and thus usefulness of the linter.",ps if -PRON- install the logtalk git version ( instead of the stable one ) -PRON- include some improvement to the compilation of module as object that improve the accuracy and thus usefulness of the linter,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,109,2020-03-11T23:15:14Z,pmoura,Missing import in validate_schema module,https://github.com/terminusdb/terminusdb/pull/109,The validate_schema module calls the database_utils:database_schema/2 predicate but the corresponding use_module(database_utils) directive is missing.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,110,2020-03-11T23:33:25Z,pmoura,Fix forall/3 -> findall/3 typo in module descriptor,https://github.com/terminusdb/terminusdb/pull/110,,2020-03-12T08:47:02Z,rrooij,https://github.com/terminusdb/terminusdb/pull/110#issuecomment-598071679,Thanks a lot!,thank a lot,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,111,2020-03-12T15:59:33Z,pmoura,Fix missing import of module syntax,https://github.com/terminusdb/terminusdb/pull/111,Also fixes a syntax typo error in db_util.pl.,2020-03-12T21:05:26Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/111#issuecomment-598417912,Thanks!,thanks,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,112,2020-03-13T12:24:07Z,pmoura,Fix missing argument in pcre:re_matchsub/4 predicate calls,https://github.com/terminusdb/terminusdb/pull/112,There is no pcre:re_matchsub/3 predicate.,2020-03-13T12:30:20Z,rrooij,https://github.com/terminusdb/terminusdb/pull/112#issuecomment-598697577,"Thanks a lot! Yeah, it is pretty annoying that there is no re_matchsub that doesn't take options.",thank a lot yeah -PRON- be pretty annoying that there be no re_matchsub that do not take option,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,113,2020-03-13T17:32:29Z,pmoura,Import library(pcre) in modules that require it,https://github.com/terminusdb/terminusdb/pull/113,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,114,2020-03-16T14:04:36Z,pmoura,Fix typos in PLDoc comments for module predicates,https://github.com/terminusdb/terminusdb/pull/114,,2020-04-20T10:23:06Z,rrooij,https://github.com/terminusdb/terminusdb/pull/114#issuecomment-616455324,Merged! Thanks for noticing @pmoura!,merged thank for notice @pmoura,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,117,2020-03-18T09:37:06Z,pmoura,Add missing imports to resolve called predicates,https://github.com/terminusdb/terminusdb/pull/117,The global_prefix_expand2 predicate is called from frame.pl and the merge_separator_split/3 is called from database_utils.pl.,2020-04-20T10:25:32Z,rrooij,https://github.com/terminusdb/terminusdb/pull/117#issuecomment-616456632,"Thanks for noticing. As far as I could see, we resolved this by importing them now.",thank for notice as far as i could see -PRON- resolve this by import -PRON- now,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,121,2020-05-21T05:41:50Z,djeikyb,fix typo,https://github.com/terminusdb/terminusdb/pull/121,,2020-05-21T06:28:21Z,rrooij,https://github.com/terminusdb/terminusdb/pull/121#issuecomment-631909501,Thanks!,thanks,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,122,2020-05-31T13:52:48Z,epost,Fix typos,https://github.com/terminusdb/terminusdb/pull/122,,2020-07-08T13:45:47Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/122#issuecomment-655530288,Thanks for the contributions - the README was amended by hand.,thank for the contribution - the readme be amend by hand,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,125,2020-07-08T17:00:32Z,rahuldeepattri,README.md: Added link to latest release,https://github.com/terminusdb/terminusdb/pull/125,Added link to version so that it automatically points to the latest project release with reference to #124,2020-07-17T15:36:24Z,rrooij,https://github.com/terminusdb/terminusdb/pull/125#issuecomment-660174899,"2.0.4 is not the latest release anymore. Anyway, thanks for the suggestion though. :) But I won't merge it as the version lacks behind.",204 be not the late release anymore anyway thank for the suggestion though ) but i will not merge -PRON- as the version lack behind,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,125,2020-07-08T17:00:32Z,rahuldeepattri,README.md: Added link to latest release,https://github.com/terminusdb/terminusdb/pull/125,Added link to version so that it automatically points to the latest project release with reference to #124,2020-07-20T05:41:07Z,rahuldeepattri,https://github.com/terminusdb/terminusdb/pull/125#issuecomment-660814678,"Hi @rrooij the link https://github.com/terminusdb/terminusdb-server/releases/latest will automatically point to latest release. E.g. If you open the link in the browser, as of now it automatically redirects to v2.0.5. So having a link like that will help as you wont have to these changes again! Please let me know if I can open a PR again.",hi @rrooij the link https//githubcom / terminusdb / terminusdb - server / release / late will automatically point to late release eg if -PRON- open the link in the browser as of now -PRON- automatically redirect to v205 so have a link like that will help as -PRON- will not have to these change again please let -PRON- know if i can open a pr again,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,125,2020-07-08T17:00:32Z,rahuldeepattri,README.md: Added link to latest release,https://github.com/terminusdb/terminusdb/pull/125,Added link to version so that it automatically points to the latest project release with reference to #124,2020-07-20T08:52:35Z,rrooij,https://github.com/terminusdb/terminusdb/pull/125#issuecomment-660895912,But the link text won't automatically change right? @rahuldeepattri,but the link text will not automatically change right @rahuldeepattri,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,142,2020-12-13T06:03:02Z,dependabot,Bump ini from 1.3.5 to 1.3.8 in /distribution/desktop,https://github.com/terminusdb/terminusdb/pull/142,"Bumps ini from 1.3.5 to 1.3.8.
+
+Commits
+
+a2c5da8 1.3.8
+af5c6bb Do not use Object.create(null)
+8b648a1 don't test where our devdeps don't even work
+c74c8af 1.3.7
+024b8b5 update deps, add linting
+032fbaf Use Object.create(null) to avoid default object property hazards
+2da9039 1.3.6
+cfea636 better git push script, before publish instead of after
+56d2805 do not allow invalid hazardous string as section name
+See full diff in compare view
+
+
+
+Maintainer changes
+This version was pushed to npm by isaacs, a new releaser for ini since your current version.
+
+
+
+Dependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting @dependabot rebase.
+
+
+Dependabot commands and options
+
+You can trigger Dependabot actions by commenting on this PR:
+
+@dependabot rebase will rebase this PR
+@dependabot recreate will recreate this PR, overwriting any edits that have been made to it
+@dependabot merge will merge this PR after your CI passes on it
+@dependabot squash and merge will squash and merge this PR after your CI passes on it
+@dependabot cancel merge will cancel a previously requested merge and block automerging
+@dependabot reopen will reopen this PR if it is closed
+@dependabot close will close this PR and stop Dependabot recreating it. You can achieve the same result by closing it manually
+@dependabot ignore this major version will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this minor version will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this dependency will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)
+@dependabot use these labels will set the current labels as the default for future PRs for this repo and language
+@dependabot use these reviewers will set the current reviewers as the default for future PRs for this repo and language
+@dependabot use these assignees will set the current assignees as the default for future PRs for this repo and language
+@dependabot use this milestone will set the current milestone as the default for future PRs for this repo and language
+
+You can disable automated security fix PRs for this repo from the Security Alerts page.",2020-12-18T16:54:04Z,dependabot,https://github.com/terminusdb/terminusdb/pull/142#issuecomment-748202207,"Looks like ini is up-to-date now, so this is no longer needed.",look like ini be up - to - date now so this be no long need,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,149,2021-01-19T10:03:58Z,drkameleon,"General copyediting: minor fixes, typos + Oxford commas",https://github.com/terminusdb/terminusdb/pull/149,,2021-01-25T14:31:22Z,rrooij,https://github.com/terminusdb/terminusdb/pull/149#issuecomment-766855458,Thanks!,thanks,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,149,2021-01-19T10:03:58Z,drkameleon,"General copyediting: minor fixes, typos + Oxford commas",https://github.com/terminusdb/terminusdb/pull/149,,2021-01-25T14:51:06Z,luke-feeney,https://github.com/terminusdb/terminusdb/pull/149#issuecomment-766869222,"great changes! Thou I would quibble about 'build from source' versus 'build from the source' - I know the latter is more grammatically correct, but the former sounds cooler...",great change thou i would quibble about ' build from source ' versus ' build from the source ' - i know the latter be more grammatically correct but the former sound cooler,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,153,2021-01-28T19:27:37Z,dependabot,Bump electron from 10.1.2 to 10.2.0 in /distribution/desktop,https://github.com/terminusdb/terminusdb/pull/153,"Bumps electron from 10.1.2 to 10.2.0.
+
+Release notes
+Sourced from electron's releases.
+
+electron v10.2.0
+Release Notes for v10.2.0
+Fixes
+
+Added Electron DLLs like libGLESv2.dll to symbol server. #26964 (Also in 9, 11, 12)
+Fixed systemPreferences.effectiveAppearance returning systemPreferences.getAppLevelAppearance(). #26882 (Also in 9, 11, 12)
+Fixed an issue that a message box in GTK contains no buttons. #26915 (Also in 11, 12)
+Fixed an issue where event.reply could sometimes not deliver a reply to an IPC message when cross-site iframes were present. #26927 (Also in 9, 11, 12)
+Fixed an occasional crash on Windows related to NativeViewHost::SetParentAccessible. #26949 (Also in 9, 11, 12)
+
+Other Changes
+
+Security: backport fix for 1150649. #26896
+Security: backported fix for 1137603. #26892
+Security: backported fix for 1141350. #26894
+Security: backported the fix to CVE-2020-16014: Use after free in PPAPI. #26855
+Security: backported the fix to CVE-2020-16023: Use after free in WebCodecs. #26832
+Security: backported the fix to CVE-2020-16024: Heap buffer overflow in UI. #26830
+Security: backported the fix to heap-buffer-overflow in gfx::internal::StyleIterator::GetTextBreakingRange. #26866
+
+electron v10.1.7
+Release Notes for v10.1.7
+Fixes
+
+Fixed <webview> render-process-gone event dispatch. #26577
+Fixed an issue where IsMaximized would incorrectly return false for some windows on Windows. #26779 (Also in 12)
+Fixed an issue where draggable regions in BrowserWindow causes BrowserView to become draggable in non-correspondent places. #26753 (Also in 11, 12)
+Fixed an issue where some buttons were un-clickable in some BrowserViews with draggable regions enabled. #26744 (Also in 9, 11)
+Fixed an issue whereby a corrupted async_hooks stack would crash the renderer when throwing some errors in the renderer process. #26747 (Also in 9, 11)
+Fixed uncaught promise rejection when creating webContents with javascript disabled. #26871 (Also in 11, 12)
+
+Other Changes
+
+Security: backported the fix to CVE-2020-16015: Insufficient data validation in WASM. #26858
+Security: backported the fix to CVE-2020-16022: Insufficient policy enforcement in networking. #26860
+
+Unknown
+
+Re-enable Rosetta on Apple Silicon devices. #26569 (Also in 7.3, 8, 9, 11)
+
+electron v10.1.6
+Release Notes for v10.1.6
+Fixes
+
+Fixed LC_ALL environment variable getting changed in Electron. #26550 (Also in 9)
+Fixed window.open not accepting size values with ""px"" at the end. #26333 (Also in 11)
+Fixed a rare crash on Windows that could occur when emitting certain powerMonitor events. #26180 (Also in 11)
+Fixed an issue where Hover Text on macOS Catalina did not work without VoiceOver also being enabled. #26245 (Also in 9, 11)
+Fixed an issue where draggable regions did not work exclusively on BrowserViews. #26260 (Also in 9, 11)
+Fixed an issue where draggable regions were not properly updated on BrowserViews when a containing BrowserWindow was resized. #26321 (Also in 9, 11)
+
+
+
+... (truncated)
+
+
+Commits
+
+4594af5 Bump v10.2.0
+0bbd268 fix: restrict sendToFrame to same-process frames by default (#26875) (#26927)
+47b9207 fix: Upload all *.dll.pdb to symbol server (#26964)
+846412c fix: Avoid crashing in NativeViewHost::SetParentAccessible on Windows 10 (#26...
+b77e48a chore: cherry-pick 3abc372c9c00 from chromium (#26894)
+87d9848 docs: add missing deprecated systemPreferences APIs to breaking-changes (#26934)
+6d468cd chore: cherry-pick 290fe9c6e245 from v8 (#26896)
+38e5854 chore: cherry-pick d8d64b7cd244 from chromium (#26892)
+5481d27 fix: message box missing an ""OK"" button in GTK (#26915)
+135133e chore: cherry-pick 381c4b5679 from chromium. (#26832)
+Additional commits viewable in compare view
+
+
+
+
+Dependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting @dependabot rebase.
+
+
+Dependabot commands and options
+
+You can trigger Dependabot actions by commenting on this PR:
+
+@dependabot rebase will rebase this PR
+@dependabot recreate will recreate this PR, overwriting any edits that have been made to it
+@dependabot merge will merge this PR after your CI passes on it
+@dependabot squash and merge will squash and merge this PR after your CI passes on it
+@dependabot cancel merge will cancel a previously requested merge and block automerging
+@dependabot reopen will reopen this PR if it is closed
+@dependabot close will close this PR and stop Dependabot recreating it. You can achieve the same result by closing it manually
+@dependabot ignore this major version will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this minor version will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this dependency will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)
+@dependabot use these labels will set the current labels as the default for future PRs for this repo and language
+@dependabot use these reviewers will set the current reviewers as the default for future PRs for this repo and language
+@dependabot use these assignees will set the current assignees as the default for future PRs for this repo and language
+@dependabot use this milestone will set the current milestone as the default for future PRs for this repo and language
+
+You can disable automated security fix PRs for this repo from the Security Alerts page.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,206,2021-02-09T17:52:44Z,luke-feeney,Updating Docs Nav Structure and New Theme ,https://github.com/terminusdb/terminusdb/pull/206,"Hello - I hope this can be merged without breaking things. I have implemented a new theme, collapsible sidebar, new navigation structure, as well as creating all sorts of base docs.",2021-02-10T10:22:38Z,luke-feeney,https://github.com/terminusdb/terminusdb/pull/206#issuecomment-776605419,Thanks!,thanks,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,259,2021-03-19T22:17:38Z,rrooij,Fix very slow query when using ./terminusdb list with many dbs,https://github.com/terminusdb/terminusdb/pull/259,"I created 388 DBs and it took 90 seconds to list them. But when I fix this query, it takes around 6 seconds. The reason is that the
+original query is very slow because it does not take account that Db_Uri could be ground already.
+To reproduce the bad performance, create: 388 DBs or something similar:
+#!/usr/bin/env python3
+from terminusdb_client import WOQLClient, WOQLQuery
+
+amount = 388
+client = WOQLClient('https://127.0.0.1:6363')
+client.connect(user='admin', account='admin', key='root')
+
+for x in range(0, amount):
+    db_name = f'db{str(x)}'
+    client.create_database(db_name, accountid=""admin"")
+Then run ./terminusdb list. As you can see it is very slow.
+Apply my commit and it runs way faster.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,260,2021-03-20T13:21:40Z,rrooij,Refactor and optimize list db,https://github.com/terminusdb/terminusdb/pull/260,"Increased performance further. If the account requesting the list
+is the super_user/admin, there is no need to get the user object
+and query the organization of every database.
+However, even when a specific user wants a list of their DBs
+it is also faster now. Since the name of the database is already
+in the user object itself, it does not need to be queried.
+This saves addiontal time and also removes the need for the
+ground check of the DB URI.
+Time went from:
+./terminusdb list  6.30s user 1.87s system 103% cpu 7.912 total
+To:
+./terminusdb list  2.37s user 1.21s system 107% cpu 3.316 total
+I also added an extra unit test for existing databases.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,273,2021-03-23T12:22:18Z,matko,implement support for starting TerminusDB in in-memory mode,https://github.com/terminusdb/terminusdb/pull/273,"This patch implements feature request #266. A new flag, -m or --memory with the terminus serve command, will start the server with a freshly initialized store that is fully in-memory. optionally, this flag takes an argument which will be used as the password for the admin account. If absent, the admin account will be initialized with password 'root'.
+Examples:
+./terminusdb serve -i -m
+./terminusdb serve -i -m my_secret_password
+./terminusdb serve -i --memory=my_secret_password",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,276,2021-03-24T12:14:53Z,soroushj,Fix TUTORIALS.md,https://github.com/terminusdb/terminusdb/pull/276,Fix tutorial repo URL MD formatting.,2021-03-25T10:22:12Z,Cheukting,https://github.com/terminusdb/terminusdb/pull/276#issuecomment-806532305,Thanks @soroushj,thanks @soroushj,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,285,2021-03-30T11:07:26Z,GavinMendelGleason,Adding error handling for database_does_not_exist.,https://github.com/terminusdb/terminusdb/pull/285,Fixing bad return message for database does not exist in prefix lookup,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,293,2021-04-08T13:27:36Z,GavinMendelGleason,Upping terminus store prolog version,https://github.com/terminusdb/terminusdb/pull/293,Upping store version and adding imprecise rollup,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,294,2021-04-09T13:45:42Z,GavinMendelGleason,Fix duplicate results from queries.,https://github.com/terminusdb/terminusdb/pull/294,Found source of erroneous repeated solutions.,2021-04-09T13:47:46Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/294#issuecomment-816694958,Resolves #294,resolve # 294,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,297,2021-04-10T15:52:36Z,evildmp,Updated link to Diátaxis authoring framework,https://github.com/terminusdb/terminusdb/pull/297,The documentation system now has a new home of its own at https://diataxis.fr/.,2021-04-10T16:19:42Z,luke-feeney,https://github.com/terminusdb/terminusdb/pull/297#issuecomment-817161326,that's great! fantastic system,that be great fantastic system,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,297,2021-04-10T15:52:36Z,evildmp,Updated link to Diátaxis authoring framework,https://github.com/terminusdb/terminusdb/pull/297,The documentation system now has a new home of its own at https://diataxis.fr/.,2021-04-10T17:59:40Z,evildmp,https://github.com/terminusdb/terminusdb/pull/297#issuecomment-817179317,"@luke-feeney Not sure what the test failures are, or if I can do anything about them.",@luke - feeney not sure what the test failure be or if i can do anything about -PRON-,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,297,2021-04-10T15:52:36Z,evildmp,Updated link to Diátaxis authoring framework,https://github.com/terminusdb/terminusdb/pull/297,The documentation system now has a new home of its own at https://diataxis.fr/.,2021-04-10T18:42:10Z,Cheukting,https://github.com/terminusdb/terminusdb/pull/297#issuecomment-817185551,"Some builds failed, it seems that it is not directly caused by the changes in this pull request. @rrooij could you have a look?",some build fail -PRON- seem that -PRON- be not directly cause by the change in this pull request @rrooij could -PRON- have a look,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,297,2021-04-10T15:52:36Z,evildmp,Updated link to Diátaxis authoring framework,https://github.com/terminusdb/terminusdb/pull/297,The documentation system now has a new home of its own at https://diataxis.fr/.,2021-04-19T15:32:58Z,Cheukting,https://github.com/terminusdb/terminusdb/pull/297#issuecomment-822563243,"@rrooij I have fixed the links, can I merge it?",@rrooij i have fix the link can i merge -PRON-,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,300,2021-04-13T14:15:02Z,GavinMendelGleason,Optimize race condition,https://github.com/terminusdb/terminusdb/pull/300,Fix the optimization race condition by using the version on the label to be updated in a test-and-set,2021-04-13T14:16:35Z,rrooij,https://github.com/terminusdb/terminusdb/pull/300#issuecomment-818772286,Not to master plz!,not to master plz,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,301,2021-04-13T14:15:20Z,GavinMendelGleason,Remove optimize labelled graph race condition,https://github.com/terminusdb/terminusdb/pull/301,Fix the optimization race condition by using the version on the label to be updated in a test-and-set,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,302,2021-04-13T14:17:48Z,GavinMendelGleason,Improvements to documentation,https://github.com/terminusdb/terminusdb/pull/302,Adding information about xsd types and xdd types,2021-04-13T15:34:05Z,matko,https://github.com/terminusdb/terminusdb/pull/302#issuecomment-818831783,closes #283,close # 283,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,304,2021-04-13T15:14:28Z,GavinMendelGleason,CLI list,https://github.com/terminusdb/terminusdb/pull/304,Add JSON output for cli database listing,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,307,2021-04-15T08:23:24Z,rrooij,Fix admin not having access to other databases,https://github.com/terminusdb/terminusdb/pull/307,"The permission checking was too strict. If any other use makes a
+DB, the admin does not have write access. Now it checks whether
+you are actually admin.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,311,2021-04-19T15:06:24Z,Cheukting,Update graph_query.md,https://github.com/terminusdb/terminusdb/pull/311,close #306,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,313,2021-04-20T15:07:41Z,rrooij,Fix organization filter,https://github.com/terminusdb/terminusdb/pull/313,"The organization filter was too strict. If the organization
+name contained one of the excluded names, it would already
+forbid this organization to exist. Even an organization name
+called ""soundboard"" would be forbidden by the existing filter.
+Now it only checks whether the whole name is the forbidden word.
+The exception to this rule is the | (pipe) character which
+should always be forbidden.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,314,2021-04-21T09:21:50Z,GavinMendelGleason,Adding better woql syntax error checking,https://github.com/terminusdb/terminusdb/pull/314,Currently woql syntax errors are not reporting with program navigable errors. This patch fixes the problem.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,315,2021-04-21T15:25:47Z,GavinMendelGleason,Updating storage_literal/2 to ignore casting on anyURI,https://github.com/terminusdb/terminusdb/pull/315,This fixes the issue of anyURI not being readable,2021-04-22T08:25:13Z,rrooij,https://github.com/terminusdb/terminusdb/pull/315#issuecomment-824645685,"WOQL.and(
+	WOQL.delete_quad('system:profile_icon', 'rdfs:range', 'xsd:anyURI', ""schema""),
+  WOQL.add_quad('system:profile_icon', 'rdfs:range', 'xsd:string', ""schema""),
+	WOQL.triple('v:Doc', 'system:profile_icon', 'v:Icon'),
+  WOQL.typecast(""v:Icon"", ""xsd:string"", ""v:IconStr""),
+  WOQL.delete_triple('v:Doc', 'system:profile_icon', 'v:Icon'),
+  WOQL.add_triple('v:Doc', 'system:profile_icon', 'v:IconStr')
+)
+An example to restore faulty anyURI types.","woqland ( woqldelete_quad('systemprofile_icon ' ' rdfsrange ' ' xsdanyuri ' "" schema "" ) woqladd_quad('systemprofile_icon ' ' rdfsrange ' ' xsdstring ' "" schema "" ) woqltriple('vdoc ' ' systemprofile_icon ' ' vicon ' ) woqltypecast(""vicon "" "" xsdstre "" "" viconstr "" ) woqldelete_triple('vdoc ' ' systemprofile_icon ' ' vicon ' ) woqladd_triple('vdoc ' ' systemprofile_icon ' ' viconstr ' ) ) an example to restore faulty anyuri type",0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,317,2021-05-09T12:40:49Z,dependabot,Bump hosted-git-info from 2.8.8 to 2.8.9 in /distribution/desktop,https://github.com/terminusdb/terminusdb/pull/317,"Bumps hosted-git-info from 2.8.8 to 2.8.9.
+
+Changelog
+Sourced from hosted-git-info's changelog.
+
+2.8.9 (2021-04-07)
+Bug Fixes
+
+backport regex fix from #76 (29adfe5), closes #84
+
+
+
+
+
+Commits
+
+8d4b369 chore(release): 2.8.9
+29adfe5 fix: backport regex fix from #76
+See full diff in compare view
+
+
+
+Maintainer changes
+This version was pushed to npm by nlf, a new releaser for hosted-git-info since your current version.
+
+
+
+Dependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting @dependabot rebase.
+
+
+Dependabot commands and options
+
+You can trigger Dependabot actions by commenting on this PR:
+
+@dependabot rebase will rebase this PR
+@dependabot recreate will recreate this PR, overwriting any edits that have been made to it
+@dependabot merge will merge this PR after your CI passes on it
+@dependabot squash and merge will squash and merge this PR after your CI passes on it
+@dependabot cancel merge will cancel a previously requested merge and block automerging
+@dependabot reopen will reopen this PR if it is closed
+@dependabot close will close this PR and stop Dependabot recreating it. You can achieve the same result by closing it manually
+@dependabot ignore this major version will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this minor version will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this dependency will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)
+@dependabot use these labels will set the current labels as the default for future PRs for this repo and language
+@dependabot use these reviewers will set the current reviewers as the default for future PRs for this repo and language
+@dependabot use these assignees will set the current assignees as the default for future PRs for this repo and language
+@dependabot use this milestone will set the current milestone as the default for future PRs for this repo and language
+
+You can disable automated security fix PRs for this repo from the Security Alerts page.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,318,2021-05-11T22:37:27Z,dependabot,Bump lodash from 4.17.20 to 4.17.21 in /distribution/desktop,https://github.com/terminusdb/terminusdb/pull/318,"Bumps lodash from 4.17.20 to 4.17.21.
+
+Commits
+
+f299b52 Bump to v4.17.21
+c4847eb Improve performance of toNumber, trim and trimEnd on large input strings
+3469357 Prevent command injection through _.template's variable option
+See full diff in compare view
+
+
+
+
+Dependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting @dependabot rebase.
+
+
+Dependabot commands and options
+
+You can trigger Dependabot actions by commenting on this PR:
+
+@dependabot rebase will rebase this PR
+@dependabot recreate will recreate this PR, overwriting any edits that have been made to it
+@dependabot merge will merge this PR after your CI passes on it
+@dependabot squash and merge will squash and merge this PR after your CI passes on it
+@dependabot cancel merge will cancel a previously requested merge and block automerging
+@dependabot reopen will reopen this PR if it is closed
+@dependabot close will close this PR and stop Dependabot recreating it. You can achieve the same result by closing it manually
+@dependabot ignore this major version will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this minor version will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this dependency will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)
+@dependabot use these labels will set the current labels as the default for future PRs for this repo and language
+@dependabot use these reviewers will set the current reviewers as the default for future PRs for this repo and language
+@dependabot use these assignees will set the current assignees as the default for future PRs for this repo and language
+@dependabot use this milestone will set the current milestone as the default for future PRs for this repo and language
+
+You can disable automated security fix PRs for this repo from the Security Alerts page.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,320,2021-05-14T15:09:47Z,bl-ue,"Capitalize ""Git"" in pdf",https://github.com/terminusdb/terminusdb/pull/320,https://git-scm.com/about/trademark,2021-05-24T11:14:08Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/320#issuecomment-846971958,This isn't for us thanks.,this be not for -PRON- thank,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,321,2021-05-14T17:00:02Z,bl-ue,Fix link format in XSD_WHITELIST.md,https://github.com/terminusdb/terminusdb/pull/321,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,325,2021-05-17T20:24:32Z,dwinston,"allow TERMINUSDB_ADMIN_PASS from a file, especially for Docker's secrets feature",https://github.com/terminusdb/terminusdb/pull/325,"I lifted docker-library's file_env shell function to facilitate the common convention of allowing a *_FILE env var, i.e. TERMINUSDB_ADMIN_PASS_FILE in this case.
+This makes it easier in my case to safely use version control for deployment configuration.",2021-05-18T09:07:26Z,rrooij,https://github.com/terminusdb/terminusdb/pull/325#issuecomment-842996603,I'm totally in favor of this. Thanks a lot for your contribution. I will let someone else have a look just to be sure.,-PRON- be totally in favor of this thank a lot for -PRON- contribution i will let someone else have a look just to be sure,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,325,2021-05-17T20:24:32Z,dwinston,"allow TERMINUSDB_ADMIN_PASS from a file, especially for Docker's secrets feature",https://github.com/terminusdb/terminusdb/pull/325,"I lifted docker-library's file_env shell function to facilitate the common convention of allowing a *_FILE env var, i.e. TERMINUSDB_ADMIN_PASS_FILE in this case.
+This makes it easier in my case to safely use version control for deployment configuration.",2021-05-18T18:01:12Z,dwinston,https://github.com/terminusdb/terminusdb/pull/325#issuecomment-843407427,"I encountered an issue when deploying this and basing off the existing docker image:
+FROM terminusdb/terminusdb-server:v4.2.1
+WORKDIR /app/terminusdb
+COPY terminus_init_docker.sh /app/terminusdb/distribution/init_docker.sh
+CMD [""/app/terminusdb/distribution/init_docker.sh""]
+
+where terminus_init_docker.sh is the new file in this PR. My issue was that the #!/bin/sh at top invokes the script using dash, which has an issue (""Bad completion"") with the file_env scripting. When I change the top line to #!/usr/bin/env bash, everything works great. I'm hesitant to suggest this change though, as it seems more major.","i encounter an issue when deploy this and base off the exist docker image from terminusdb / terminusdb - serverv421 workdir /app / terminusdb copy terminus_init_dockersh /app / terminusdb / distribution / init_dockersh cmd [ "" /app / terminusdb / distribution / init_dockersh "" ] where terminus_init_dockersh be the new file in this pr -PRON- issue be that the # /bin / sh at top invoke the script use dash which have an issue ( "" bad completion "" ) with the file_env scripting when i change the top line to # /usr / bin / env bash everything work great -PRON- be hesitant to suggest this change though as -PRON- seem more major",0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,325,2021-05-17T20:24:32Z,dwinston,"allow TERMINUSDB_ADMIN_PASS from a file, especially for Docker's secrets feature",https://github.com/terminusdb/terminusdb/pull/325,"I lifted docker-library's file_env shell function to facilitate the common convention of allowing a *_FILE env var, i.e. TERMINUSDB_ADMIN_PASS_FILE in this case.
+This makes it easier in my case to safely use version control for deployment configuration.",2021-05-19T08:01:59Z,rrooij,https://github.com/terminusdb/terminusdb/pull/325#issuecomment-843850095,"Changing it to bash should be fine 👍
+By the way, can you submit your pull request to the dev branch instead? That way we can still test a little bit.",change -PRON- to bash should be fine 👍 by the way can -PRON- submit -PRON- pull request to the dev branch instead that way -PRON- can still test a little bit,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,326,2021-05-19T17:34:05Z,dwinston,allow TERMINUSDB_ADMIN_PASS_FILE,https://github.com/terminusdb/terminusdb/pull/326,"I lifted docker-library's file_env shell function to facilitate the common convention of allowing a *_FILE env var, i.e. TERMINUSDB_ADMIN_PASS_FILE in this case.
+This makes it easier in my case to safely use version control for deployment configuration.
+Use bash rather than dash, to avoid ""bad completion"" error (change the top line to #!/usr/bin/env bash).
+This supersedes #325, with PR against dev as per @rrooij's recommendation.",2021-05-19T20:34:04Z,rrooij,https://github.com/terminusdb/terminusdb/pull/326#issuecomment-844451661,Thanks a lot!,thank a lot,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,328,2021-05-25T13:37:25Z,andtheWings,Update MODELHOW.md,https://github.com/terminusdb/terminusdb/pull/328,"Please read https://github.com/terminusdb/terminus-server/blob/master/docs/CONTRIBUTING.md
+before submitting a pull request.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,330,2021-06-02T10:19:33Z,rrooij,jwt: support jwks endpoint instead of pub/private key files,https://github.com/terminusdb/terminusdb/pull/330,"The JWKS endpoints consists of sets of keys. This makes it easier
+to rotate keys without losing functionality. I updated the
+jwt_io lib accordingly, see the tagged 0.0.4 release.
+See:
+terminusdb-labs/jwt_io@v0.0.3-fix-make...v0.0.4
+For a comparison
+Please read https://github.com/terminusdb/terminus-server/blob/master/docs/CONTRIBUTING.md
+before submitting a pull request.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,332,2021-06-12T04:57:35Z,dependabot,Bump normalize-url from 4.5.0 to 4.5.1 in /distribution/desktop,https://github.com/terminusdb/terminusdb/pull/332,"Bumps normalize-url from 4.5.0 to 4.5.1.
+
+Commits
+
+See full diff in compare view
+
+
+
+
+Dependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting @dependabot rebase.
+
+
+Dependabot commands and options
+
+You can trigger Dependabot actions by commenting on this PR:
+
+@dependabot rebase will rebase this PR
+@dependabot recreate will recreate this PR, overwriting any edits that have been made to it
+@dependabot merge will merge this PR after your CI passes on it
+@dependabot squash and merge will squash and merge this PR after your CI passes on it
+@dependabot cancel merge will cancel a previously requested merge and block automerging
+@dependabot reopen will reopen this PR if it is closed
+@dependabot close will close this PR and stop Dependabot recreating it. You can achieve the same result by closing it manually
+@dependabot ignore this major version will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this minor version will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)
+@dependabot ignore this dependency will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)
+@dependabot use these labels will set the current labels as the default for future PRs for this repo and language
+@dependabot use these reviewers will set the current reviewers as the default for future PRs for this repo and language
+@dependabot use these assignees will set the current assignees as the default for future PRs for this repo and language
+@dependabot use this milestone will set the current milestone as the default for future PRs for this repo and language
+
+You can disable automated security fix PRs for this repo from the Security Alerts page.",2021-06-14T12:07:00Z,matko,https://github.com/terminusdb/terminusdb/pull/332#issuecomment-860632051,gotta do this in dev too. @rrooij,get to do this in dev too @rrooij,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,340,2021-06-22T18:45:27Z,tfidfwastaken,docs: fix incorrect markdown links,https://github.com/terminusdb/terminusdb/pull/340,(It's hard to)[remember] where the brackets go in markdown links,2021-06-23T07:11:47Z,spl,https://github.com/terminusdb/terminusdb/pull/340#issuecomment-866589989,Ha! Thanks so much! 😆,ha thank so much 😆,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,353,2021-07-05T14:35:50Z,AstroChelonian,"Renamed ""dev"" to ""main""",https://github.com/terminusdb/terminusdb/pull/353,"The ""dev branch does not exist, so I updated the .md and proposed for the pull requests to be directed to the ""main"" branch.
+Please read https://github.com/terminusdb/terminus-server/blob/master/docs/CONTRIBUTING.md
+before submitting a pull request.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,355,2021-07-05T16:01:31Z,AstroChelonian,edit link at Contributing.md,https://github.com/terminusdb/terminusdb/pull/355,"Edited the following:
+Submitting changes
+Please send a GitHub Pull Request to the main branch.
+Please write clear log messages with your commits. Small changes can be a one line message,
+but big changes should have a descriptive paragraph with a newline after the title in the message.",2021-07-05T16:03:14Z,rrooij,https://github.com/terminusdb/terminusdb/pull/355#issuecomment-874212967,Thanks Dani! We should get rid of all the old branches. 👍,thanks dani -PRON- should get rid of all the old branch 👍,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,363,2021-07-12T17:59:22Z,spl,Database (named graph) deletion using terminus-store,https://github.com/terminusdb/terminusdb/pull/363,"Bumps terminus_store_prolog version
+Closes #350",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,365,2021-07-14T10:58:04Z,rrooij,Remove HTTPS support,https://github.com/terminusdb/terminusdb/pull/365,We decided to encourage the use of reverse proxies instead of relying on the SWI Prolog cert handling.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,377,2021-07-23T16:15:53Z,AstroChelonian,updated json documentation in class_frame.,https://github.com/terminusdb/terminusdb/pull/377,"You really were there and held my hand while doing it, so is there a point of explaining it?",2021-07-26T13:11:00Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/377#issuecomment-886689801,"ERROR: /app/terminusdb/src/core/document/json.pl:5248:
+	test doc_frame: failed
+
+. done
+
+This test doesn't pass. Should be trivial to fix in the pr.",error /app / terminusdb / src / core / document / jsonpl5248 test doc_frame fail do this test do not pass should be trivial to fix in the pr,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,396,2021-08-10T16:42:15Z,AstroChelonian,"bug fixed, tests added",https://github.com/terminusdb/terminusdb/pull/396,"the Bundle bug was fixed, it was occurring because the head of the repo was not deleted properly and this was leading to schema failure.
+Added some tests too.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,408,2021-08-12T16:53:26Z,GavinMendelGleason,Nanoseconds fixed,https://github.com/terminusdb/terminusdb/pull/408,Attempts to make it so that previous database dates can also be deleted.  This problem was caused by binning problems with floating point numbers.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,409,2021-08-12T17:18:21Z,AstroChelonian,Same instance ID in the same transaction bug fixed,https://github.com/terminusdb/terminusdb/pull/409,"1/3 issues resolved. The process exits with an error when two instances with the same ID are added with the same transaction.
+remaining tasks:
+Duplication at POST
+Duplication at PUT",2021-08-13T08:41:01Z,spl,https://github.com/terminusdb/terminusdb/pull/409#issuecomment-898289732,"@AstroChelonian Can you please remove the whitespace differences? Also, try to make the diff as small as possible. In the end, I think your diff will just look something like:
++                         do_or_die(is_set(Ids), error(same_ids_in_one_transaction(Id), _))),
+You can squash all commits into one.",@astrochelonian can -PRON- please remove the whitespace difference also try to make the diff as small as possible in the end i think -PRON- diff will just look something like + do_or_die(is_set(ids ) error(same_ids_in_one_transaction(id ) _ ) ) ) -PRON- can squash all commit into one,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,409,2021-08-12T17:18:21Z,AstroChelonian,Same instance ID in the same transaction bug fixed,https://github.com/terminusdb/terminusdb/pull/409,"1/3 issues resolved. The process exits with an error when two instances with the same ID are added with the same transaction.
+remaining tasks:
+Duplication at POST
+Duplication at PUT",2021-08-13T09:02:15Z,matko,https://github.com/terminusdb/terminusdb/pull/409#issuecomment-898302218,"This is just one place where double ids have to be checked though. we also need to do this for the case of document replacing, both in the case of a full replace through a POST and for the case of a partial replace through the PUT method.",this be just one place where double id have to be check though -PRON- also need to do this for the case of document replace both in the case of a full replace through a post and for the case of a partial replace through the put method,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,410,2021-08-13T11:35:58Z,GavinMendelGleason,Syntax error,https://github.com/terminusdb/terminusdb/pull/410,Fixing syntax response for WOQL response on path queries,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,415,2021-08-16T13:55:34Z,GavinMendelGleason,Adding key type restriction for subdocuments,https://github.com/terminusdb/terminusdb/pull/415,This will ensure that subdocuments have a viable key type so we don't end up with complex and difficult to find errors which might result from manually defined keys.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,418,2021-08-16T15:00:28Z,GavinMendelGleason,Subdocument update,https://github.com/terminusdb/terminusdb/pull/418,Example of subdocument update,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,419,2021-08-17T09:07:22Z,spl,Rename subdocuments_must_be_random_or_value_hash,https://github.com/terminusdb/terminusdb/pull/419,... from subdocument_key_must_be_random_or_value_hash,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,421,2021-08-17T10:43:10Z,spl,Remove dead write_schema4,https://github.com/terminusdb/terminusdb/pull/421,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,422,2021-08-17T11:12:54Z,AstroChelonian,bug in PUT resolved.,https://github.com/terminusdb/terminusdb/pull/422,replace document with multiple documents (PUT method) with the same id  now returns an error. All tests passing.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,424,2021-08-17T18:02:19Z,spl,Add schema context tests,https://github.com/terminusdb/terminusdb/pull/424,No functionality changed.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,425,2021-08-18T17:03:47Z,GavinMendelGleason,Context documentation,https://github.com/terminusdb/terminusdb/pull/425,Adding changes to context documentation so we have a place to hang our schema global information including authorship,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,426,2021-08-18T19:56:32Z,GavinMendelGleason,Add script for documentation generation,https://github.com/terminusdb/terminusdb/pull/426,javascript app to generate automatic documentation from schemata,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,427,2021-08-19T02:41:17Z,spl,Fix conditional compilation of JWT loading,https://github.com/terminusdb/terminusdb/pull/427,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,428,2021-08-19T07:35:30Z,spl,Remove excess space in document generation,https://github.com/terminusdb/terminusdb/pull/428,Remove the unnecessary spaces before and after newlines. git doesn't like spaces before newlines.,2021-08-19T08:43:15Z,spl,https://github.com/terminusdb/terminusdb/pull/428#issuecomment-901726017,Use https://github.com/terminusdb/terminusdb/pull/428/files?w=1 to see that there are only whitespace changes.,use https//githubcom / terminusdb / terminusdb / pull/428 / filesw=1 to see that there be only whitespace change,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,429,2021-08-19T08:28:20Z,spl,Makefile: fail on error or warning,https://github.com/terminusdb/terminusdb/pull/429,"Currently, make doesn't fail if there is an error or warning while building the target with swipl. This adds a few greps to do that.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,430,2021-08-19T09:35:03Z,GavinMendelGleason,Add replace IDs to formerly empty response,https://github.com/terminusdb/terminusdb/pull/430,"fixes #412
+Please read https://github.com/terminusdb/terminus-server/blob/master/docs/CONTRIBUTING.md
+before submitting a pull request.",2021-08-19T09:39:50Z,spl,https://github.com/terminusdb/terminusdb/pull/430#issuecomment-901766710,I confirm that this produces the expected PUT response for the script in #412 (comment).,i confirm that this produce the expect put response for the script in # 412 ( comment ),0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,432,2021-08-19T10:55:47Z,matko,Document auth,https://github.com/terminusdb/terminusdb/pull/432,The document api was not yet checking authorization. Now it does.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,435,2021-08-19T15:48:52Z,GavinMendelGleason,Adding schema documentation to core schemata,https://github.com/terminusdb/terminusdb/pull/435,This improves the documentation of our core ontologies and exercises our schema documentation features.,2021-08-19T15:50:22Z,luke-feeney,https://github.com/terminusdb/terminusdb/pull/435#issuecomment-902027097,love the schema documentation feature - we should be documenting schema (& data) where they live,love the schema documentation feature - -PRON- should be document schema ( & data ) where -PRON- live,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,436,2021-08-19T18:22:11Z,GavinMendelGleason,Schema documentation script,https://github.com/terminusdb/terminusdb/pull/436,Add some fixes to js script to process documentation,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,439,2021-08-20T08:30:50Z,matko,More document error handling,https://github.com/terminusdb/terminusdb/pull/439,"Most/all insert errors should now give a nice looking error message, and not a stack trace or an incomprehensible json object.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,440,2021-08-20T08:38:29Z,spl,Add base and schema prefix URI checks,https://github.com/terminusdb/terminusdb/pull/440,"In schema checker and create_db
+Make uri_has_protocol a bit more stringent
+Fixes #416",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,442,2021-08-21T15:30:01Z,AstroChelonian,Api reference,https://github.com/terminusdb/terminusdb/pull/442,I have updated the document and checked if it reflects the current API status. I will update the document whenever a change in the API is implemented.,2021-09-07T16:02:08Z,AstroChelonian,https://github.com/terminusdb/terminusdb/pull/442#issuecomment-914432216,Closed due to updated document strategy.,close due to update document strategy,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,443,2021-08-23T08:10:46Z,rrooij,Dockerfile: remove default env,https://github.com/terminusdb/terminusdb/pull/443,"We need to be able to override this one. It caused issues when running the TerminusDB Docker image when running:
+sudo docker run -d -it --rm --name ""terminusdb-server"" -e TERMINUSDB_SERVER_JWKS_ENDPOINT="""" -e TERMINUSDB_JWT_ENABLED=""false"" terminusdb/terminusdb-server:dev",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,444,2021-08-23T09:30:33Z,spl,Fix some JWT environment issues,https://github.com/terminusdb/terminusdb/pull/444,,2021-08-23T14:27:20Z,rrooij,https://github.com/terminusdb/terminusdb/pull/444#issuecomment-903825054,Beautiful ❤️,beautiful ❤ ️,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,445,2021-08-23T10:45:02Z,spl,Move macos build and test into nightly workflow,https://github.com/terminusdb/terminusdb/pull/445,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,446,2021-08-23T11:07:42Z,spl,Skip ubuntu job if already run,https://github.com/terminusdb/terminusdb/pull/446,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,447,2021-08-23T11:11:40Z,rrooij,jwt: use agent name as username,https://github.com/terminusdb/terminusdb/pull/447,'sub' can't be changed as easy as a custom entry in the token.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,451,2021-08-24T12:45:38Z,matko,document error handling,https://github.com/terminusdb/terminusdb/pull/451,"This is a draft branch and merge request for the ongoing work into improving error handling, to be merged soon.",2021-08-27T12:44:20Z,matko,https://github.com/terminusdb/terminusdb/pull/451#issuecomment-907175139,"merging this back now, though there's still some more places. There'll probably always be more places.",merge this back now though there be still some more place there will probably always be more place,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,452,2021-08-24T12:58:53Z,matko,Ensure that we have proper default prefixes when creating db from cli,https://github.com/terminusdb/terminusdb/pull/452,Fixes #448 .,2021-08-24T13:05:09Z,spl,https://github.com/terminusdb/terminusdb/pull/452#issuecomment-904623290,Does this change mean we always use default prefixes when creating a database?,do this change mean -PRON- always use default prefix when create a database,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,452,2021-08-24T12:58:53Z,matko,Ensure that we have proper default prefixes when creating db from cli,https://github.com/terminusdb/terminusdb/pull/452,Fixes #448 .,2021-08-24T13:10:51Z,matko,https://github.com/terminusdb/terminusdb/pull/452#issuecomment-904628340,"Does this change mean we always use default prefixes when creating a database?
+
+No. We use the default prefixes, unless they are overridden. You can override either by using the --data-prefix and/or --schema-prefix, or you can specify your prefix document like before, with an '@base' and/or an '@Schema'. If any of that is present, it takes precedence over the defaults.
+this should ensure that there's always a value for the base and schema prefix though.",do this change mean -PRON- always use default prefix when create a database no -PRON- use the default prefix unless -PRON- be overridden -PRON- can override either by use the --data - prefix and/or --schema - prefix or -PRON- can specify -PRON- prefix document like before with an ' @base ' and/or an ' @schema ' if any of that be present -PRON- take precedence over the default this should ensure that there be always a value for the base and schema prefix though,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,452,2021-08-24T12:58:53Z,matko,Ensure that we have proper default prefixes when creating db from cli,https://github.com/terminusdb/terminusdb/pull/452,Fixes #448 .,2021-08-24T13:22:58Z,spl,https://github.com/terminusdb/terminusdb/pull/452#issuecomment-904638651,"Before this change, I was unable to do ./terminusdb db create testdb without passing --prefixes. After this change, I don't need --prefixes, and I see something when I query the schema:
+{
+    ""@base"": ""terminusdb:///data/"",
+    ""@schema"": ""terminusdb:///schema#"",
+    ""@type"": ""@context""
+}
+So, my understanding is that we're using default prefixes.","before this change i be unable to do /terminusdb db create testdb without pass --prefixe after this change i do not need --prefixe and i see something when i query the schema { "" @base "" "" terminusdb///data/ "" "" @schema "" "" terminusdb///schema # "" "" @type "" "" @context "" } so -PRON- understanding be that -PRON- be use default prefix",0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,452,2021-08-24T12:58:53Z,matko,Ensure that we have proper default prefixes when creating db from cli,https://github.com/terminusdb/terminusdb/pull/452,Fixes #448 .,2021-08-24T13:24:30Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/452#issuecomment-904639821,That's correct.,that be correct,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,452,2021-08-24T12:58:53Z,matko,Ensure that we have proper default prefixes when creating db from cli,https://github.com/terminusdb/terminusdb/pull/452,Fixes #448 .,2021-08-24T13:24:46Z,matko,https://github.com/terminusdb/terminusdb/pull/452#issuecomment-904640019,"So, my understanding is that we're using default prefixes.
+
+We are using them, but not always was my point. You can still override them but we have a good default now.",so -PRON- understanding be that -PRON- be use default prefix -PRON- be use -PRON- but not always be -PRON- point -PRON- can still override -PRON- but -PRON- have a good default now,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,452,2021-08-24T12:58:53Z,matko,Ensure that we have proper default prefixes when creating db from cli,https://github.com/terminusdb/terminusdb/pull/452,Fixes #448 .,2021-08-24T13:28:11Z,spl,https://github.com/terminusdb/terminusdb/pull/452#issuecomment-904642852,"Right. I didn't mean always as in never allowing overriding. We just didn't have them at all before this change. 😬
+Nonetheless, very happy to see this! I always wondered why I had to type so much to create a database!",right i do not mean always as in never allow override -PRON- just do not have -PRON- at all before this change 😬 nonetheless very happy to see this i always wonder why i have to type so much to create a database,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,455,2021-08-25T07:48:57Z,spl,Don't run test workflows if only docs are changed,https://github.com/terminusdb/terminusdb/pull/455,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,456,2021-08-25T10:00:07Z,spl,More updates to the schema docs,https://github.com/terminusdb/terminusdb/pull/456,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,458,2021-08-25T12:23:23Z,matko,Document api doc,https://github.com/terminusdb/terminusdb/pull/458,Document API markdown.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,459,2021-08-25T12:46:29Z,GavinMendelGleason,Prefixes auth fix,https://github.com/terminusdb/terminusdb/pull/459,Some problems with 'system:' prefix still being used in auth.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,463,2021-08-25T14:40:46Z,matko,querying an empty branch should no longer error,https://github.com/terminusdb/terminusdb/pull/463,Fixes #454.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,465,2021-08-25T20:35:15Z,GavinMendelGleason,Adding two tests which exhibited no schema failure - and a fix,https://github.com/terminusdb/terminusdb/pull/465,Fixes for rebase showing no schema failure after cardinality violation.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,467,2021-08-26T08:33:59Z,GavinMendelGleason,Remove hard removal of schemaless mode from schema.,https://github.com/terminusdb/terminusdb/pull/467,"We will need to add some endpoint that enables us to turn schema on
+and off at will!
+Please read https://github.com/terminusdb/terminus-server/blob/master/docs/CONTRIBUTING.md
+before submitting a pull request.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,468,2021-08-26T08:38:29Z,matko,fix: schema and public arguments were swapped in call to db creation,https://github.com/terminusdb/terminusdb/pull/468,"We were improperly creating databases, causing them to become schemaless by accident.
+The 'public' argument was being treated as the 'schema' argument and vice versa. So any database created as nonpublic schema-checking would become public and schemaless.
+Fixes #461.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,471,2021-08-26T09:57:45Z,spl,Change update_prefixes auth to write access,https://github.com/terminusdb/terminusdb/pull/471,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,474,2021-08-26T11:33:25Z,GavinMendelGleason,Adding Document explainer,https://github.com/terminusdb/terminusdb/pull/474,"This needs loads of work, but better something rather than nothing.
+Please read https://github.com/terminusdb/terminus-server/blob/master/docs/CONTRIBUTING.md
+before submitting a pull request.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,475,2021-08-26T11:58:14Z,matko,detect orphan objects in schema checking,https://github.com/terminusdb/terminusdb/pull/475,"schema checking
+ fix existing errors",2021-08-26T12:24:50Z,matko,https://github.com/terminusdb/terminusdb/pull/475#issuecomment-906361309,"In the current state of this code, any references to a document that is being deleted will be deleted as well.
+This is problematic when it is pointed at by some structures though:
+
+Hashed objects have their hash depend on subdocuments, so deleting a subdocument without modifying the hash is wrong.
+Lists and arrays cannot just have an element deleted in the middle, we need to build a new list.",in the current state of this code any reference to a document that be be delete will be delete as well this be problematic when -PRON- be point at by some structure though hash object have -PRON- hash depend on subdocument so delete a subdocument without modify the hash be wrong list and array can not just have an element delete in the middle -PRON- need to build a new list,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,475,2021-08-26T11:58:14Z,matko,detect orphan objects in schema checking,https://github.com/terminusdb/terminusdb/pull/475,"schema checking
+ fix existing errors",2021-08-26T12:32:49Z,matko,https://github.com/terminusdb/terminusdb/pull/475#issuecomment-906367073,"Since the behavior of delete_document is changing, we probably also want a way to get the old behavior still, where a deletion is only allowed when a document is no longer referred to. For this, we need to implement a woql word delete_unreferenced_document, and also provide a parameter in the document deletion interface for switching between the behaviors.",since the behavior of delete_document be change -PRON- probably also want a way to get the old behavior still where a deletion be only allow when a document be no long refer to for this -PRON- need to implement a woql word delete_unreferenced_document and also provide a parameter in the document deletion interface for switching between the behavior,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,477,2021-08-26T12:50:08Z,spl,Error for missing/bad Content-type,https://github.com/terminusdb/terminusdb/pull/477,"This adds error responses thrown for Content-Type issues in the /api/db route. I'm guessing this check could be added elsewhere, too, but I'm not sure where.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,479,2021-08-27T07:45:20Z,rrooij,Fix docs workflow for new branch names,https://github.com/terminusdb/terminusdb/pull/479,"The docs workflow did not reflect the branch name changes from master to main. It also did not include tagged releases.
+For now, the workflow creates a folder in docs based on its version. For instance:
+
+A push to main will save the docs to a folder called main
+A tagged release will make a folder containing its version
+
+Am I missing something? I've been thinking that the latest tagged release should always be moved to the root as well.",2021-08-27T07:47:53Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/479#issuecomment-907001089,Thanks for this @rrooij any comments @spl @matko ?,thank for this @rrooij any comment @spl @matko,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,479,2021-08-27T07:45:20Z,rrooij,Fix docs workflow for new branch names,https://github.com/terminusdb/terminusdb/pull/479,"The docs workflow did not reflect the branch name changes from master to main. It also did not include tagged releases.
+For now, the workflow creates a folder in docs based on its version. For instance:
+
+A push to main will save the docs to a folder called main
+A tagged release will make a folder containing its version
+
+Am I missing something? I've been thinking that the latest tagged release should always be moved to the root as well.",2021-08-27T08:42:55Z,rrooij,https://github.com/terminusdb/terminusdb/pull/479#issuecomment-907034918,"There is one problem remaining with this approach. If we want to do fixes to the documentation, we would have to make a new release. What would be a good workflow for this? I was thinking that we could have a production / stable branch which would allow us to hotfix certain documentation issues.",there be one problem remain with this approach if -PRON- want to do fix to the documentation -PRON- would have to make a new release what would be a good workflow for this i be think that -PRON- could have a production / stable branch which would allow -PRON- to hotfix certain documentation issue,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,479,2021-08-27T07:45:20Z,rrooij,Fix docs workflow for new branch names,https://github.com/terminusdb/terminusdb/pull/479,"The docs workflow did not reflect the branch name changes from master to main. It also did not include tagged releases.
+For now, the workflow creates a folder in docs based on its version. For instance:
+
+A push to main will save the docs to a folder called main
+A tagged release will make a folder containing its version
+
+Am I missing something? I've been thinking that the latest tagged release should always be moved to the root as well.",2021-08-30T08:08:31Z,spl,https://github.com/terminusdb/terminusdb/pull/479#issuecomment-908136559,"We've moved our documentation to https://github.com/terminusdb/terminusdb-docs, so this isn't needed now.",-PRON- have move -PRON- documentation to https//githubcom / terminusdb / terminusdb - doc so this be not need now,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,480,2021-08-27T07:53:26Z,rrooij,BUILD.md: add TUS as a requirement,https://github.com/terminusdb/terminusdb/pull/480,"The build instructions did not include the installation of TUS, which is necessary to run a functioning TerminusDB.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,481,2021-08-27T11:51:38Z,GavinMendelGleason,Update WOQL schema to add TypeOf,https://github.com/terminusdb/terminusdb/pull/481,Extension to the WOQL schema for completeness,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,484,2021-08-30T12:59:33Z,rrooij,Remove Javscript JSON conversion,https://github.com/terminusdb/terminusdb/pull/484,This script has been moved to the terminusdb-docs repo.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,489,2021-08-31T13:34:24Z,AstroChelonian,Prefix errors,https://github.com/terminusdb/terminusdb/pull/489,Bug fixed.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,491,2021-08-31T13:44:23Z,matko,changing key strategy now validates existing objects,https://github.com/terminusdb/terminusdb/pull/491,Fixes #335.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,493,2021-09-01T09:36:41Z,spl,"Fix graph/graph_filter, DeleteTriple, etc.",https://github.com/terminusdb/terminusdb/pull/493,"Add DeleteTriple tests
+Fixes #492",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,494,2021-09-01T09:47:14Z,matko,raise default max transaction retries to multiple of worker count,https://github.com/terminusdb/terminusdb/pull/494,"Transaction retry count, when not supplied through an environment variable at startup, is now computed by doubling the worker count. With the default settings, this will now result in a retry count of 16.
+Furthermore, since this configuration setting is retrieved every time a transaction is started, I figured that re-parsing the environment variables and/or recomputing this retry count is a bit silly, so the config predicate is now also tabled, ensuring this happens only once.
+Fixes #486.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,495,2021-09-01T11:41:47Z,matko,proper list and array cardinality checking,https://github.com/terminusdb/terminusdb/pull/495,"list cardinality checked
+ array cardinality checked
+fixes #485 .",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,499,2021-09-01T22:19:28Z,GavinMendelGleason,Id generation,https://github.com/terminusdb/terminusdb/pull/499,Add lexical subdocument addressing,2021-09-02T15:19:09Z,matko,https://github.com/terminusdb/terminusdb/pull/499#issuecomment-911799549,"Merging this pull request will invalidate all existing deployments, since the id generation is incompatible with the old way of doing things, and the system graph has changed too.",merge this pull request will invalidate all exist deployment since the -PRON- d generation be incompatible with the old way of do thing and the system graph have change too,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,503,2021-09-02T10:03:57Z,GavinMendelGleason,Access control fix,https://github.com/terminusdb/terminusdb/pull/503,Less than was dying on resource access control checking,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,504,2021-09-02T10:04:49Z,spl,Speed up CI,https://github.com/terminusdb/terminusdb/pull/504,"Move ubuntu install to nightly
+Docker test for all push, pull_request, workflow_dispatch events
+Skip test for pull_request duplicates of push events
+Deploy only for push events with certain refs
+Other cleanups",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,507,2021-09-02T15:14:27Z,matko,default schema checking to true on new db creation,https://github.com/terminusdb/terminusdb/pull/507,Fixes #506 .,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,508,2021-09-02T15:21:35Z,GavinMendelGleason,Fix `using` in resource,https://github.com/terminusdb/terminusdb/pull/508,"Please read https://github.com/terminusdb/terminus-server/blob/master/docs/CONTRIBUTING.md
+before submitting a pull request.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,510,2021-09-03T07:46:44Z,GavinMendelGleason,Adding fix to #383,https://github.com/terminusdb/terminusdb/pull/510,"Please read https://github.com/terminusdb/terminus-server/blob/master/docs/CONTRIBUTING.md
+before submitting a pull request.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,513,2021-09-03T14:32:44Z,spl,Fixes the null elaboration,https://github.com/terminusdb/terminusdb/pull/513,Closes #450,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,514,2021-09-03T14:40:33Z,spl,Improve unknown_type_casting_error,https://github.com/terminusdb/terminusdb/pull/514,,2021-09-03T15:03:07Z,spl,https://github.com/terminusdb/terminusdb/pull/514#issuecomment-912605449,This helps with debugging. I don't think it is controversial. 😬,this help with debug i do not think -PRON- be controversial 😬,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,516,2021-09-03T19:53:15Z,GavinMendelGleason,Fix slashes in ID,https://github.com/terminusdb/terminusdb/pull/516,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,519,2021-09-05T09:48:59Z,GavinMendelGleason,Foreign Types,https://github.com/terminusdb/terminusdb/pull/519,,2021-09-06T09:11:02Z,matko,https://github.com/terminusdb/terminusdb/pull/519#issuecomment-913483796,"If this is to be used for domain sharding, we probably also want to enforce that any objects inserted in this data product do not have a type corresponding to any foreign type registered in this data product.",if this be to be use for domain sharde -PRON- probably also want to enforce that any object insert in this data product do not have a type correspond to any foreign type register in this data product,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,522,2021-09-06T10:22:19Z,spl,Catch json(unexpected_end_of_file) and throw malformed_json_payload,https://github.com/terminusdb/terminusdb/pull/522,Fixes #473,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,523,2021-09-06T10:35:37Z,GavinMendelGleason,"Revert ""Catch json(unexpected_end_of_file) and throw malformed_json_payload""",https://github.com/terminusdb/terminusdb/pull/523,Reverts #522,2021-09-06T10:37:02Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/523#issuecomment-913542985,"The double catch is discouraged
+ No test, so no way to know if this has suffered regression making it awkward to refactor",the double catch be discourage no test so no way to know if this have suffer regression make -PRON- awkward to refactor,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,524,2021-09-06T10:52:05Z,GavinMendelGleason,Making syntax error check more general,https://github.com/terminusdb/terminusdb/pull/524,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,525,2021-09-06T12:00:17Z,spl,"Remove writeq, use string instead of atom",https://github.com/terminusdb/terminusdb/pull/525,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,530,2021-09-07T09:44:54Z,GavinMendelGleason,Adding better base error message,https://github.com/terminusdb/terminusdb/pull/530,,2021-09-07T09:46:38Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/530#issuecomment-914160653,Fixes #528,fix # 528,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,530,2021-09-07T09:44:54Z,GavinMendelGleason,Adding better base error message,https://github.com/terminusdb/terminusdb/pull/530,,2021-09-07T12:40:28Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/530#issuecomment-914269376,Already covered in #531,already cover in # 531,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,531,2021-09-07T10:07:25Z,AstroChelonian,improved submitted DocId error,https://github.com/terminusdb/terminusdb/pull/531,"fixes #509
+fixes #528",2021-09-07T11:05:53Z,AstroChelonian,https://github.com/terminusdb/terminusdb/pull/531#issuecomment-914210694,"The error now is the following:
+{
+    ""@type"": ""api:InsertDocumentErrorResponse"",
+    ""api:error"": {
+        ""@type"": ""api:SubmittedDocIdDoesNotHaveExpectedPrefix"",
+        ""api:document"": {
+            ""@id"": ""something"",
+            ""@type"": ""String""
+        },
+        ""api:prefix"": ""terminusdb:///data/String/"",
+        ""api:submitted_id"": ""terminusdb:///data/something""
+    },
+    ""api:message"": ""Document id 'terminusdb:///data/something' does not have expected prefix 'terminusdb:///data/String/'"",
+    ""api:status"": ""api:failure""
+}","the error now be the following { "" @type "" "" apiinsertdocumenterrorresponse "" "" apierror "" { "" @type "" "" apisubmitteddociddoesnothaveexpectedprefix "" "" apidocument "" { "" @id "" "" something "" "" @type "" "" string "" } "" apiprefix "" "" terminusdb///data / string/ "" "" apisubmitted_id "" "" terminusdb///data / something "" } "" apimessage "" "" document -PRON- d ' terminusdb///data / something ' do not have expect prefix ' terminusdb///data / string/ ' "" "" apistatus "" "" apifailure "" }",0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,533,2021-09-07T13:00:42Z,matko,properly parse count/skip both for input documents and query params,https://github.com/terminusdb/terminusdb/pull/533,"Numerical parameters to the document interface were not properly parsed for get requests with a posted query document. A string was expected, which would fail on the numerical representation in a json document.
+Furthermore, the existing code did not properly check that the resulting number was an integer. This is now also checked.
+Fixes #532.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,536,2021-09-07T14:15:34Z,GavinMendelGleason,Fix underscore inclusion in id fragments.,https://github.com/terminusdb/terminusdb/pull/536,,2021-09-07T14:18:52Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/536#issuecomment-914346523,fixes #520,fix # 520,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,538,2021-09-07T15:54:04Z,AstroChelonian,Cryptic rebase error fixed.,https://github.com/terminusdb/terminusdb/pull/538,fixed #537,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,539,2021-09-08T13:00:29Z,matko,fix foreign type test that was failing due to new id scheme,https://github.com/terminusdb/terminusdb/pull/539,"This fixes the unit test that was failing due to id changes.
+However, there's something weird going on here. The id references in the document do not match the actual ids, as one has the + escaped and the other does not. This is probably unintended behavior so I'm not yet merging.
+@GavinMendelGleason please have a look.",2021-09-08T13:07:10Z,matko,https://github.com/terminusdb/terminusdb/pull/539#issuecomment-915222907,explanation is an intentional double encoding of a foreign id. nothing out of the ordinary.,explanation be an intentional double encoding of a foreign -PRON- d nothing out of the ordinary,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,540,2021-09-09T11:58:25Z,matko,report the duplicate ids when trying to insert duplicate documents,https://github.com/terminusdb/terminusdb/pull/540,Fixes #431.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,542,2021-09-09T12:46:02Z,spl,Throw errors for rebase branches not found,https://github.com/terminusdb/terminusdb/pull/542,Fixes #460,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,543,2021-09-09T12:48:07Z,matko,proper error for schema replacement with missing context,https://github.com/terminusdb/terminusdb/pull/543,Fixes #541.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,547,2021-09-09T15:27:06Z,matko,document elaboration now works with expanded properties,https://github.com/terminusdb/terminusdb/pull/547,"Elaboration context now uses fully expanded properties, something which the rest of the code already seemed to anticipate but wasn't actually happening.
+Fixes #545.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,549,2021-09-09T15:59:44Z,matko,Idempotent insert,https://github.com/terminusdb/terminusdb/pull/549,"This is still a work in progress.
+Currently this will still fail if subdocuments have random ids but are otherwise equivalent.
+Resolves #544.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,551,2021-09-09T18:53:55Z,matko,return documents in minimized format by default,https://github.com/terminusdb/terminusdb/pull/551,"This change makes minimized json output the default on document retrieval. For pretty printing, users now have to explicitely specify minimized=false.
+Resolves #550.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,553,2021-09-09T22:42:45Z,matko,"when inserting and updating documents, return ids compressed",https://github.com/terminusdb/terminusdb/pull/553,Fixes #548.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,554,2021-09-09T23:00:40Z,matko,better error handling for put and delete,https://github.com/terminusdb/terminusdb/pull/554,"These error conditions are now properly checked and return a good error to the user:
+
+PUT instance/schema documents for which no version currently exists in the db
+DELETE schema documents that do not exist
+
+Fixes #552.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,556,2021-09-10T10:24:20Z,matko,change all hashing strategies to SHA256,https://github.com/terminusdb/terminusdb/pull/556,Resolves  #555.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,559,2021-09-11T22:17:08Z,matko,check type kind on schema elaboration and error if it is unknown,https://github.com/terminusdb/terminusdb/pull/559,Resolves  #437.,2021-09-13T09:57:28Z,matko,https://github.com/terminusdb/terminusdb/pull/559#issuecomment-918029015,Superseded by #564.,superseded by # 564,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,564,2021-09-12T08:47:08Z,GavinMendelGleason,Last chance hotel for schema elaboration,https://github.com/terminusdb/terminusdb/pull/564,This will at minimum alert the user that the schema document being added is not viable rather than silently dropping the insert.,2021-09-12T20:51:44Z,matko,https://github.com/terminusdb/terminusdb/pull/564#issuecomment-917708210,Looks like we did some overlapping work in regards to recognizing unknown schema types (#559). Your solution for this is probably better though.,look like -PRON- do some overlap work in regard to recognize unknown schema type ( # 559 ) -PRON- solution for this be probably well though,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,564,2021-09-12T08:47:08Z,GavinMendelGleason,Last chance hotel for schema elaboration,https://github.com/terminusdb/terminusdb/pull/564,This will at minimum alert the user that the schema document being added is not viable rather than silently dropping the insert.,2021-09-12T21:31:29Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/564#issuecomment-917714096,Oh no! I should have looked more closely...,oh no i should have look more closely,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,575,2021-09-13T17:25:02Z,AstroChelonian,"return ""@context"" as the name of the context document when replacing it through the document api",https://github.com/terminusdb/terminusdb/pull/575,"binding the id when replacing the schema document (Id='@context') fixes the error.
+When typing:
+curl -X PUT -H ""Content-Type: application/json"" -u ""admin:root"" ""http://localhost:6363/api/document/admin/test563?graph_type=schema&author=me&message=me"" --data-binary '{ ""@base"": ""http://example.com/elements/"", ""@documentation"": {""@authors"": [""Gavin Mendel-Gleason""], ""@description"": ""This collection gives the periodic table of the elements with all isotopes together with their names, symbols and masses"", ""@title"": ""Periodic Table of the Elements""}, ""@schema"": ""http://example.com/elements#"", ""@type"": ""@context""}'
+
+The output is:
+[""@context"" ]
+
+In order to use POST with this, the flag for full replacement should be set to 'true':
+curl -X POST -H ""Content-Type: application/json"" -u ""admin:root"" ""http://localhost:6363/api/document/admin/test563?graph_type=schema&author=me&message=me&full_replace=true"" --data-binary '{""@base"": ""http://example.com/elements/"", ""@documentation"": {""@authors"": [""Gavin Mendel-Gleason""], ""@description"": ""This collection gives the periodic table of the elements with all isotopes together with their names, symbols and masses"", ""@title"": ""Periodic Table of the Elements""}, ""@schema"": ""http://example.com/elements#"", ""@type"": ""@context""}'
+
+This returns an empty list:
+[]
+
+To check if the methods above work, use:
+curl -X GET -H ""Content-Type: application/json"" -u ""admin:root"" ""http://localhost:6363/api/document/admin/test563?graph_type=schema""
+
+or add minimized=false  at the end of the http for nice printing:
+curl -X GET -H ""Content-Type: application/json"" -u ""admin:root"" ""http://localhost:6363/api/document/admin/test563?graph_type=schema&minimized=false""
+
+This returns:
+{
+  ""@base"":""http://example.com/elements/"",
+  ""@documentation"": {
+    ""@authors"": [""Gavin Mendel-Gleason"" ],
+    ""@description"":""This collection gives the periodic table of the elements with all isotopes together with their names, symbols and masses"",
+    ""@title"":""Periodic Table of the Elements""
+  },
+  ""@schema"":""http://example.com/elements#"",
+  ""@type"":""@context""
+}
+
+fixed #563",2021-09-14T14:50:46Z,matko,https://github.com/terminusdb/terminusdb/pull/575#issuecomment-919226394,Please write better pull request title next time though.,please write well pull request title next time though,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,581,2021-09-14T13:26:14Z,spl,Fix typo: JSON -> json,https://github.com/terminusdb/terminusdb/pull/581,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,582,2021-09-14T13:56:57Z,spl,Fix boolean value in boolean field,https://github.com/terminusdb/terminusdb/pull/582,Fixes #577,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,583,2021-09-14T15:18:20Z,GavinMendelGleason,Updating to v10.0.1,https://github.com/terminusdb/terminusdb/pull/583,,2021-09-15T09:35:20Z,matko,https://github.com/terminusdb/terminusdb/pull/583#issuecomment-919860312,"Closing, due to mishaps with a version tag. New pull request coming up shortly.",close due to mishap with a version tag new pull request come up shortly,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,584,2021-09-15T09:34:54Z,rrooij,appimage: dont clone our own repo,https://github.com/terminusdb/terminusdb/pull/584,"The AppImage is being created inside the TerminusDB repo itself.
+Therefore it does not make sense to clone it again!",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,585,2021-09-15T09:38:01Z,rrooij,Canary to v10.0,https://github.com/terminusdb/terminusdb/pull/585,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,588,2021-09-15T11:53:25Z,matko,Document explaining our release process,https://github.com/terminusdb/terminusdb/pull/588,"This is both a description and a proposal for how to handle our release process.
+Leaving this as a draft request so people can have a look.",2021-09-15T12:04:54Z,rrooij,https://github.com/terminusdb/terminusdb/pull/588#issuecomment-919959007,Great work! What about adding a small bit about canary releases? That we aim to release those at least weekly?,great work what about add a small bit about canary release that -PRON- aim to release those at least weekly,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,588,2021-09-15T11:53:25Z,matko,Document explaining our release process,https://github.com/terminusdb/terminusdb/pull/588,"This is both a description and a proposal for how to handle our release process.
+Leaving this as a draft request so people can have a look.",2021-09-15T12:11:25Z,spl,https://github.com/terminusdb/terminusdb/pull/588#issuecomment-919963474,"Nice! Some initial comments:
+
+Uppercase day names and “european”. (I know it's different in Dutch. 😉)
+Can we use a lowercase file name, release.md? I feel that all these uppercase file names are trying really hard to get my attention, but they don't need it at the moment.
+I think you might be using minor when you mean patch in places. But it's not a big deal.
+Use the prefix v in your versions.","nice some initial comment uppercase day name and "" european "" ( i know -PRON- be different in dutch 😉 ) can -PRON- use a lowercase file name releasemd i feel that all these uppercase file name be try really hard to get -PRON- attention but -PRON- do not need -PRON- at the moment i think -PRON- may be use minor when -PRON- mean patch in place but -PRON- be not a big deal use the prefix v in -PRON- version",0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,589,2021-09-15T14:41:27Z,matko,Ensure that query documents can be used to query optional base class fields,https://github.com/terminusdb/terminusdb/pull/589,Fixes #557.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,592,2021-09-15T18:06:11Z,spl,"Errors for no key or key type, unknown key type",https://github.com/terminusdb/terminusdb/pull/592,Fixes #566,2021-09-15T18:09:36Z,spl,https://github.com/terminusdb/terminusdb/pull/592#issuecomment-920259965,"I have passing integration tests for these errors. Is it okay if I don't add unit tests?
+import { describe } from './expect.js'
+import { Http } from './http.js'
+
+const http = new Http()
+
+export default function () {
+  describe('document key checks', (t) => {
+    const schema = {
+      '@id': 'Child',
+      '@type': 'Class',
+      '@subdocument': [],
+    }
+    {
+      const r = http.post(`/api/db/${http.user}/dbname`, '{""comment"":""c"",""label"":""l""}', { headers: { 'Content-Type': 'application/json' } })
+      t.expect(r.status).as('status').toEqual(200)
+        .and(r).toHaveValidJson()
+        .and(r.json('@type')).as('@type').toEqual('api:DbCreateResponse')
+        .and(r.json('api:status')).as('api:status').toEqual('api:success')
+    }
+    {
+      const r = http.post(`/api/document/${http.user}/dbname?graph_type=schema&author=a&message=m`, JSON.stringify(schema), { headers: { 'Content-Type': 'application/json' } })
+      t.expect(r.status).as('status').toEqual(400)
+      t.expect(r).toHaveValidJson()
+        .and(r.json('api:status')).as('api:status').toEqual('api:failure')
+        .and(r.json('api:error.@type')).as('api:error.@type').toEqual('api:SubdocumentKeyMissing')
+        .and(r.json('api:error.api:document.@id')).as('api:error.api:document.@id').toEqual('Child')
+    }
+    {
+      schema['@key'] = { useless_key: 'useless_value' }
+      const r = http.post(`/api/document/${http.user}/dbname?graph_type=schema&author=a&message=m`, JSON.stringify(schema), { headers: { 'Content-Type': 'application/json' } })
+      t.expect(r.status).as('status').toEqual(400)
+      t.expect(r).toHaveValidJson()
+        .and(r.json('api:status')).as('api:status').toEqual('api:failure')
+        .and(r.json('api:error.@type')).as('api:error.@type').toEqual('api:DocumentKeyTypeMissing')
+        .and(r.json('api:error.api:document.@id')).as('api:error.api:document.@id').toEqual('Child')
+        .and(r.json('api:error.api:key')).as('api:error.api:key').toEqual(JSON.stringify(schema['@key']))
+    }
+    {
+      schema['@key'] = { '@type': 'Unknown' }
+      const r = http.post(`/api/document/${http.user}/dbname?graph_type=schema&author=a&message=m`, JSON.stringify(schema), { headers: { 'Content-Type': 'application/json' } })
+      t.expect(r.status).as('status').toEqual(400)
+      t.expect(r).toHaveValidJson()
+        .and(r.json('api:status')).as('api:status').toEqual('api:failure')
+        .and(r.json('api:error.@type')).as('api:error.@type').toEqual('api:DocumentKeyTypeUnknown')
+        .and(r.json('api:error.api:document.@id')).as('api:error.api:document.@id').toEqual('Child')
+        .and(r.json('api:error.api:key_type')).as('api:error.api:key_type').toEqual('Unknown')
+    }
+    {
+      const r = http.delete(`/api/db/${http.user}/dbname`)
+      t.expect(r.status).as('status').toEqual(200)
+        .and(r).toHaveValidJson()
+        .and(r.json('@type')).as('@type').toEqual('api:DbDeleteResponse')
+        .and(r.json('api:status')).as('api:status').toEqual('api:success')
+    }
+  })
+}","i have pass integration test for these error be -PRON- okay if i do not add unit test import { describe } from ' /expectjs ' import { http } from ' /httpjs ' const http = new http ( ) export default function ( ) { describe('document key check ' ( t ) = > { const schema = { ' @id ' ' child ' ' @type ' ' class ' ' @subdocument ' [ ] } { const r = httppost(`/api / db/${httpuser}/dbname ` ' { "" comment""""c""""label""""l "" } ' { header { ' content - type ' ' application / json ' } } ) texpect(rstatus)as('status')toequal(200 ) and(r)tohavevalidjson ( ) and(rjson('@type'))as('@type')toequal('apidbcreateresponse ' ) and(rjson('apistatus'))as('apistatus')toequal('apisuccess ' ) } { const r = httppost(`/api / document/${httpuser}/dbnamegraph_type = schema&author = a&message = m ` jsonstringify(schema ) { header { ' content - type ' ' application / json ' } } ) texpect(rstatus)as('status')toequal(400 ) texpect(r)tohavevalidjson ( ) and(rjson('apistatus'))as('apistatus')toequal('apifailure ' ) and(rjson('apierror@type'))as('apierror@type')toequal('apisubdocumentkeymissing ' ) and(rjson('apierrorapidocument@id'))as('apierrorapidocument@id')toequal('child ' ) } { schema['@key ' ] = { useless_key ' useless_value ' } const r = httppost(`/api / document/${httpuser}/dbnamegraph_type = schema&author = a&message = m ` jsonstringify(schema ) { header { ' content - type ' ' application / json ' } } ) texpect(rstatus)as('status')toequal(400 ) texpect(r)tohavevalidjson ( ) and(rjson('apistatus'))as('apistatus')toequal('apifailure ' ) and(rjson('apierror@type'))as('apierror@type')toequal('apidocumentkeytypemissing ' ) and(rjson('apierrorapidocument@id'))as('apierrorapidocument@id')toequal('child ' ) and(rjson('apierrorapikey'))as('apierrorapikey')toequal(jsonstringify(schema['@key ' ] ) ) } { schema['@key ' ] = { ' @type ' ' unknown ' } const r = httppost(`/api / document/${httpuser}/dbnamegraph_type = schema&author = a&message = m ` jsonstringify(schema ) { header { ' content - type ' ' application / json ' } } ) texpect(rstatus)as('status')toequal(400 ) texpect(r)tohavevalidjson ( ) and(rjson('apistatus'))as('apistatus')toequal('apifailure ' ) and(rjson('apierror@type'))as('apierror@type')toequal('apidocumentkeytypeunknown ' ) and(rjson('apierrorapidocument@id'))as('apierrorapidocument@id')toequal('child ' ) and(rjson('apierrorapikey_type'))as('apierrorapikey_type')toequal('unknown ' ) } { const r = httpdelete(`/api / db/${httpuser}/dbname ` ) texpect(rstatus)as('status')toequal(200 ) and(r)tohavevalidjson ( ) and(rjson('@type'))as('@type')toequal('apidbdeleteresponse ' ) and(rjson('apistatus'))as('apistatus')toequal('apisuccess ' ) } } ) }",0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,592,2021-09-15T18:06:11Z,spl,"Errors for no key or key type, unknown key type",https://github.com/terminusdb/terminusdb/pull/592,Fixes #566,2021-09-15T18:17:28Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/592#issuecomment-920265412,100%,100 %,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,595,2021-09-15T23:56:25Z,matko,Properly handle key fields that are type containers,https://github.com/terminusdb/terminusdb/pull/595,"Optionals, sets, arrays and lists were not working properly with key generation.
+This now follows the following algorithm:
+
+For all 4, if there's just a single value, it is treated exactly as if this was a required field. This ensures that the same id is generated, so that in the future, it may be possible to switch between key strategies without having to convert existing objects that are already in line with the new format, such as when going from optional to set, or from required to optional.
+For all 4, if there is no value, the out-of-band value '+' '+none+' (unencoded) is used
+For the list-like types with more than one value, the values are concatenated with an unencoded '++' between them. In case of sets, the list is first sorted to ensure that documents who order the list differently but contain the same values still get the same id.
+
+Work in progress as I explore some more edge cases.
+Resolves #570.",2021-09-16T00:01:28Z,matko,https://github.com/terminusdb/terminusdb/pull/595#issuecomment-920471563,"I replaced the oob value for missing property with +none+ from its previous +. The reason is that otherwise, it is possible to construct a ++ out of multiple missing optional keys, which may conflict with the way lists key values are now represented. It probably wasn't an actual issue, but better safe than sorry.
+Undrafting this pull request.",i replace the oob value for miss property with + none+ from -PRON- previous + the reason be that otherwise -PRON- be possible to construct a + + out of multiple miss optional key which may conflict with the way list key value be now represent -PRON- probably be not an actual issue but well safe than sorry undrafte this pull request,1,1
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,596,2021-09-16T07:52:12Z,GavinMendelGleason,Required key field missing fix and test.,https://github.com/terminusdb/terminusdb/pull/596,,2021-09-16T08:15:25Z,GavinMendelGleason,https://github.com/terminusdb/terminusdb/pull/596#issuecomment-920688721,fixes #558,fix # 558,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,597,2021-09-16T09:55:48Z,matko,Preparing v10.0.2,https://github.com/terminusdb/terminusdb/pull/597,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,598,2021-09-16T12:21:43Z,GavinMendelGleason,Floats not marshalled correctly,https://github.com/terminusdb/terminusdb/pull/598,"could be causing difficulties with time stamps
+fixes #594",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,600,2021-09-20T18:44:58Z,spl,Fallback route handler for unknown paths,https://github.com/terminusdb/terminusdb/pull/600,"Fixes #469.
+I have integration tests:
+  describe('paths not found', (t) => {
+    const baseUrl = http.baseUrl
+    http.batch([
+      new Get('/api'),
+      new Get('/api/abc'),
+      new Get('/api/branch'),
+      new Get('/api/clone'),
+      new Get('/api/db'),
+      new Get('/api/document'),
+      new Get('/api/fetch'),
+      new Get('/api/optimize'),
+      new Get('/api/pack'),
+      new Get('/api/prefixes'),
+      new Get('/api/pull'),
+      new Get('/api/push'),
+      new Get('/api/rebase'),
+      new Get('/api/reset'),
+      new Get('/api/schema'),
+      new Get('/api/triples'),
+      new Get('/api/unpack'),
+    ]).forEach((r) => {
+      t.expect(r.status).as('status').toEqual(404)
+      t.expect(r).toHaveValidJson()
+        .and(r.json('api:status')).as('api:status').toEqual('api:not_found')
+        .and(r.json('api:path')).as('api:path').toEqual(r.request.url.replace(baseUrl, ''))
+    })
+  })",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,602,2021-09-20T19:11:47Z,spl,Mark tests with external links as fixme,https://github.com/terminusdb/terminusdb/pull/602,Fixes #601,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,605,2021-09-22T13:06:05Z,spl,Improve errors for unknown database,https://github.com/terminusdb/terminusdb/pull/605,"Change database_does_not_exist to unknown_database
+Fix resolve_absolute_descriptor when given a name and _meta
+Use input path instead of modified path for invalid_absolute_path
+Use api:not_found instead of api:failure
+Improve branch errors for db and desc
+Fixes #567
+
+I have integration tests:
+  describe('bad descriptor', (t) => {
+    const r = http.get('/api/remote/unknowndesc')
+    t.expect(r.status).as('status').toEqual(400)
+      .and(r).toHaveValidJson()
+      .and(r.json('@type')).as('@type').toEqual('api:RemoteErrorResponse')
+      .and(r.json('api:status')).as('api:status').toEqual('api:failure')
+      .and(r.json('api:error.@type')).as('api:error.@type').toEqual('api:BadAbsoluteDescriptor')
+      .and(r.json('api:error.api:absolute_descriptor')).as('api:error.api:absolute_descriptor').toEqual('unknowndesc')
+  })
+
+  describe('unknown database', (t) => {
+    const r = http.get('/api/remote/unknownorg/unknowndb')
+    t.expect(r.status).as('status').toEqual(404)
+      .and(r).toHaveValidJson()
+      .and(r.json('@type')).as('@type').toEqual('api:RemoteErrorResponse')
+      .and(r.json('api:status')).as('api:status').toEqual('api:not_found')
+      .and(r.json('api:error.@type')).as('api:error.@type').toEqual('api:UnknownDatabase')
+      .and(r.json('api:error.api:organization_name')).as('api:error.api:organization_name').toEqual('unknownorg')
+      .and(r.json('api:error.api:database_name')).as('api:error.api:database_name').toEqual('unknowndb')
+  })",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,606,2021-09-23T11:54:34Z,matko,Implement a new logging strategy,https://github.com/terminusdb/terminusdb/pull/606,"This pull request will replace the existing log with a new type.
+The new logger allows structured logging of json structures by severity, and will make an effort to associate each log entry with an ongoing request.
+Through the environment variable TERMINUSDB_LOG_LEVEL, the desired log level can be set. this can be one of DEBUG, INFO, NOTICE, WARNING or ERROR. The default is INFO. Anything below the desired log level is omitted from the log.
+Through the environment variable TERMINUSDB_LOG_FORMAT, the desired log format can be set. By default this is text, which will just print the log severity, a timestamp and the log message (provided those fields exist in the structured log record). By setting it to json, the full structured log record is printed instead.
+This log format should be compatible with google cloud logging.
+Currently, log records are made for the following cases:
+
+request start (info)
+request end (info)
+descriptor open (debug)
+descriptor commit (debug)
+uncaught errors (error)",2021-09-23T12:00:07Z,matko,https://github.com/terminusdb/terminusdb/pull/606#issuecomment-925744293,"Open question is whether or not the http requests are logged correctly. Currently the log entries are logging some of the info on at the start of a request, and some of the info at the end of a request. It could be that log aggregators expect one big message with all the info in it, in which case we'll need to merge out the existing log data and have different (debug) records for request start and request finish.",open question be whether or not the http request be log correctly currently the log entry be log some of the info on at the start of a request and some of the info at the end of a request -PRON- could be that log aggregator expect one big message with all the info in -PRON- in which case -PRON- will need to merge out the exist log datum and have different ( debug ) record for request start and request finish,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,607,2021-09-23T13:31:25Z,matko,Log improvements,https://github.com/terminusdb/terminusdb/pull/607,This is a last handful of changes to make logging slightly better.,2021-09-23T13:36:37Z,matko,https://github.com/terminusdb/terminusdb/pull/607#issuecomment-925823564,"I'm still thinking we ought to merge request and response in one big log entry with all the information, to be logged at info level. The request start and request end can then be demoted to debug.
+But this doesn't necessarily need to happen for this version.",-PRON- be still think -PRON- ought to merge request and response in one big log entry with all the information to be log at info level the request start and request end can then be demote to debug but this do not necessarily need to happen for this version,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,608,2021-09-23T15:19:46Z,matko,Preparing v10.0.3 release,https://github.com/terminusdb/terminusdb/pull/608,,2021-09-23T15:24:29Z,rrooij,https://github.com/terminusdb/terminusdb/pull/608#issuecomment-925918300,It would be cleaner to squash some commits regarding the json logging,-PRON- would be clean to squash some commit regard the json log,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,617,2021-09-28T13:44:01Z,matko,update version to reflect the upcoming release,https://github.com/terminusdb/terminusdb/pull/617,Fixes #609.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,618,2021-09-28T15:35:07Z,matko,Normalize values,https://github.com/terminusdb/terminusdb/pull/618,Fixes #610 .,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,624,2021-09-29T19:53:43Z,matko,Ensure newly created empty branches have a valid context,https://github.com/terminusdb/terminusdb/pull/624,"With this pull request, newly created empty branches inherit the context of main. Additionally, whether or not the branch is going to be schemaful/schemaless, as well as its initial set of prefixes, can be set through the submitted document in the same way as one would with a new database.
+Fixes #619.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,626,2021-09-30T01:18:47Z,matko,Further log improvements,https://github.com/terminusdb/terminusdb/pull/626,"This pull request will resolve a bunch of logging issues:
+
+ merge request and response log in one line (Fixes #625)
+ use operation id if supplied in a header (Fixes #616)
+ log authentication information (Fixes #615)",2021-09-30T02:07:51Z,matko,https://github.com/terminusdb/terminusdb/pull/626#issuecomment-930690428,"One annoyance about this change is that I'm forced to save some request info in a dynamic predicate, so that it is still available after the response has been sent. I just hope this won't lead to a noticable slowdown.",one annoyance about this change be that -PRON- be force to save some request info in a dynamic predicate so that -PRON- be still available after the response have be send i just hope this will not lead to a noticable slowdown,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,630,2021-09-30T10:08:33Z,matko,Include the request id in all log records made during a request,https://github.com/terminusdb/terminusdb/pull/630,"We were including the operation id in all requests, but not the request id. When operation id and request id are different (which happens when a client submits an X-Operation-ID header), we therefore lost information about the particular request a log record was part of. Since multiple requests may share the same operation id (such as when multiple database operations logically make up a single operation from a user perspective), this information is required for proper grouping.
+With this pull request, it's now included in every log entry, much like how this happens with the operation id.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,632,2021-09-30T10:17:27Z,matko,modify welcome banner to be locale and servername independent,https://github.com/terminusdb/terminusdb/pull/632,"The welcome banner was using server name to build an example url, even though the server name could be wholly unsuitable for that, and is really just meant for identifying purposes in logs. The example url is now hardcoded to localhost.
+Furthermore, date printing was locale-dependent, changing the weekday depending on language, which is weird in an otherwise english sentence. It should be locale-independent now.",,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,633,2021-09-30T10:41:04Z,matko,Preparing 10.0.4 release,https://github.com/terminusdb/terminusdb/pull/633,,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,638,2021-10-01T15:11:39Z,matko,Upgrade to terminus_store_prolog 0.19.2,https://github.com/terminusdb/terminusdb/pull/638,New version of store which fixes the rollup bug and upgrades dependencies.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,639,2021-10-01T15:23:15Z,matko,Preparing 10.0.5,https://github.com/terminusdb/terminusdb/pull/639,Quick bugfix release.,,,,,,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,642,2021-10-04T12:34:03Z,spl,Rename Nightly to Non-Docker,https://github.com/terminusdb/terminusdb/pull/642,"It's a less confusing name, since “nightly” could also mean the nightly release of Rust, for example.
+Run every night instead of every weeknight. It doesn't hurt.",2021-10-04T12:54:55Z,rrooij,https://github.com/terminusdb/terminusdb/pull/642#issuecomment-933454456,I really like this. Nightly was a confusing name.,i really like this nightly be a confusing name,0,0
+https://github.com/terminusdb/terminusdb,terminusdb,terminusdb,643,2021-10-04T13:07:42Z,rrooij,AppImage: use make instead of wrapper make.sh script,https://github.com/terminusdb/terminusdb/pull/643,The make.sh script has been deprecated,,,,,,0,0

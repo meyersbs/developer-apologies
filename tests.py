@@ -2500,7 +2500,6 @@ class TestDevelopers(unittest.TestCase):
         }
         # Test
         actual_flat_dict = _flattenDicts(input_dict_list)
-        print(actual_flat_dict)
         self.assertDictEqual(expected_flat_dict, actual_flat_dict)
 
     def test__countDeveloperApologies(self):
@@ -2508,8 +2507,215 @@ class TestDevelopers(unittest.TestCase):
         Test src.developers:_countDeveloperApologies().
         """
         # Setup
-        input_file_path = os.path.join(CWD, "test_files/test_data3/")
-        # TODO
+        input_file_path = os.path.join(CWD, "test_files/test_data7/COBOL/issues/issues.csv")
+        input_comment_author_index = 10
+        input_num_apology_lemmas_index = 14
+        expected_developers_dict = {
+            "DanielRosenwasser": {"num_apology_lemmas": 0}, "OliverMaerz": {"num_apology_lemmas": 0},
+            "martinkeen": {"num_apology_lemmas": 0}, "jazzyjackson": {"num_apology_lemmas": 0},
+            "jmertic": {"num_apology_lemmas": 0}, "DStatWriter": {"num_apology_lemmas": 0},
+            "sccosel": {"num_apology_lemmas": 0}, "paulnewt": {"num_apology_lemmas": 0},
+            "leonardcohen58": {"num_apology_lemmas": 1}, "danpcconsult": {"num_apology_lemmas": 0},
+            "JerethCutestory": {"num_apology_lemmas": 0}, "kas1830": {"num_apology_lemmas": 1},
+            "MartinYeung5": {"num_apology_lemmas": 0}, "JoAnnaEsq": {"num_apology_lemmas": 0},
+            "varlux": {"num_apology_lemmas": 2}, "OlegKunitsyn": {"num_apology_lemmas": 1},
+            "CmdrZin": {"num_apology_lemmas": 0}, "Dlthomass": {"num_apology_lemmas": 0},
+            "brunopacheco1": {"num_apology_lemmas": 0}, "michael-conrad": {"num_apology_lemmas": 0},
+            "navarretedaniel": {"num_apology_lemmas": 0}, "mconfoy": {"num_apology_lemmas": 0},
+            "Sudharsana-Srinivasan": {"num_apology_lemmas": 0}, "ftpo": {"num_apology_lemmas": 0},
+            "bhowe": {"num_apology_lemmas": 0}, "rsac56": {"num_apology_lemmas": 0},
+            "Eliana88": {"num_apology_lemmas": 0}, "BilltheK": {"num_apology_lemmas": 0},
+            "johnpevans": {"num_apology_lemmas": 0}, "jrmalone93": {"num_apology_lemmas": 0},
+            "cwansart": {"num_apology_lemmas": 0}, "Schekn": {"num_apology_lemmas": 0},
+            "JosefKaser": {"num_apology_lemmas": 0}, "camdroid": {"num_apology_lemmas": 0},
+            "tathoma": {"num_apology_lemmas": 0}, "al-heisner": {"num_apology_lemmas": 0},
+            "timretout": {"num_apology_lemmas": 0}, "java007md": {"num_apology_lemmas": 0},
+            "GreenRoemer": {"num_apology_lemmas": 2}, "staceylmarch": {"num_apology_lemmas": 0},
+            "MrGmaw": {"num_apology_lemmas": 0}, "negovan13": {"num_apology_lemmas": 0},
+            "WellBattle6": {"num_apology_lemmas": 0}, "cobol10": {"num_apology_lemmas": 0},
+            "marianpg12": {"num_apology_lemmas": 0}, "fromer97": {"num_apology_lemmas": 0},
+            "sabybasu": {"num_apology_lemmas": 1}, "AidanFarhi": {"num_apology_lemmas": 0},
+            "jtrevithick": {"num_apology_lemmas": 0}, "RowReal": {"num_apology_lemmas": 0},
+            "MikeBauerCA": {"num_apology_lemmas": 0}, "ibrahimaktasgithub": {"num_apology_lemmas": 1},
+            "ejimenezISEP": {"num_apology_lemmas": 0}, "dennisad": {"num_apology_lemmas": 0},
+            "jacqpot": {"num_apology_lemmas": 0}, "timdsaunders1": {"num_apology_lemmas": 0},
+            "venkatzhub": {"num_apology_lemmas": 0}, "EddieCavic": {"num_apology_lemmas": 0},
+            "moonman7": {"num_apology_lemmas": 0}, "broarr": {"num_apology_lemmas": 0},
+            "RageshAntony": {"num_apology_lemmas": 0}, "comps3": {"num_apology_lemmas": 0},
+            "bkline": {"num_apology_lemmas": 0}, "abickerton": {"num_apology_lemmas": 0},
+            "mthomp9838": {"num_apology_lemmas": 0}, "thyarles": {"num_apology_lemmas": 0},
+            "zvookiejoo": {"num_apology_lemmas": 0}, "jellypuno": {"num_apology_lemmas": 0},
+            "OldGuy86": {"num_apology_lemmas": 0}, "BaileyH": {"num_apology_lemmas": 0},
+            "steven-piot": {"num_apology_lemmas": 0}, "MLo8": {"num_apology_lemmas": 3},
+            "jackson-024": {"num_apology_lemmas": 0}, "gowide00": {"num_apology_lemmas": 0},
+            "mikedblum": {"num_apology_lemmas": 0}, "binary-sequence": {"num_apology_lemmas": 0},
+            "sandeep-sparrow": {"num_apology_lemmas": 0}, "seahopki12": {"num_apology_lemmas": 0},
+            "FranklinChen": {"num_apology_lemmas": 0}, "edrubins": {"num_apology_lemmas": 0},
+            "peraciodias": {"num_apology_lemmas": 0}, "tanto259": {"num_apology_lemmas": 0},
+            "michalblaszak": {"num_apology_lemmas": 0}, "zeibura": {"num_apology_lemmas": 0},
+            "edack": {"num_apology_lemmas": 0}, "raven300": {"num_apology_lemmas": 0},
+            "ravindrachechani": {"num_apology_lemmas": 0}, "moueza": {"num_apology_lemmas": 0},
+            "mpettis": {"num_apology_lemmas": 0}, "binishantony": {"num_apology_lemmas": 0},
+            "DanielSReynoso": {"num_apology_lemmas": 0}, "wawesomeNOGUI": {"num_apology_lemmas": 0}
+        }
+        # Test
+        actual_developers_dict = _countDeveloperApologies(
+            input_file_path, input_comment_author_index, input_num_apology_lemmas_index
+        )
+        self.assertDictEqual(expected_developers_dict, actual_developers_dict)
+
+
+    def test__getDeveloperDicts(self):
+        """
+        Test src.developers:_geetDeveloperDicts().
+        """
+        #### Case 1
+        # Setup
+        input_file_path = os.path.join(CWD, "test_files/test_data7/COBOL/")
+        expected_developers_dict = {
+            "edack": {"num_apology_lemmas": 0}, "zvookiejoo": {"num_apology_lemmas": 0},
+            "jrmalone93": {"num_apology_lemmas": 0}, "martinkeen": {"num_apology_lemmas": 0},
+            "OlegKunitsyn": {"num_apology_lemmas": 1}, "ibrahimaktasgithub": {"num_apology_lemmas": 1},
+            "bhowe": {"num_apology_lemmas": 0}, "FranklinChen": {"num_apology_lemmas": 0},
+            "sabybasu": {"num_apology_lemmas": 1}, "tathoma": {"num_apology_lemmas": 0},
+            "GreenRoemer": {"num_apology_lemmas": 2}, "tanto259": {"num_apology_lemmas": 1},
+            "Eliana88": {"num_apology_lemmas": 0}, "rsac56": {"num_apology_lemmas": 0},
+            "JerethCutestory": {"num_apology_lemmas": 0}, "moonman7": {"num_apology_lemmas": 0},
+            "MikeBauerCA": {"num_apology_lemmas": 1}, "BaileyH": {"num_apology_lemmas": 0},
+            "salisbuk7897": {"num_apology_lemmas": 0}, "cwansart": {"num_apology_lemmas": 0},
+            "ftpo": {"num_apology_lemmas": 0}, "Schekn": {"num_apology_lemmas": 0},
+            "timdsaunders1": {"num_apology_lemmas": 0}, "michalblaszak": {"num_apology_lemmas": 0},
+            "Dlthomass": {"num_apology_lemmas": 0}, "edrubins": {"num_apology_lemmas": 0},
+            "venkatzhub": {"num_apology_lemmas": 0}, "detinsley1s": {"num_apology_lemmas": 0},
+            "RowReal": {"num_apology_lemmas": 0}, "moueza": {"num_apology_lemmas": 0},
+            "raven300": {"num_apology_lemmas": 1}, "Sudharsana-Srinivasan": {"num_apology_lemmas": 0},
+            "mikedblum": {"num_apology_lemmas": 0}, "marianpg12": {"num_apology_lemmas": 0},
+            "wawesomeNOGUI": {"num_apology_lemmas": 0}, "MLo8": {"num_apology_lemmas": 3},
+            "binary-sequence": {"num_apology_lemmas": 0}, "WellBattle6": {"num_apology_lemmas": 0},
+            "ravindrachechani": {"num_apology_lemmas": 0}, "bkline": {"num_apology_lemmas": 0},
+            "al-heisner": {"num_apology_lemmas": 0}, "mthomp9838": {"num_apology_lemmas": 0},
+            "ifctgerardo": {"num_apology_lemmas": 0}, "RageshAntony": {"num_apology_lemmas": 0},
+            "DanielSReynoso": {"num_apology_lemmas": 0}, "sandeep-sparrow": {"num_apology_lemmas": 0},
+            "negovan13": {"num_apology_lemmas": 0}, "JosefKaser": {"num_apology_lemmas": 0},
+            "binishantony": {"num_apology_lemmas": 0}, "thyarles": {"num_apology_lemmas": 0},
+            "jmertic": {"num_apology_lemmas": 0}, "cobol10": {"num_apology_lemmas": 0},
+            "MrGmaw": {"num_apology_lemmas": 0}, "kas1830": {"num_apology_lemmas": 1},
+            "JoAnnaEsq": {"num_apology_lemmas": 0}, "jacqpot": {"num_apology_lemmas": 0},
+            "mconfoy": {"num_apology_lemmas": 0}, "ahmedEid1": {"num_apology_lemmas": 4},
+            "CmdrZin": {"num_apology_lemmas": 0}, "timretout": {"num_apology_lemmas": 0},
+            "jackson-024": {"num_apology_lemmas": 0}, "noct4": {"num_apology_lemmas": 0},
+            "varlux": {"num_apology_lemmas": 2}, "EddieCavic": {"num_apology_lemmas": 0},
+            "DanielRosenwasser": {"num_apology_lemmas": 0}, "MartinYeung5": {"num_apology_lemmas": 0},
+            "sccosel": {"num_apology_lemmas": 2}, "danpcconsult": {"num_apology_lemmas": 0},
+            "jazzyjackson": {"num_apology_lemmas": 0}, "johnpevans": {"num_apology_lemmas": 0},
+            "seahopki12": {"num_apology_lemmas": 0}, "brunopacheco1": {"num_apology_lemmas": 0},
+            "michael-conrad": {"num_apology_lemmas": 0}, "klausmelcher": {"num_apology_lemmas": 1},
+            "jtrevithick": {"num_apology_lemmas": 0}, "ChrisBoehmCA": {"num_apology_lemmas": 0},
+            "ejimenezISEP": {"num_apology_lemmas": 0}, "mpettis": {"num_apology_lemmas": 0},
+            "OliverMaerz": {"num_apology_lemmas": 0}, "comps3": {"num_apology_lemmas": 0},
+            "dennisad": {"num_apology_lemmas": 0}, "broarr": {"num_apology_lemmas": 0},
+            "peraciodias": {"num_apology_lemmas": 0}, "steven-piot": {"num_apology_lemmas": 0},
+            "leonardcohen58": {"num_apology_lemmas": 1}, "zeibura": {"num_apology_lemmas": 0},
+            "java007md": {"num_apology_lemmas": 0}, "staceylmarch": {"num_apology_lemmas": 0},
+            "abickerton": {"num_apology_lemmas": 0}, "navarretedaniel": {"num_apology_lemmas": 0},
+            "DStatWriter": {"num_apology_lemmas": 0}, "jellypuno": {"num_apology_lemmas": 1},
+            "camdroid": {"num_apology_lemmas": 0}, "BilltheK": {"num_apology_lemmas": 0},
+            "paulnewt": {"num_apology_lemmas": 0}, "bz8g3d": {"num_apology_lemmas": 0},
+            "Rickster66": {"num_apology_lemmas": 0}, "gowide00": {"num_apology_lemmas": 0},
+            "fromer97": {"num_apology_lemmas": 0}, "OldGuy86": {"num_apology_lemmas": 0},
+            "AidanFarhi": {"num_apology_lemmas": 0}
+        }
+        # Test
+        actual_developers_dict = _getDeveloperDicts(input_file_path)
+        self.assertDictEqual(expected_developers_dict, actual_developers_dict)
+
+
+    def test_developerStats(self):
+        """
+        Test src.developers:developerStats().
+        """
+        # Setup
+        input_file_path = os.path.join(CWD, "test_files/test_data7/")
+        input_num_procs = 2
+        expected_developers_dict = {
+            "Dlthomass": {"num_apology_lemmas": 0}, "Cheukting": {"num_apology_lemmas": 0},
+            "danpcconsult": {"num_apology_lemmas": 0}, "staceylmarch": {"num_apology_lemmas": 0},
+            "kghenderson": {"num_apology_lemmas": 0}, "dennisad": {"num_apology_lemmas": 0},
+            "cwansart": {"num_apology_lemmas": 0}, "kevinchekovfeeney": {"num_apology_lemmas": 0},
+            "MrRaymondLee": {"num_apology_lemmas": 0}, "ravindrachechani": {"num_apology_lemmas": 0},
+            "andeplane": {"num_apology_lemmas": 0}, "binary-sequence": {"num_apology_lemmas": 0},
+            "BilltheK": {"num_apology_lemmas": 0}, "k-tipp": {"num_apology_lemmas": 0},
+            "al-heisner": {"num_apology_lemmas": 0}, "broarr": {"num_apology_lemmas": 0},
+            "wawesomeNOGUI": {"num_apology_lemmas": 0}, "brunopacheco1": {"num_apology_lemmas": 0},
+            "michael-conrad": {"num_apology_lemmas": 0}, "Sudharsana-Srinivasan": {"num_apology_lemmas": 0},
+            "matko": {"num_apology_lemmas": 2}, "paulnewt": {"num_apology_lemmas": 0},
+            "MichaelSavin": {"num_apology_lemmas": 0}, "ahmedEid1": {"num_apology_lemmas": 4},
+            "camdroid": {"num_apology_lemmas": 0}, "CmdrZin": {"num_apology_lemmas": 0},
+            "RageshAntony": {"num_apology_lemmas": 0}, "seahopki12": {"num_apology_lemmas": 0},
+            "hoijnet": {"num_apology_lemmas": 0}, "joepio": {"num_apology_lemmas": 0},
+            "Schekn": {"num_apology_lemmas": 0}, "nemanjavuk": {"num_apology_lemmas": 0},
+            "edrubins": {"num_apology_lemmas": 0}, "cobol10": {"num_apology_lemmas": 0},
+            "abickerton": {"num_apology_lemmas": 0}, "Eliana88": {"num_apology_lemmas": 0},
+            "bhowe": {"num_apology_lemmas": 0}, "kaaloo": {"num_apology_lemmas": 0},
+            "MrGmaw": {"num_apology_lemmas": 0}, "jtrevithick": {"num_apology_lemmas": 0},
+            "ifctgerardo": {"num_apology_lemmas": 0}, "zeibura": {"num_apology_lemmas": 0},
+            "bionicles": {"num_apology_lemmas": 0}, "edack": {"num_apology_lemmas": 0},
+            "trialblaze-bt": {"num_apology_lemmas": 0}, "EddieCavic": {"num_apology_lemmas": 0},
+            "mikedblum": {"num_apology_lemmas": 0}, "raven300": {"num_apology_lemmas": 1},
+            "eddiejaoude": {"num_apology_lemmas": 0}, "WellBattle6": {"num_apology_lemmas": 0},
+            "noct4": {"num_apology_lemmas": 0}, "jacqpot": {"num_apology_lemmas": 0},
+            "OlegKunitsyn": {"num_apology_lemmas": 1}, "sandeep-sparrow": {"num_apology_lemmas": 0},
+            "java007md": {"num_apology_lemmas": 0}, "RowReal": {"num_apology_lemmas": 0},
+            "rahuldeepattri": {"num_apology_lemmas": 0}, "steven-piot": {"num_apology_lemmas": 0},
+            "mconfoy": {"num_apology_lemmas": 0}, "GavinMendelGleason": {"num_apology_lemmas": 0},
+            "moonman7": {"num_apology_lemmas": 0}, "KarlLevik": {"num_apology_lemmas": 0},
+            "marvin-hansen": {"num_apology_lemmas": 0}, "MLo8": {"num_apology_lemmas": 3},
+            "DStatWriter": {"num_apology_lemmas": 0}, "dwinston": {"num_apology_lemmas": 0},
+            "rrooij": {"num_apology_lemmas": 1}, "gowide00": {"num_apology_lemmas": 0},
+            "salisbuk7897": {"num_apology_lemmas": 0}, "DanielRosenwasser": {"num_apology_lemmas": 0},
+            "dependabot": {"num_apology_lemmas": 0}, "sabybasu": {"num_apology_lemmas": 1},
+            "michalblaszak": {"num_apology_lemmas": 0}, "marianpg12": {"num_apology_lemmas": 0},
+            "jackson-024": {"num_apology_lemmas": 0}, "martinkeen": {"num_apology_lemmas": 0},
+            "BaileyH": {"num_apology_lemmas": 0}, "timretout": {"num_apology_lemmas": 0},
+            "zvookiejoo": {"num_apology_lemmas": 0}, "moueza": {"num_apology_lemmas": 0},
+            "JerethCutestory": {"num_apology_lemmas": 0}, "mthomp9838": {"num_apology_lemmas": 0},
+            "EmmanuelOga": {"num_apology_lemmas": 0}, "JosefKaser": {"num_apology_lemmas": 0},
+            "DanielSReynoso": {"num_apology_lemmas": 0}, "KittyJose": {"num_apology_lemmas": 0},
+            "sachinbhutani": {"num_apology_lemmas": 0}, "fromer97": {"num_apology_lemmas": 0},
+            "ChrisBoehmCA": {"num_apology_lemmas": 0}, "ansarizafar": {"num_apology_lemmas": 0},
+            "ghpu": {"num_apology_lemmas": 0}, "LogicalDash": {"num_apology_lemmas": 0},
+            "rsac56": {"num_apology_lemmas": 0}, "FranklinChen": {"num_apology_lemmas": 0},
+            "Francesca-Bit": {"num_apology_lemmas": 0}, "jmertic": {"num_apology_lemmas": 0},
+            "ejimenezISEP": {"num_apology_lemmas": 0}, "jrmalone93": {"num_apology_lemmas": 0},
+            "detinsley1s": {"num_apology_lemmas": 0}, "leonardcohen58": {"num_apology_lemmas": 1},
+            "chrisshortlaw": {"num_apology_lemmas": 0}, "evildmp": {"num_apology_lemmas": 0},
+            "MartinYeung5": {"num_apology_lemmas": 0}, "kamleshjoshi8102": {"num_apology_lemmas": 0},
+            "bkline": {"num_apology_lemmas": 0}, "sccosel": {"num_apology_lemmas": 2},
+            "kas1830": {"num_apology_lemmas": 1}, "thyarles": {"num_apology_lemmas": 0},
+            "mpettis": {"num_apology_lemmas": 0}, "binishantony": {"num_apology_lemmas": 0},
+            "jellypuno": {"num_apology_lemmas": 1}, "tathoma": {"num_apology_lemmas": 0},
+            "ibrahimaktasgithub": {"num_apology_lemmas": 1}, "tanto259": {"num_apology_lemmas": 1},
+            "peraciodias": {"num_apology_lemmas": 0}, "navarretedaniel": {"num_apology_lemmas": 0},
+            "AidanFarhi": {"num_apology_lemmas": 0}, "yashasvimisra2798": {"num_apology_lemmas": 0},
+            "luke-feeney": {"num_apology_lemmas": 2}, "mikkokotila": {"num_apology_lemmas": 0},
+            "timdsaunders1": {"num_apology_lemmas": 0}, "jazzyjackson": {"num_apology_lemmas": 0},
+            "Rickster66": {"num_apology_lemmas": 0}, "OliverMaerz": {"num_apology_lemmas": 0},
+            "spl": {"num_apology_lemmas": 1}, "GreenRoemer": {"num_apology_lemmas": 2},
+            "OldGuy86": {"num_apology_lemmas": 0}, "pmoura": {"num_apology_lemmas": 2},
+            "comps3": {"num_apology_lemmas": 0}, "bz8g3d": {"num_apology_lemmas": 0},
+            "henryjcee": {"num_apology_lemmas": 2}, "NeelParihar": {"num_apology_lemmas": 0},
+            "johnpevans": {"num_apology_lemmas": 0}, "klausmelcher": {"num_apology_lemmas": 1},
+            "venkatzhub": {"num_apology_lemmas": 0}, "MikeBauerCA": {"num_apology_lemmas": 1},
+            "pwin": {"num_apology_lemmas": 0}, "bascott": {"num_apology_lemmas": 0},
+            "JoAnnaEsq": {"num_apology_lemmas": 0}, "negovan13": {"num_apology_lemmas": 0},
+            "jbennettgit": {"num_apology_lemmas": 0}, "jamesnvc": {"num_apology_lemmas": 0},
+            "AstroChelonian": {"num_apology_lemmas": 0}, "ftpo": {"num_apology_lemmas": 0},
+            "varlux": {"num_apology_lemmas": 2}
+        }
+        # Test
+        actual_developers_dict = developerStats(input_file_path, input_num_procs)
+        self.assertDictEqual(expected_developers_dict, actual_developers_dict)
+
 
 
 class TestApologies(unittest.TestCase):
