@@ -18,6 +18,8 @@ from src.apologies import classify, _countApologies, _labelApologies
 from src.config import getAPIToken, EmptyAPITokenError
 from src.deduplicate import deduplicate
 from src.delete import delete
+from src.developers import _countDeveloperApologies, _flattenDicts, _getDeveloperDicts, \
+    _writeToDisk, developerStats
 from src.download import download
 from src.graphql import _runQuery, runQuery, getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, validateDataDir, parseRepoURL, \
@@ -2455,6 +2457,59 @@ class TestPreprocess(unittest.TestCase):
         os.remove(pre_issues)
         os.remove(pre_commits)
         os.remove(pre_pull_requests)
+
+
+class TestDevelopers(unittest.TestCase):
+    """
+    Test cases for functions in src.developers.
+    """
+    def setUp(self):
+        """
+        Necessary setup for test cases.
+        """
+        pass
+
+    def test__flattenDicts(self):
+        """
+        Test src.developers:_flattenDicts().
+        """
+        # Setup
+        dict_1 = {
+            "ben": {"num_apology_lemmas": 42},
+            "andy": {"num_apology_lemmas": 17},
+            "nuthan": {"num_apology_lemmas": 7}
+        }
+        dict_2 = {
+            "ben": {"num_apology_lemmas": 10},
+            "andy": {"num_apology_lemmas": 32},
+            "emilio": {"num_apology_lemmas": 48}
+        }
+        dict_3 = {
+            "ben": {"num_apology_lemmas": 102},
+            "paul": {"num_apology_lemmas": 0},
+            "jen": {"num_apology_lemmas": 16}
+        }
+        input_dict_list = [dict_1, dict_2, dict_3]
+        expected_flat_dict = {
+            "ben": {"num_apology_lemmas": 154},
+            "andy": {"num_apology_lemmas": 49},
+            "nuthan": {"num_apology_lemmas": 7},
+            "emilio": {"num_apology_lemmas": 48},
+            "paul": {"num_apology_lemmas": 0},
+            "jen": {"num_apology_lemmas": 16}
+        }
+        # Test
+        actual_flat_dict = _flattenDicts(input_dict_list)
+        print(actual_flat_dict)
+        self.assertDictEqual(expected_flat_dict, actual_flat_dict)
+
+    def test__countDeveloperApologies(self):
+        """
+        Test src.developers:_countDeveloperApologies().
+        """
+        # Setup
+        input_file_path = os.path.join(CWD, "test_files/test_data3/")
+        # TODO
 
 
 class TestApologies(unittest.TestCase):

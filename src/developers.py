@@ -5,9 +5,8 @@
 import collections
 import csv
 import multiprocessing as mproc
+import random
 import sys
-from pathlib import Path
-from shutil import copyfile
 
 
 #### PACKAGE IMPORTS ###############################################################################
@@ -15,6 +14,7 @@ from src.helpers import doesPathExist, fixNullBytes, getDataFilepaths, getSubDir
 
 
 #### GLOBALS #######################################################################################
+HEADER = ["USERNAME", "NUM_APOLOGY_LEMMAS", ]
 
 
 #### FUNCTIONS #####################################################################################
@@ -72,7 +72,7 @@ def _countDeveloperApologies(file_path, comment_author_index, num_apology_lemmas
             comment_author = line[comment_author_index]
 
             if comment_author in developers_dict.keys():
-                developers_dict[comment_author]["apology_lemma_count"] += int(line[16])
+                developers_dict[comment_author]["apology_lemma_count"] += int(line[num_apology_lemmas_index])
             else:
                 developers_dict[comment_author] = {
                     "apology_lemma_count": int(line[num_apology_lemmas_index])
@@ -109,8 +109,32 @@ def _getDeveloperDicts(language_dir):
 
     developers_dict = _flattenDicts([i_dict, c_dict, p_dict])
 
+    # Memory management
+    del i_dict
+    del c_dict
+    del p_dict
 
-def developerStats(data_dir, num_procs, overwrite=True):
+    return developers_dict
+
+
+def _writeToDisk(developer_dict):
+    """
+    Write dictionary to disk in CSV format.
+    """
+    with open("developer_stats.csv", "w") as f:
+        csv_writer = csv.write(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow(HEADER)
+
+        for k, v in developer_dict:
+            row = [
+                k,                       # Username
+                v["num_apology_lemmas"], # Num Apology Lemmas
+            ]
+            csv_writer.writerow(row)
+
+
+def developerStats(data_dir, num_procs):
     """
 
     """
@@ -130,7 +154,10 @@ def developerStats(data_dir, num_procs, overwrite=True):
     developer_usernames = developer_dict.keys()
 
     # Compute other metrics
-    pass
+    # TODO
+
+    # Write to Disk
+    _writeToDisk(developer_dict)
 
 
 #### MAIN ##########################################################################################
