@@ -352,11 +352,7 @@ def stats(data_dir, num_procs, verbose=True):
         }
     }
     # Get filepaths
-    #pop_filepaths = _getPopulationFilepaths(data_dir)
-    pop_filepaths = list()
-    pop_filepaths.append("/home/bsm9339/developer-apologies/data_aps3/Scratch/issues/issues.csv")
-    pop_filepaths.append("/home/bsm9339/developer-apologies/data_aps3/Scratch/commits/commits.csv")
-    pop_filepaths.append("/home/bsm9339/developer-apologies/data_aps3/Scratch/pull_requests/pull_requests.csv")
+    pop_filepaths = _getPopulationFilepaths(data_dir)
 
     stats_list = list()
     for filepath in pop_filepaths:
