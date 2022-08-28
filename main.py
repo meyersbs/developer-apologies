@@ -11,6 +11,7 @@ import sys
 from src.apologies import classify
 from src.deduplicate import deduplicate
 from src.delete import delete
+from src.developers import developerStats
 from src.download import download
 from src.graphql import getRateLimitInfo
 from src.helpers import canonicalize, doesPathExist, GITHUB_LANGUAGES
@@ -69,6 +70,20 @@ def deleteCommand(args):
 
     # Pass arguments to src.delete:delete()
     delete(args.data_dir)
+
+
+def developerStatsCommand(args):
+    """
+    Compute stats for developers.
+    """
+    # Canonicalize filepaths
+    args.data_dir = canonicalize(args.data_dir)
+
+    if args.num_procs == 0:
+        args.num_procs = mproc.cpu_count()
+
+    # Pass arguments to src.developers:developerStats()
+    developerStats(args.data_dir, args.num_procs)
 
 
 def searchCommand(args):
@@ -431,6 +446,21 @@ if __name__ == "__main__":
         "'0' to use all available CPUs."
     )
     stats_parser.set_defaults(func=statsCommand)
+
+    #### DEVELOPER_STATS COMMAND
+    developer_parser = command_parsers.add_parser(
+        "developer_stats", help="Compute statistics for developers."
+    )
+
+    developer_parser.add_argument(
+        "data_dir", type=str, help="The path for a directory containing processed and classified "
+        "data. Relative paths will be canonicalized."
+    )
+    developer_parser.add_argument(
+        "num_procs", type=int, help="Number of processes (CPUs) to use for multiprocessing. Enter "
+        "'0' to use all available CPUs."
+    )
+    developer_parser.set_defaults(func=developerStatsCommand)
 
     #### PARSER ARGUMENTS
     args = parser.parse_args()
